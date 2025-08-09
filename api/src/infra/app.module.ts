@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EnvModule } from 'src/env/env.module';
 import { envSchema } from 'src/env/env.schema';
-import { ControllersModule } from './controllers/controllers.module';
 import { AuthModule } from './auth/auth.module';
 import { EnvService } from 'src/env/env.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ControllersModule } from 'src/controllers/controllers.module';
 
 @Module({
   imports: [
