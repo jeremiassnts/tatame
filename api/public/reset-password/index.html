@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tatame - Redefinir Senha</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        background-color: #2d2d2d;
+        padding: 1.5rem 1rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        width: 80vw;
+        max-width: 400px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #f0f0f0;
+        font-size: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #b0b0b0;
+        font-size: 0.9rem;
+      }
+
+      input[type='password'] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #4a4a4a;
+        border-radius: 4px;
+        background-color: #3a3a3a;
+        color: #e0e0e0;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      input[type='password']:focus {
+        outline: none;
+        border-color: #6a6a6a;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #4a4a4a;
+        color: #e0e0e0;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-weight: bold;
+      }
+
+      .btn:hover {
+        background-color: #5a5a5a;
+      }
+
+      .btn:disabled {
+        background-color: #3a3a3a;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .message {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 0.9rem;
+        display: none;
+      }
+
+      .message.success {
+        background-color: #2d4a2d;
+        color: #90ee90;
+        border: 1px solid #4a6a4a;
+      }
+
+      .message.error {
+        background-color: #4a2d2d;
+        color: #ff6b6b;
+        border: 1px solid #6a4a4a;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        margin-top: 1rem;
+        color: #b0b0b0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Redefinir Senha</h1>
+      <form id="resetPasswordForm">
+        <div class="form-group">
+          <label for="password">Nova Senha</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            minlength="6"
+          />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirme a Nova Senha</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            required
+            minlength="6"
+          />
+        </div>
+        <button type="submit" class="btn" id="submitBtn">Alterar Senha</button>
+      </form>
+      <div class="loading" id="loading">Processando...</div>
+      <div class="message" id="message"></div>
+    </div>
+
+    <script>
+      document
+        .getElementById('resetPasswordForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const password = document.getElementById('password').value;
+          const confirmPassword =
+            document.getElementById('confirmPassword').value;
+          const submitBtn = document.getElementById('submitBtn');
+          const loading = document.getElementById('loading');
+          const message = document.getElementById('message');
+
+          // Limpar mensagens anteriores
+          message.style.display = 'none';
+          message.className = 'message';
+
+          // Validar se as senhas coincidem
+          if (password !== confirmPassword) {
+            showMessage('As senhas não coincidem.', 'error');
+            return;
+          }
+
+          // Validar comprimento mínimo
+          if (password.length < 6) {
+            showMessage('A senha deve ter pelo menos 6 caracteres.', 'error');
+            return;
+          }
+
+          // Obter token da URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const token = urlParams.get('token');
+
+          if (!token) {
+            showMessage('Token de autenticação não encontrado.', 'error');
+            return;
+          }
+
+          // Mostrar loading
+          submitBtn.disabled = true;
+          loading.style.display = 'block';
+
+          try {
+            const response = await fetch('/users/change-password', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                password: password,
+              }),
+            });
+
+            if (response.ok) {
+              showMessage('Senha alterada com sucesso!', 'success');
+              document.getElementById('resetPasswordForm').reset();
+            } else {
+              const errorData = await response.json();
+              showMessage(
+                errorData.message || 'Erro ao alterar senha. Tente novamente.',
+                'error',
+              );
+            }
+          } catch (error) {
+            showMessage('Erro de conexão. Tente novamente.', 'error');
+          } finally {
+            submitBtn.disabled = false;
+            loading.style.display = 'none';
+          }
+        });
+
+      function showMessage(text, type) {
+        const message = document.getElementById('message');
+        message.textContent = text;
+        message.className = `message ${type}`;
+        message.style.display = 'block';
+      }
+    </script>
+  </body>
+</html>
