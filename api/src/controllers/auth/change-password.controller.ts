@@ -5,9 +5,9 @@ import {
   HttpCode,
   Post,
 } from '@nestjs/common';
-import { ChangePasswordUseCase } from 'src/domain/use-cases/change-password';
-import { UserPayload } from '../../infra/auth/jwt.strategy';
-import { CurrentUser } from '../../infra/auth/current-user-decorator';
+import { ChangePasswordUseCase } from 'src/use-cases/change-password';
+import { UserPayload } from '../../auth/jwt.strategy';
+import { CurrentUser } from '../../auth/current-user-decorator';
 
 interface ChangePasswordBody {
   password: string;

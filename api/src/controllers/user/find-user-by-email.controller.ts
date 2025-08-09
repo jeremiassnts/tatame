@@ -6,9 +6,9 @@ import {
   HttpCode,
   SetMetadata,
 } from '@nestjs/common';
-import { ZodValidationPipe } from '../../infra/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
-import { FindUserByEmailUseCase } from 'src/domain/use-cases/find-user-by-email';
+import { FindUserByEmailUseCase } from 'src/use-cases/find-user-by-email';
 
 export const FindUserByEmailQuerySchema = z.object({
   email: z.string().email(),

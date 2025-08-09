@@ -7,11 +7,11 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { z } from 'zod';
-import { ZodValidationPipe } from '../../infra/pipes/zod-validation.pipe';
-import { JwtAuthGuard } from '../../infra/auth/jwt-auth.guard';
-import { EditClassUseCase } from 'src/domain/use-cases/edit-class';
-import { ClassPresenter } from '../../infra/presenters/class-presenter';
-import { DayOfWeek } from 'src/domain/entities/class';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { EditClassUseCase } from 'src/use-cases/edit-class';
+import { ClassPresenter } from '../../database/presenters/class-presenter';
+import { DayOfWeek } from 'src/entities/class';
 
 const editClassBodySchema = z.object({
   name: z.string(),

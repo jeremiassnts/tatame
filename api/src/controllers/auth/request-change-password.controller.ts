@@ -6,7 +6,7 @@ import {
   Post,
   SetMetadata,
 } from '@nestjs/common';
-import { RequestChangePasswordUseCase } from 'src/domain/use-cases/request-change-password';
+import { RequestChangePasswordUseCase } from 'src/use-cases/request-change-password';
 
 interface RequestChangePasswordBody {
   email: string;

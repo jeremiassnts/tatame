@@ -1,4 +1,4 @@
-import { MailerService } from 'src/domain/services/mailer.service';
+import { MailerService } from 'src/services/mailer.service';
 
 export class FakeMailerService implements MailerService {
   sendMail(to: string, subject: string, body: string): Promise<void> {

@@ -1,4 +1,4 @@
-import { PasswordHasherService } from 'src/domain/services/password-hasher.service';
+import { PasswordHasherService } from 'src/services/password-hasher.service';
 
 export class FakePasswordHasher implements PasswordHasherService {
   async hash(plain: string): Promise<string> {

@@ -1,5 +1,5 @@
-import { Gym } from '../../src/domain/entities/gym';
-import { GymsRepository } from '../../src/domain/repositories/gyms.repository';
+import { Gym } from '../../src/entities/gym';
+import { GymsRepository } from '../../src/database/repositories/gyms.repository';
 
 export class InMemoryGymsRepository implements GymsRepository {
   public gyms: Gym[] = [];

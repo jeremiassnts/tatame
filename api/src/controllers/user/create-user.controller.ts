@@ -8,13 +8,13 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { ZodValidationPipe } from '../../infra/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
-import { UserAlreadyExistsError } from '../../domain/use-cases/error/user-already-exists.error';
-import { Gender } from '../../domain/entities/user';
-import { UserPresenter } from '../../infra/presenters/user-presenter';
-import { CreateUserUseCase } from 'src/domain/use-cases/create-user';
-import { Role } from 'src/domain/entities/user-role';
+import { UserAlreadyExistsError } from '../../use-cases/error/user-already-exists.error';
+import { Gender } from '../../entities/user';
+import { UserPresenter } from '../../database/presenters/user-presenter';
+import { CreateUserUseCase } from 'src/use-cases/create-user';
+import { Role } from 'src/entities/user-role';
 
 export const CreateUserBodySchema = z.object({
   name: z.string(),

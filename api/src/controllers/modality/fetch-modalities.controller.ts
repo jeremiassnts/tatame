@@ -1,6 +1,6 @@
 import { Controller, Get, HttpCode, SetMetadata } from '@nestjs/common';
-import { FetchModalitiesUseCase } from '../../domain/use-cases/fetch-modalities';
-import { ModalityPresenter } from '../../infra/presenters/modality-presenter';
+import { FetchModalitiesUseCase } from '../../use-cases/fetch-modalities';
+import { ModalityPresenter } from '../../database/presenters/modality-presenter';
 
 @Controller('/modalities')
 @SetMetadata('isPublic', true)

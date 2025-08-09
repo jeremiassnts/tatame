@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { Class, DayOfWeek } from '../../src/domain/entities/class';
-import { PrismaService } from 'src/infra/repositories/prisma/prisma.service';
+import { Class, DayOfWeek } from '../../src/entities/class';
+import { PrismaService } from 'src/database/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Class as PrismaClass } from '@prisma/client';
 

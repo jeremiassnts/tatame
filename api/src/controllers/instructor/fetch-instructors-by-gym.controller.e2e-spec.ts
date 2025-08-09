@@ -3,12 +3,12 @@ import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { UserFactory } from 'test/factories/make-user';
-import { AppModule } from '../../infra/app.module';
+import { AppModule } from '../../app.module';
 import { describe, test, expect, beforeAll } from 'vitest';
-import { DatabaseModule } from '../../infra/repositories/database.module';
+import { DatabaseModule } from '../../database/database.module';
 import { GymFactory } from 'test/factories/make-gym';
-import { PrismaService } from '../../infra/repositories/prisma/prisma.service';
-import { Role } from 'src/domain/entities/user-role';
+import { PrismaService } from '../../database/prisma/prisma.service';
+import { Role } from 'src/entities/user-role';
 
 describe('Fetch Instructors By Gym (E2E)', () => {
   let app: INestApplication;

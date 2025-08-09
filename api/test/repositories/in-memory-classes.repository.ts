@@ -1,6 +1,6 @@
-import { Class } from '../../src/domain/entities/class';
-import { ClassWithDetails } from '../../src/domain/entities/class-with-details';
-import { ClassesRepository } from '../../src/domain/repositories/classes.repository';
+import { Class } from '../../src/entities/class';
+import { ClassWithDetails } from '../../src/entities/class-with-details';
+import { ClassesRepository } from '../../src/database/repositories/classes.repository';
 
 export class InMemoryClassesRepository implements ClassesRepository {
   public classes: Class[] = [];

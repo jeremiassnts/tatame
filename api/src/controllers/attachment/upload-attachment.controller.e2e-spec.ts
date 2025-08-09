@@ -2,8 +2,8 @@ import { beforeAll, describe, expect, test } from 'vitest';
 import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from '../../infra/app.module';
-import { DatabaseModule } from '../../infra/repositories/database.module';
+import { AppModule } from '../../app.module';
+import { DatabaseModule } from '../../database/database.module';
 
 describe('Upload attachment (E2E)', () => {
   let app: INestApplication;

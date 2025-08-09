@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { Gym } from '../../src/domain/entities/gym';
-import { PrismaService } from 'src/infra/repositories/prisma/prisma.service';
+import { Gym } from '../../src/entities/gym';
+import { PrismaService } from 'src/database/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

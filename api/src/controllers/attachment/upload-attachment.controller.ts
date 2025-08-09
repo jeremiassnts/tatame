@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadPhotoUseCase } from 'src/domain/use-cases/upload-photo';
+import { UploadPhotoUseCase } from 'src/use-cases/upload-photo';
 
 @Controller('/attachments')
 @SetMetadata('isPublic', true)

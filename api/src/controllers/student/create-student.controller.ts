@@ -7,12 +7,12 @@ import {
   HttpStatus,
   SetMetadata,
 } from '@nestjs/common';
-import { CreateStudentUseCase } from '../../domain/use-cases/create-student';
-import { ZodValidationPipe } from '../../infra/pipes/zod-validation.pipe';
+import { CreateStudentUseCase } from '../../use-cases/create-student';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
-import { UserAlreadyExistsError } from '../../domain/use-cases/error/user-already-exists.error';
-import { Gender } from '../../domain/entities/user';
-import { UserPresenter } from '../../infra/presenters/user-presenter';
+import { UserAlreadyExistsError } from '../../use-cases/error/user-already-exists.error';
+import { Gender } from '../../entities/user';
+import { UserPresenter } from '../../database/presenters/user-presenter';
 
 export const createStudentBodySchema = z.object({
   name: z.string(),

@@ -1,6 +1,6 @@
 import { Controller, Get, SetMetadata } from '@nestjs/common';
-import { FetchGymsUseCase } from 'src/domain/use-cases/fetch-gyms';
-import { GymPresenter } from '../../infra/presenters/gym-presenter';
+import { FetchGymsUseCase } from 'src/use-cases/fetch-gyms';
+import { GymPresenter } from '../../database/presenters/gym-presenter';
 
 @Controller('gyms')
 @SetMetadata('isPublic', true)

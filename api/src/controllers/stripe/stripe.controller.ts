@@ -7,9 +7,9 @@ import {
   SetMetadata,
   UsePipes,
 } from '@nestjs/common';
-import { StripeService } from '../../infra/services/stripe';
-import { StripePresenter } from '../../infra/presenters/stripe-presenter';
-import { ZodValidationPipe } from '../../infra/pipes/zod-validation.pipe';
+import { StripeService } from 'src/stripe/stripe.service';
+import { StripePresenter } from 'src/database/presenters/stripe-presenter';
+import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { z } from 'zod';
 
 const StripeSubscribeBodySchema = z.object({

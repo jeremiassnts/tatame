@@ -1,8 +1,8 @@
 import { Controller, Get, HttpCode, BadRequestException } from '@nestjs/common';
-import { GetUserProfileUseCase } from 'src/domain/use-cases/get-user-profile';
-import { UserProfilePresenter } from '../../infra/presenters/user-profile-presenter';
-import { CurrentUser } from '../../infra/auth/current-user-decorator';
-import { UserNotFoundError } from 'src/domain/use-cases/error/user-not-found.error';
+import { GetUserProfileUseCase } from 'src/use-cases/get-user-profile';
+import { UserProfilePresenter } from '../../database/presenters/user-profile-presenter';
+import { CurrentUser } from '../../auth/current-user-decorator';
+import { UserNotFoundError } from 'src/use-cases/error/user-not-found.error';
 
 interface UserPayload {
   sub: string;

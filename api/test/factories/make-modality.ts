@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { PrismaService } from 'src/infra/repositories/prisma/prisma.service';
+import { PrismaService } from 'src/database/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Modality, TypeOfGraduation } from 'src/domain/entities/modality';
+import { Modality, TypeOfGraduation } from 'src/entities/modality';
 
 @Injectable()
 export class ModalityFactory {

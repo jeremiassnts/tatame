@@ -1,10 +1,10 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../../infra/app.module';
+import { AppModule } from '../../app.module';
 import { UserFactory } from 'test/factories/make-user';
 import { beforeAll, describe, expect, test } from 'vitest';
-import { DatabaseModule } from '../../infra/repositories/database.module';
+import { DatabaseModule } from '../../database/database.module';
 
 describe('Find User By Email (E2E)', () => {
   let app: INestApplication;

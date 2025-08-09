@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from '../../infra/app.module';
+import { AppModule } from '../../app.module';
 import request from 'supertest';
-import { DatabaseModule } from '../../infra/repositories/database.module';
+import { DatabaseModule } from '../../database/database.module';
 import { GymFactory } from 'test/factories/make-gym';
 import { UserFactory } from 'test/factories/make-user';
 

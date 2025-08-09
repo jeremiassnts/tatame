@@ -1,6 +1,6 @@
 import { Controller, Delete, Param, UseGuards, HttpCode } from '@nestjs/common';
-import { JwtAuthGuard } from '../../infra/auth/jwt-auth.guard';
-import { DeleteClassUseCase } from 'src/domain/use-cases/delete-class';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { DeleteClassUseCase } from 'src/use-cases/delete-class';
 
 @Controller('/classes/:id')
 @UseGuards(JwtAuthGuard)

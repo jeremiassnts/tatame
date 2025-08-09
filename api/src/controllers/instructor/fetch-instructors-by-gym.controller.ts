@@ -1,7 +1,7 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../infra/auth/jwt-auth.guard';
-import { UserPresenter } from '../../infra/presenters/user-presenter';
-import { FetchInstructorsByGymUseCase } from 'src/domain/use-cases/fetch-instructors-by-gym';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { UserPresenter } from '../../database/presenters/user-presenter';
+import { FetchInstructorsByGymUseCase } from 'src/use-cases/fetch-instructors-by-gym';
 
 @Controller('/gyms/:gymId/instructors')
 @UseGuards(JwtAuthGuard)

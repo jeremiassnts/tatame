@@ -1,12 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { PrismaService } from '../../infra/repositories/prisma/prisma.service';
-import { Gender } from '../../domain/entities/user';
-import { AppModule } from '../../infra/app.module';
+import { PrismaService } from '../../database/prisma/prisma.service';
+import { Gender } from '../../entities/user';
+import { AppModule } from '../../app.module';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { GymFactory } from 'test/factories/make-gym';
-import { DatabaseModule } from '../../infra/repositories/database.module';
+import { DatabaseModule } from '../../database/database.module';
 import { UserFactory } from 'test/factories/make-user';
 
 describe('Create Student (E2E)', () => {

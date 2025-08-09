@@ -1,5 +1,5 @@
-import { UserRole } from '../../src/domain/entities/user-role';
-import { UserRolesRepository } from '../../src/domain/repositories/user-roles.repository';
+import { UserRole } from '../../src/entities/user-role';
+import { UserRolesRepository } from '../../src/database/repositories/user-roles.repository';
 
 export class InMemoryUserRolesRepository implements UserRolesRepository {
   public userRoles: UserRole[] = [];

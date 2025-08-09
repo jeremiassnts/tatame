@@ -1,15 +1,15 @@
-import { Graduation } from 'src/domain/entities/graduation';
-import { Gym } from 'src/domain/entities/gym';
-import { User } from 'src/domain/entities/user';
+import { Graduation } from 'src/entities/graduation';
+import { Gym } from 'src/entities/gym';
+import { User } from 'src/entities/user';
 import {
   UsersRepository,
   UserProfileData,
-} from 'src/domain/repositories/users.repository';
+} from 'src/database/repositories/users.repository';
 import { InMemoryGraduationsRepository } from './in-memory-graduations.repository';
 import { InMemoryGymsRepository } from './in-memory-gyms.repository';
 import { InMemoryUserRolesRepository } from './in-memory-user-roles.repository';
-import { Role, UserRole } from 'src/domain/entities/user-role';
-import { TrainingGym } from 'src/domain/entities/training-gym';
+import { Role, UserRole } from 'src/entities/user-role';
+import { TrainingGym } from 'src/entities/training-gym';
 import { InMemoryTrainingGymsRepository } from './in-memory-training-gyms.repository';
 
 export class InMemoryUsersRepository implements UsersRepository {

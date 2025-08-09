@@ -1,5 +1,5 @@
-import { ModalitiesRepository } from '../../src/domain/repositories/modalities.repository';
-import { Modality } from '../../src/domain/entities/modality';
+import { ModalitiesRepository } from '../../src/database/repositories/modalities.repository';
+import { Modality } from '../../src/entities/modality';
 
 export class InMemoryModalitiesRepository implements ModalitiesRepository {
   public items: Modality[] = [];

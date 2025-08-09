@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../../infra/app.module';
-import { DatabaseModule } from '../../infra/repositories/database.module';
+import { AppModule } from '../../app.module';
+import { DatabaseModule } from '../../database/database.module';
 import { UserFactory } from 'test/factories/make-user';
-import { PrismaService } from '../../infra/repositories/prisma/prisma.service';
+import { PrismaService } from '../../database/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { BcryptHasher } from '../../infra/services/bcrypt-hasher';
+import { BcryptHasher } from '../../hasher/bcrypt-hasher';
 import { describe, expect, beforeAll, test } from 'vitest';
 
 describe('Change password (E2E)', () => {

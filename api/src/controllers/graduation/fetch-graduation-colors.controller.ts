@@ -7,9 +7,9 @@ import {
   HttpStatus,
   SetMetadata,
 } from '@nestjs/common';
-import { FetchGraduationColorsUseCase } from '../../domain/use-cases/fetch-graduation-colors';
-import { GraduationColorPresenter } from '../../infra/presenters/graduation-color-presenter';
-import { ModalityNotFoundError } from '../../domain/use-cases/error/modality-not-found.error';
+import { FetchGraduationColorsUseCase } from '../../use-cases/fetch-graduation-colors';
+import { GraduationColorPresenter } from '../../database/presenters/graduation-color-presenter';
+import { ModalityNotFoundError } from '../../use-cases/error/modality-not-found.error';
 
 @Controller('/modalities/:modalityId/colors')
 @SetMetadata('isPublic', true)

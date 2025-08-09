@@ -8,13 +8,13 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { CreateManagerUseCase } from '../../domain/use-cases/create-manager';
-import { ZodValidationPipe } from '../../infra/pipes/zod-validation.pipe';
+import { CreateManagerUseCase } from '../../use-cases/create-manager';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
-import { UserAlreadyExistsError } from '../../domain/use-cases/error/user-already-exists.error';
-import { Gender } from '../../domain/entities/user';
-import { UserPresenter } from '../../infra/presenters/user-presenter';
-import { GymPresenter } from '../../infra/presenters/gym-presenter';
+import { UserAlreadyExistsError } from '../../use-cases/error/user-already-exists.error';
+import { Gender } from '../../entities/user';
+import { UserPresenter } from '../../database/presenters/user-presenter';
+import { GymPresenter } from '../../database/presenters/gym-presenter';
 
 export const createManagerBodySchema = z.object({
   name: z.string(),

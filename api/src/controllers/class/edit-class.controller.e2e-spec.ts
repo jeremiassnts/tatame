@@ -2,13 +2,13 @@ import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../../infra/app.module';
+import { AppModule } from '../../app.module';
 import { UserFactory } from 'test/factories/make-user';
 import { ClassFactory } from 'test/factories/make-class';
 import { GymFactory } from 'test/factories/make-gym';
 import { ModalityFactory } from 'test/factories/make-modality';
-import { DatabaseModule } from '../../infra/repositories/database.module';
-import { DayOfWeek } from 'src/domain/entities/class';
+import { DatabaseModule } from '../../database/database.module';
+import { DayOfWeek } from 'src/entities/class';
 import { beforeAll, describe, expect, test } from 'vitest';
 
 describe('Edit Class (E2E)', () => {

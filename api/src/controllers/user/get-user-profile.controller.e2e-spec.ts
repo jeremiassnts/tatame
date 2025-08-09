@@ -1,18 +1,18 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from 'src/infra/app.module';
-import { DatabaseModule } from 'src/infra/repositories/database.module';
-import { PrismaService } from 'src/infra/repositories/prisma/prisma.service';
+import { AppModule } from 'src/app.module';
+import { DatabaseModule } from 'src/database/database.module';
+import { PrismaService } from 'src/database/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { makeUser } from 'test/factories/make-user';
 import { makeGym } from 'test/factories/make-gym';
 import { makeGraduation } from 'test/factories/make-graduation';
-import { PrismaUserMapper } from 'src/infra/mappers/prisma/prisma-user.mapper';
-import { PrismaGymMapper } from 'src/infra/mappers/prisma/prisma-gym.mapper';
-import { PrismaGraduationMapper } from 'src/infra/mappers/prisma/prisma-graduation.mapper';
-import { PrismaUserRoleMapper } from 'src/infra/mappers/prisma/prisma-user-role.mapper';
-import { Role, UserRole } from 'src/domain/entities/user-role';
+import { PrismaUserMapper } from 'src/database/prisma/mappers/prisma-user.mapper';
+import { PrismaGymMapper } from 'src/database/prisma/mappers/prisma-gym.mapper';
+import { PrismaGraduationMapper } from 'src/database/prisma/mappers/prisma-graduation.mapper';
+import { PrismaUserRoleMapper } from 'src/database/prisma/mappers/prisma-user-role.mapper';
+import { Role, UserRole } from 'src/entities/user-role';
 import { beforeAll, describe, expect, test } from 'vitest';
 
 describe('Get User Profile (E2E)', () => {

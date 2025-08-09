@@ -6,9 +6,9 @@ import {
   SetMetadata,
   UsePipes,
 } from '@nestjs/common';
-import { AuthenticateUseCase } from '../../domain/use-cases/authenticate';
-import { ZodValidationPipe } from '../../infra/pipes/zod-validation.pipe';
-import { WrongCredentialsError } from '../../domain/use-cases/error/wrong-credentials.error';
+import { AuthenticateUseCase } from '../../use-cases/authenticate';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
+import { WrongCredentialsError } from '../../use-cases/error/wrong-credentials.error';
 import { HttpStatus } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { z } from 'zod';

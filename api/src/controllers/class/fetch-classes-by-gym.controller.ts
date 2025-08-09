@@ -1,9 +1,9 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { FetchClassesByGymUseCase } from 'src/domain/use-cases/fetch-classes-by-gym';
-import { JwtAuthGuard } from '../../infra/auth/jwt-auth.guard';
-import { CurrentUser } from '../../infra/auth/current-user-decorator';
-import { UserPayload } from '../../infra/auth/jwt.strategy';
-import { ClassWithDetailsPresenter } from '../../infra/presenters/class-with-details-presenter';
+import { FetchClassesByGymUseCase } from 'src/use-cases/fetch-classes-by-gym';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { CurrentUser } from '../../auth/current-user-decorator';
+import { UserPayload } from '../../auth/jwt.strategy';
+import { ClassWithDetailsPresenter } from '../../database/presenters/class-with-details-presenter';
 
 @Controller('/classes')
 @UseGuards(JwtAuthGuard)

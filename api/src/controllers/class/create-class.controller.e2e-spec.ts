@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../../infra/app.module';
-import { DatabaseModule } from '../../infra/repositories/database.module';
-import { PrismaService } from '../../infra/repositories/prisma/prisma.service';
+import { AppModule } from '../../app.module';
+import { DatabaseModule } from '../../database/database.module';
+import { PrismaService } from '../../database/prisma/prisma.service';
 import { describe, expect, beforeAll, test } from 'vitest';
 import { JwtService } from '@nestjs/jwt';
 import { GymFactory } from 'test/factories/make-gym';

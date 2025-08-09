@@ -6,12 +6,12 @@ import {
   UsePipes,
   UseGuards,
 } from '@nestjs/common';
-import { ZodValidationPipe } from '../../infra/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
-import { CreateClassUseCase } from 'src/domain/use-cases/create-class';
-import { DayOfWeek } from 'src/domain/entities/class';
-import { ClassPresenter } from '../../infra/presenters/class-presenter';
-import { JwtAuthGuard } from '../../infra/auth/jwt-auth.guard';
+import { CreateClassUseCase } from 'src/use-cases/create-class';
+import { DayOfWeek } from 'src/entities/class';
+import { ClassPresenter } from '../../database/presenters/class-presenter';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 export const CreateClassBodySchema = z.object({
   name: z.string(),

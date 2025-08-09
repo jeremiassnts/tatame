@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from '../../infra/app.module';
-import { PrismaService } from '../../infra/repositories/prisma/prisma.service';
+import { AppModule } from '../../app.module';
+import { PrismaService } from '../../database/prisma/prisma.service';
 import request from 'supertest';
-import { DatabaseModule } from '../../infra/repositories/database.module';
+import { DatabaseModule } from '../../database/database.module';
 
 describe('Fetch Graduation Colors (E2E)', () => {
   let app: INestApplication;

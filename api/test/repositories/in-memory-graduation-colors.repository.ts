@@ -1,5 +1,5 @@
-import { GraduationColorsRepository } from '../../src/domain/repositories/graduation-colors.repository';
-import { GraduationColor } from '../../src/domain/entities/graduation-color';
+import { GraduationColorsRepository } from '../../src/database/repositories/graduation-colors.repository';
+import { GraduationColor } from '../../src/entities/graduation-color';
 
 export class InMemoryGraduationColorsRepository
   implements GraduationColorsRepository

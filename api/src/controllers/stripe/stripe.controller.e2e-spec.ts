@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../../infra/app.module';
-import { DatabaseModule } from '../../infra/repositories/database.module';
+import { AppModule } from '../../app.module';
+import { DatabaseModule } from '../../database/database.module';
 import { describe, it, expect, beforeAll } from 'vitest';
 
 describe('Fetch stripe products (E2E)', () => {

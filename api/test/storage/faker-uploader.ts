@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { Uploader, UploadParams } from 'src/domain/storage/uploader';
+import { Uploader, UploadParams } from 'src/services/uploader';
 
 interface Upload {
   fileName: string;

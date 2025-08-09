@@ -1,5 +1,5 @@
-import { Graduation } from '../../src/domain/entities/graduation';
-import { GraduationsRepository } from '../../src/domain/repositories/graduations.repository';
+import { Graduation } from '../../src/entities/graduation';
+import { GraduationsRepository } from '../../src/database/repositories/graduations.repository';
 
 export class InMemoryGraduationsRepository implements GraduationsRepository {
   public graduations: Graduation[] = [];
