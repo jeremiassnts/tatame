@@ -91,13 +91,13 @@ export default function Class() {
 
   return (
     <SafeAreaView className="flex flex-1 bg-neutral-900 flex-col items-start justify-start pt-4 pl-3 pr-3">
-      {isLoading ||
-        (isDeletingClass && (
-          <View className="w-full h-full flex flex-col justify-start items-start gap-1">
-            <Skeleton className="w-full h-[50px]" />
-            <Skeleton className="w-full h-[500px] mt-4" />
-          </View>
-        ))}
+      {(isLoading || isDeletingClass) && (
+        <View className="w-full h-full flex flex-col justify-start items-start gap-1">
+          <Skeleton className="w-[36px] h-[36px] bg-neutral-700 rounded-lg" />
+          <Skeleton className="w-full h-[150px] mt-4 bg-neutral-700 rounded-lg" />
+          <Skeleton className="w-full h-[300px] mt-4 bg-neutral-700 rounded-lg" />
+        </View>
+      )}
       {!isLoading && (
         <View className="flex flex-col items-start justify-start w-full">
           <Button
@@ -110,7 +110,7 @@ export default function Class() {
           <Image
             source={require("~/assets/images/jiujitsu.webp")}
             resizeMode="cover"
-            className="w-full h-[150px] mt-2 mb-2"
+            className="w-full h-[150px] mt-2 mb-3"
             style={{
               borderRadius: 5,
             }}
