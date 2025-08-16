@@ -22,6 +22,7 @@ export class PrismaClassesRepository implements ClassesRepository {
         modality: true,
         gym: true,
         instructor: true,
+        ClassCancellation: true,
       },
     });
     return classes.map((classEntity) =>
@@ -62,6 +63,7 @@ export class PrismaClassesRepository implements ClassesRepository {
         modality: true,
         gym: true,
         instructor: true,
+        ClassCancellation: true,
       },
     });
     if (!classEntity) {

@@ -16,6 +16,8 @@ import { PrismaClassesRepository } from './prisma/repositories/prisma-classes.re
 import { ClassesRepository } from './repositories/classes.repository';
 import { TrainingGymsRepository } from './repositories/training-gyms.repository';
 import { PrismaTrainingGymsRepository } from './prisma/repositories/prisma-training-gyms.repository';
+import { ClassCancellationsRepository } from './repositories/class-cancellations.repository';
+import { PrismaClassCancellationsRepository } from './prisma/repositories/prisma-class-cancellations.repository';
 
 @Module({
   providers: [
@@ -52,6 +54,10 @@ import { PrismaTrainingGymsRepository } from './prisma/repositories/prisma-train
       provide: TrainingGymsRepository,
       useClass: PrismaTrainingGymsRepository,
     },
+    {
+      provide: ClassCancellationsRepository,
+      useClass: PrismaClassCancellationsRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -63,6 +69,7 @@ import { PrismaTrainingGymsRepository } from './prisma/repositories/prisma-train
     GymsRepository,
     ClassesRepository,
     TrainingGymsRepository,
+    ClassCancellationsRepository,
   ],
 })
 export class DatabaseModule {}

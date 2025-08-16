@@ -50,6 +50,8 @@ import { DeleteClassController } from './class/delete-class.controller';
 import { DeleteClassUseCase } from 'src/use-cases/delete-class';
 import { FetchClassByIdController } from './class/fetch-class-by-id.controller';
 import { FetchClassByIdUseCase } from 'src/use-cases/fetch-class-by-id';
+import { CancelClassController } from './class/cancel-class.controller';
+import { CancelClassUseCase } from 'src/use-cases/cancel-class';
 
 @Module({
   imports: [DatabaseModule, StorageModule],
@@ -74,6 +76,7 @@ import { FetchClassByIdUseCase } from 'src/use-cases/fetch-class-by-id';
     EditClassController,
     DeleteClassController,
     FetchClassByIdController,
+    CancelClassController,
   ],
   providers: [
     PrismaService,
@@ -98,6 +101,7 @@ import { FetchClassByIdUseCase } from 'src/use-cases/fetch-class-by-id';
     FetchInstructorsByGymUseCase,
     EditClassUseCase,
     DeleteClassUseCase,
+    CancelClassUseCase,
     {
       provide: PasswordHasherService,
       useClass: BcryptHasher,

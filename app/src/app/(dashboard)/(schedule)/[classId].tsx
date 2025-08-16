@@ -1,14 +1,13 @@
 import Icon from "@react-native-vector-icons/feather";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { differenceInMinutes, formatDate } from "date-fns";
+import { differenceInMinutes, formatDate, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, Image, SafeAreaView, Text, View } from "react-native";
 import colors from "tailwindcss/colors";
+import cancelClass from "~/src/api/cancel-class";
 import { deleteClass } from "~/src/api/delete-class";
 import { fetchClass } from "~/src/api/fetch-class";
-import { CardAction } from "~/src/components/card-action";
-import { DialogCardAction } from "~/src/components/dialog-card-action";
 import ActionDialog from "~/src/components/ui/action-dialog";
 import { Button } from "~/src/components/ui/button";
 import { Dialog, DialogTrigger } from "~/src/components/ui/dialog";
@@ -51,6 +50,26 @@ export default function Class() {
     },
   });
 
+  const { mutate: cancelClassFn, isPending: isCancellingClass } = useMutation({
+    mutationFn: async () => {
+      if (!data) return;
+      const session = await getSession();
+      return cancelClass({
+        classId: data.id,
+        token: session?.accessToken ?? "",
+        referenceDate: new Date(day).toISOString(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      router.back();
+    },
+    onError: (err) => {
+      console.log(err);
+      Alert.alert("Erro", "Erro ao cancelar a aula");
+    },
+  });
+
   function handleGoBack() {
     router.back();
   }
@@ -78,6 +97,10 @@ export default function Class() {
     deleteClassFn();
   }
 
+  function handleCancelClass() {
+    cancelClassFn();
+  }
+
   const formattedTimeStart = formatDate(
     data?.timeStart ?? new Date(),
     "HH:mm",
@@ -89,9 +112,14 @@ export default function Class() {
     locale: ptBR,
   });
 
+  const isCancelled = data?.cancellations.some((cancellation) => {
+    const cancellationDate = new Date(cancellation);
+    return isSameDay(cancellationDate, day ?? new Date());
+  });
+
   return (
     <SafeAreaView className="flex flex-1 bg-neutral-900 flex-col items-start justify-start pt-4 pl-3 pr-3">
-      {(isLoading || isDeletingClass) && (
+      {(isLoading || isDeletingClass || isCancellingClass) && (
         <View className="w-full h-full flex flex-col justify-start items-start gap-1">
           <Skeleton className="w-[36px] h-[36px] bg-neutral-700 rounded-lg" />
           <Skeleton className="w-full h-[150px] mt-4 bg-neutral-700 rounded-lg" />
@@ -107,14 +135,24 @@ export default function Class() {
           >
             <Icon name="arrow-left" color={"#ffffff"} size={20} />
           </Button>
-          <Image
-            source={require("~/assets/images/jiujitsu.webp")}
-            resizeMode="cover"
-            className="w-full h-[150px] mt-2 mb-3"
-            style={{
-              borderRadius: 5,
-            }}
-          />
+          <View className={`w-full h-[150px] mt-2 mb-3`}>
+            <Image
+              source={require("~/assets/images/jiujitsu.webp")}
+              resizeMode="cover"
+              className={`w-full h-full ${isCancelled ? "opacity-40" : ""}`}
+              style={{
+                borderRadius: 5,
+              }}
+            />
+            {isCancelled && (
+              <View className="flex flex-row gap-1 items-baseline pt-1 pl-2 pr-2 pb-1 bg-neutral-950 rounded-xl ml-2 justify-center max-w-[120px] border-[1px] border-neutral-800 border-solid z-50 absolute top-3 left-1">
+                <Icon name="x" size={12} color={colors.neutral[200]} />
+                <Text className="font-sora text-neutral-200 text-[12px]">
+                  Cancelado
+                </Text>
+              </View>
+            )}
+          </View>
           <Text className="text-white text-[18px] text-left font-sora-bold">
             {data?.name}
           </Text>
@@ -158,7 +196,10 @@ export default function Class() {
                 onConfirm={handleDeleteClass}
               />
               <DialogTrigger asChild>
-                <Button className="flex flex-row gap-1 justify-start items-center bg-neutral-300">
+                <Button
+                  className="flex flex-row gap-1 justify-center items-center bg-neutral-300"
+                  size={"sm"}
+                >
                   <Icon name="trash" size={16} color={colors.neutral[900]} />
                   <Text className="font-sora text-[14px] text-neutral-900">
                     Excluir
@@ -166,14 +207,25 @@ export default function Class() {
                 </Button>
               </DialogTrigger>
             </Dialog>
-
             <Button
-              className="flex flex-row gap-1 justify-start items-center bg-neutral-300"
+              className="flex flex-row gap-1 justify-center items-center bg-neutral-300"
+              size={"sm"}
               onPress={handleEditClass}
             >
               <Icon name="edit" size={16} color={colors.neutral[900]} />
               <Text className="font-sora text-[14px] text-neutral-900">
                 Editar
+              </Text>
+            </Button>
+            <Button
+              className="flex flex-row gap-1 justify-center items-center bg-neutral-300"
+              size={"sm"}
+              onPress={handleCancelClass}
+              disabled={isCancelled}
+            >
+              <Icon name="x-circle" size={16} color={colors.neutral[900]} />
+              <Text className="font-sora text-[14px] text-neutral-900">
+                Cancelar
               </Text>
             </Button>
           </View>

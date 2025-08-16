@@ -122,20 +122,31 @@ model TrainingGym {
 }
 
 model Class {
-  id          String    @id @default(uuid())
-  name        String
-  description String
-  timeStart   DateTime  @map("time_start")
-  timeEnd     DateTime  @map("time_end")
-  dayOfWeek   DayOfWeek @map("day_of_week")
-  gym         Gym       @relation(fields: [gymId], references: [id])
-  instructor  User      @relation(fields: [userId], references: [id])
-  address     String
-  modality    Modality  @relation(fields: [modalityId], references: [id])
-  active      Boolean
-  gymId       String    @map("gym_id")
-  userId      String    @map("user_id")
-  modalityId  String    @map("modality_id")
+  id                String              @id @default(uuid())
+  name              String
+  description       String
+  timeStart         DateTime            @map("time_start")
+  timeEnd           DateTime            @map("time_end")
+  dayOfWeek         DayOfWeek           @map("day_of_week")
+  gym               Gym                 @relation(fields: [gymId], references: [id])
+  instructor        User                @relation(fields: [userId], references: [id])
+  address           String
+  modality          Modality            @relation(fields: [modalityId], references: [id])
+  active            Boolean
+  gymId             String              @map("gym_id")
+  userId            String              @map("user_id")
+  modalityId        String              @map("modality_id")
+  ClassCancellation ClassCancellation[]
 
   @@map("classes")
+}
+
+model ClassCancellation {
+  id            String   @id @default(uuid())
+  class         Class    @relation(fields: [classId], references: [id])
+  referenceDate DateTime @map("reference_date")
+  createdAt     DateTime @map("created_at")
+  classId       String   @map("class_id")
+
+  @@map("class_cancellation")
 }

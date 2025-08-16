@@ -108,7 +108,7 @@ export default function Index() {
       )}
 
       {/* Classes list filtered by selected day */}
-      {!isLoading && !isLoadingClasses && classes && classes.length > 0 && (
+      {!isLoading && !isLoadingClasses && classes && (
         <ScrollView>
           <View className="w-full flex flex-col gap-2">
             {classes
@@ -120,6 +120,7 @@ export default function Index() {
                   day={selectedDay?.date}
                   instructorId={item.userId}
                   weekDay={item.dayOfWeek}
+                  cancellations={item.cancellations}
                 />
               ))}
             {classes.filter((item) => item.dayOfWeek === selectedDay?.dayOfWeek)

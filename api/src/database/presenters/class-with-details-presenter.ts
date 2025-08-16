@@ -17,6 +17,7 @@ export class ClassWithDetailsPresenter {
       gymName: classEntity.gymName,
       instructorName: classEntity.instructorName,
       modalityName: classEntity.modalityName,
+      cancellations: classEntity.cancellations,
     };
   }
 }

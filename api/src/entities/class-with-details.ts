@@ -4,6 +4,7 @@ interface ClassWithDetailsProps extends ClassProps {
   gymName: string;
   instructorName: string;
   modalityName: string;
+  cancellations: Date[];
 }
 
 export class ClassWithDetails {
@@ -23,6 +24,10 @@ export class ClassWithDetails {
 
   get modalityName(): string {
     return this.props.modalityName;
+  }
+
+  get cancellations(): Date[] {
+    return this.props.cancellations;
   }
 
   get id(): string {

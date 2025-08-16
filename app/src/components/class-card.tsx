@@ -1,5 +1,5 @@
 import Icon from "@react-native-vector-icons/feather";
-import { differenceInMinutes, formatDate } from "date-fns";
+import { differenceInMinutes, formatDate, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   ActivityIndicator,
@@ -17,6 +17,7 @@ import { DialogCardAction } from "./dialog-card-action";
 import { useMutation } from "@tanstack/react-query";
 import { deleteClass } from "../api/delete-class";
 import { queryClient } from "../lib/react-query";
+import cancelClass from "../api/cancel-class";
 
 interface ClassProps {
   id: string;
@@ -32,6 +33,7 @@ interface ClassProps {
   weekDay: string;
   instructorName: string;
   gymName: string;
+  cancellations: Date[];
 }
 
 export default function ClassCard({
@@ -48,6 +50,7 @@ export default function ClassCard({
   weekDay,
   instructorName,
   gymName,
+  cancellations,
 }: ClassProps) {
   const classDuration = differenceInMinutes(timeEnd, timeStart);
   const router = useRouter();
@@ -63,6 +66,23 @@ export default function ClassCard({
     onError: (err) => {
       console.log(err);
       Alert.alert("Erro", "Erro ao excluir a aula");
+    },
+  });
+  const { mutate: cancelClassFn, isPending: isCancellingClass } = useMutation({
+    mutationFn: async () => {
+      const session = await getSession();
+      return cancelClass({
+        classId: id,
+        token: session?.accessToken ?? "",
+        referenceDate: new Date(day ?? new Date()).toISOString(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+    },
+    onError: (err) => {
+      console.log(err);
+      Alert.alert("Erro", "Erro ao cancelar a aula");
     },
   });
 
@@ -88,88 +108,116 @@ export default function ClassCard({
     deleteClassFn();
   }
 
+  function handleCancelClass() {
+    cancelClassFn();
+  }
+
   function handleViewClass() {
-    if (isDeletingClass) return;
+    if (isDeletingClass || isCancellingClass) return;
     router.push({
       pathname: "/(dashboard)/(schedule)/[classId]",
       params: { classId: id, day: day?.toISOString() },
     });
   }
 
+  const isCancelled = cancellations.some((cancellation) => {
+    const cancellationDate = new Date(cancellation);
+    return isSameDay(cancellationDate, day ?? new Date());
+  });
+
   return (
-    <Pressable
-      className="flex flex-col rounded-lg bg-neutral-800 min-w-full min-h-[150px]"
-      onPress={handleViewClass}
-    >
-      {isDeletingClass && (
-        <View className="absolute w-full h-full z-20 bg-neutral-900 opacity-60 flex justify-center items-center">
-          <ActivityIndicator size={50} color={"rgb(139 92 246)"} />
+    <Pressable onPress={handleViewClass}>
+      {isCancelled && (
+        <View className="flex flex-row gap-1 items-baseline pt-1 pl-2 pr-2 pb-1 bg-neutral-950 rounded-xl ml-2 justify-center max-w-[120px] border-[1px] border-neutral-800 border-solid z-50 absolute top-3 left-1">
+          <Icon name="x" size={12} color={colors.neutral[200]} />
+          <Text className="font-sora text-neutral-200 text-[12px]">
+            Cancelado
+          </Text>
         </View>
       )}
-      <DialogCardAction
-        icon="trash"
-        onConfirm={handleDeleteClass}
-        right={45}
-        title="Excluir aula"
-        description="Tem certeza que deseja excluir a aula?"
-      />
-      <CardAction icon="edit" onPress={handleEditClass} right={10} />
-      {/* <CardAction icon="x" onPress={() => {}} right={80} /> */}
-      <Image
-        source={require("~/assets/images/jiujitsu.webp")}
-        resizeMode="cover"
-        className="w-full h-[120px]"
-        style={{
-          borderTopLeftRadius: 5,
-          borderTopRightRadius: 5,
-          opacity: 0.8,
-        }}
-      />
-      <View className="mt-[-30px] flex flex-row gap-1">
-        <View className="flex flex-row gap-1 items-baseline pt-1 pl-2 pr-2 pb-1 bg-neutral-950 rounded-xl ml-2 justify-center max-w-[120px] border-[1px] border-neutral-800 border-solid">
-          <Icon name="user" size={12} color={colors.neutral[200]} />
-          <Text className="font-sora text-neutral-200 text-[12px]">
-            {instructorName}
-          </Text>
-        </View>
-        <View className="flex flex-row gap-1 items-baseline pt-1 pl-2 pr-2 pb-1 bg-neutral-800 rounded-xl ml-2 justify-center max-w-[120px] border-[1px] border-neutral-700 border-solid">
-          <Text className="font-sora text-neutral-200 text-[12px]">
-            {modalityName}
-          </Text>
-        </View>
-      </View>
-      <View className="flex flex-col p-3 gap-1 pb-4">
-        <View className="flex flex-col align-top justify-start">
-          <Text className="text-white text-[18px] text-left font-sora-bold">
-            {name}
-          </Text>
-          {description && (
-            <Text className="text-neutral-400 text-[14px] text-left font-sora">
-              {description}
-            </Text>
-          )}
-        </View>
-        <View className="flex flex-col gap-1">
-          <View className="flex flex-row gap-1 justify-start items-baseline">
-            <Icon name="clock" size={16} color={colors.neutral[400]} />
-            <Text className="text-neutral-400 text-[14px] font-sora">
-              {formatDate(timeStart, "HH:mm", { locale: ptBR })}
-              {" - "}
-              {classDuration}
-              {" min"}
+      <View
+        className={`flex flex-col rounded-lg bg-neutral-800 min-w-full min-h-[150px] ${
+          isCancelled ? "opacity-50" : ""
+        }`}
+      >
+        {(isDeletingClass || isCancellingClass) && (
+          <View className="absolute w-full h-full z-20 bg-neutral-900 opacity-60 flex justify-center items-center">
+            <ActivityIndicator size={50} color={"rgb(139 92 246)"} />
+          </View>
+        )}
+        {!isCancelled && (
+          <DialogCardAction
+            icon="x"
+            onConfirm={handleCancelClass}
+            right={80}
+            title="Cancelar aula"
+            description="Tem certeza que deseja cancelar a aula?"
+          />
+        )}
+        <DialogCardAction
+          icon="trash"
+          onConfirm={handleDeleteClass}
+          right={45}
+          title="Excluir aula"
+          description="Tem certeza que deseja excluir a aula?"
+        />
+        <CardAction icon="edit" onPress={handleEditClass} right={10} />
+        <Image
+          source={require("~/assets/images/jiujitsu.webp")}
+          resizeMode="cover"
+          className="w-full h-[120px]"
+          style={{
+            borderTopLeftRadius: 5,
+            borderTopRightRadius: 5,
+            opacity: 0.8,
+          }}
+        />
+        <View className="mt-[-30px] flex flex-row gap-1">
+          <View className="flex flex-row gap-1 items-baseline pt-1 pl-2 pr-2 pb-1 bg-neutral-950 rounded-xl ml-2 justify-center max-w-[120px] border-[1px] border-neutral-800 border-solid">
+            <Icon name="user" size={12} color={colors.neutral[200]} />
+            <Text className="font-sora text-neutral-200 text-[12px]">
+              {instructorName}
             </Text>
           </View>
-          <View className="flex flex-row gap-1 justify-start items-baseline">
-            <Icon name="map-pin" size={16} color={colors.neutral[400]} />
-            <Text className="text-neutral-400 text-[14px] font-sora">
-              {gymName}
+          <View className="flex flex-row gap-1 items-baseline pt-1 pl-2 pr-2 pb-1 bg-neutral-800 rounded-xl ml-2 justify-center max-w-[120px] border-[1px] border-neutral-700 border-solid">
+            <Text className="font-sora text-neutral-200 text-[12px]">
+              {modalityName}
             </Text>
           </View>
-          <View className="flex flex-row gap-1 justify-start items-baseline">
-            <Icon name="users" size={16} color={colors.neutral[400]} />
-            <Text className="text-neutral-400 text-[14px] font-sora">
-              15 check-ins
+        </View>
+        <View className="flex flex-col p-3 gap-1 pb-4">
+          <View className="flex flex-col align-top justify-start">
+            <Text className="text-white text-[18px] text-left font-sora-bold">
+              {name}
             </Text>
+            {description && (
+              <Text className="text-neutral-400 text-[14px] text-left font-sora">
+                {description}
+              </Text>
+            )}
+          </View>
+          <View className="flex flex-col gap-1">
+            <View className="flex flex-row gap-1 justify-start items-baseline">
+              <Icon name="clock" size={16} color={colors.neutral[400]} />
+              <Text className="text-neutral-400 text-[14px] font-sora">
+                {formatDate(timeStart, "HH:mm", { locale: ptBR })}
+                {" - "}
+                {classDuration}
+                {" min"}
+              </Text>
+            </View>
+            <View className="flex flex-row gap-1 justify-start items-baseline">
+              <Icon name="map-pin" size={16} color={colors.neutral[400]} />
+              <Text className="text-neutral-400 text-[14px] font-sora">
+                {gymName}
+              </Text>
+            </View>
+            <View className="flex flex-row gap-1 justify-start items-baseline">
+              <Icon name="users" size={16} color={colors.neutral[400]} />
+              <Text className="text-neutral-400 text-[14px] font-sora">
+                15 check-ins
+              </Text>
+            </View>
           </View>
         </View>
       </View>

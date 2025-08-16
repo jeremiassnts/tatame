@@ -16,6 +16,7 @@ export interface Class {
   gymName: string;
   instructorName: string;
   modalityName: string;
+  cancellations: Date[];
 }
 
 export async function fetchClasses(accessToken: string) {

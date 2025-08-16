@@ -5,6 +5,7 @@ import {
   Modality as PrismaModality,
   Prisma,
   DayOfWeek as PrismaDayOfWeek,
+  ClassCancellation as PrismaClassCancellation,
 } from '@prisma/client';
 import { Class, DayOfWeek } from '../../../entities/class';
 import { ClassWithDetails } from 'src/entities/class-with-details';
@@ -31,6 +32,7 @@ export class PrismaClassMapper {
       gym: PrismaGym;
       instructor: PrismaUser;
       modality: PrismaModality;
+      ClassCancellation: PrismaClassCancellation[];
     },
   ): ClassWithDetails {
     return new ClassWithDetails({
@@ -48,6 +50,7 @@ export class PrismaClassMapper {
       gymName: raw.gym.name,
       instructorName: raw.instructor.name,
       modalityName: raw.modality.name,
+      cancellations: raw.ClassCancellation.map((c) => c.referenceDate),
     });
   }
 
