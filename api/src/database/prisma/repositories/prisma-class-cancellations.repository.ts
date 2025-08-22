@@ -3,6 +3,7 @@ import { ClassCancellation } from '../../../entities/class-cancellation';
 import { ClassCancellationsRepository } from '../../repositories/class-cancellations.repository';
 import { PrismaService } from '../prisma.service';
 import { PrismaClassCancellationMapper } from '../mappers/prisma-class-cancellation.mapper';
+import { endOfDay, startOfDay } from 'date-fns';
 
 @Injectable()
 export class PrismaClassCancellationsRepository
@@ -19,10 +20,16 @@ export class PrismaClassCancellationsRepository
     classId: string,
     referenceDate: Date,
   ): Promise<ClassCancellation | null> {
+    const start = startOfDay(referenceDate);
+    const end = endOfDay(referenceDate);
+
     const classCancellation = await this.prisma.classCancellation.findFirst({
       where: {
         classId,
-        referenceDate,
+        referenceDate: {
+          gte: start,
+          lte: end,
+        },
       },
     });
 
@@ -31,5 +38,23 @@ export class PrismaClassCancellationsRepository
     }
 
     return PrismaClassCancellationMapper.toDomain(classCancellation);
+  }
+
+  async deleteByClassIdAndDate(
+    classId: string,
+    referenceDate: Date,
+  ): Promise<void> {
+    const start = startOfDay(referenceDate);
+    const end = endOfDay(referenceDate);
+
+    await this.prisma.classCancellation.deleteMany({
+      where: {
+        classId,
+        referenceDate: {
+          gte: start,
+          lte: end,
+        },
+      },
+    });
   }
 }

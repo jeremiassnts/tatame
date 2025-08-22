@@ -6,4 +6,8 @@ export abstract class ClassCancellationsRepository {
     classId: string,
     referenceDate: Date,
   ): Promise<ClassCancellation | null>;
+  abstract deleteByClassIdAndDate(
+    classId: string,
+    referenceDate: Date,
+  ): Promise<void>;
 }

@@ -55,10 +55,11 @@ describe('Cancel Class (E2E)', () => {
     const referenceDate = new Date('2024-01-15T08:00:00Z');
 
     const response = await request(app.getHttpServer())
-      .post(`/classes/${classEntity.id}/cancel`)
+      .post(`/classes/cancel`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         referenceDate: referenceDate.toISOString(),
+        classId: classEntity.id,
       });
 
     expect(response.statusCode).toBe(201);
