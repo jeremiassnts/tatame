@@ -18,6 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import { deleteClass } from "../api/delete-class";
 import { queryClient } from "../lib/react-query";
 import cancelClass from "../api/cancel-class";
+import uncancelClass from "../api/uncancel-class";
 
 interface ClassProps {
   id: string;
@@ -85,6 +86,23 @@ export default function ClassCard({
       Alert.alert("Erro", "Erro ao cancelar a aula");
     },
   });
+  const { mutate: uncancelClassFn, isPending: isUncancellingClass } = useMutation({
+    mutationFn: async () => {
+      const session = await getSession();
+      return uncancelClass({
+        classId: id,
+        token: session?.accessToken ?? "",
+        referenceDate: new Date(day ?? new Date()).toISOString(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+    },
+    onError: (err) => {
+      console.log(err);
+      Alert.alert("Erro", "Erro ao restaurar a aula");
+    },
+  });
 
   function handleEditClass() {
     router.push({
@@ -110,6 +128,10 @@ export default function ClassCard({
 
   function handleCancelClass() {
     cancelClassFn();
+  }
+
+  function handleUncancelClass() {
+    uncancelClassFn();
   }
 
   function handleViewClass() {
@@ -140,7 +162,7 @@ export default function ClassCard({
           isCancelled ? "opacity-50" : ""
         }`}
       >
-        {(isDeletingClass || isCancellingClass) && (
+        {(isDeletingClass || isCancellingClass || isUncancellingClass) && (
           <View className="absolute w-full h-full z-20 bg-neutral-900 opacity-60 flex justify-center items-center">
             <ActivityIndicator size={50} color={"rgb(139 92 246)"} />
           </View>
@@ -152,6 +174,15 @@ export default function ClassCard({
             right={80}
             title="Cancelar aula"
             description="Tem certeza que deseja cancelar a aula?"
+          />
+        )}
+        {isCancelled && (
+          <DialogCardAction
+            icon="check"
+            onConfirm={handleUncancelClass}
+            right={80}
+            title="Restaurar aula"
+            description="Tem certeza que deseja restaurar a aula?"
           />
         )}
         <DialogCardAction

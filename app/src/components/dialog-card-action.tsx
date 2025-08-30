@@ -1,6 +1,4 @@
-import { Text } from "react-native";
 import ActionDialog from "./ui/action-dialog";
-import { Button } from "./ui/button";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { CardAction } from "./card-action";
 
@@ -8,7 +6,7 @@ interface DialogCardActionProps {
   title: string;
   description: string;
   onConfirm: () => void;
-  icon: "trash" | "edit" | "x";
+  icon: "trash" | "edit" | "x" | "check";
   right: number;
   className?: string;
 }

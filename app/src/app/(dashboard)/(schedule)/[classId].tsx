@@ -8,6 +8,7 @@ import colors from "tailwindcss/colors";
 import cancelClass from "~/src/api/cancel-class";
 import { deleteClass } from "~/src/api/delete-class";
 import { fetchClass } from "~/src/api/fetch-class";
+import uncancelClass from "~/src/api/uncancel-class";
 import ActionDialog from "~/src/components/ui/action-dialog";
 import { Button } from "~/src/components/ui/button";
 import { Dialog, DialogTrigger } from "~/src/components/ui/dialog";
@@ -70,6 +71,26 @@ export default function Class() {
     },
   });
 
+  const { mutate: uncancelClassFn, isPending: isUncancellingClass } = useMutation({
+    mutationFn: async () => {
+      if (!data) return;
+      const session = await getSession();
+      return uncancelClass({
+        classId: data.id,
+        token: session?.accessToken ?? "",
+        referenceDate: new Date(day).toISOString(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      router.back();
+    },
+    onError: (err) => {
+      console.log(err);
+      Alert.alert("Erro", "Erro ao restaurar a aula");
+    },
+  });
+
   function handleGoBack() {
     router.back();
   }
@@ -101,6 +122,10 @@ export default function Class() {
     cancelClassFn();
   }
 
+  function handleUncancelClass() {
+    uncancelClassFn();
+  }
+
   const formattedTimeStart = formatDate(
     data?.timeStart ?? new Date(),
     "HH:mm",
@@ -119,7 +144,7 @@ export default function Class() {
 
   return (
     <SafeAreaView className="flex flex-1 bg-neutral-900 flex-col items-start justify-start pt-4 pl-3 pr-3">
-      {(isLoading || isDeletingClass || isCancellingClass) && (
+      {(isLoading || isDeletingClass || isCancellingClass || isUncancellingClass) && (
         <View className="w-full h-full flex flex-col justify-start items-start gap-1">
           <Skeleton className="w-[36px] h-[36px] bg-neutral-700 rounded-lg" />
           <Skeleton className="w-full h-[150px] mt-4 bg-neutral-700 rounded-lg" />
@@ -217,17 +242,26 @@ export default function Class() {
                 Editar
               </Text>
             </Button>
-            <Button
+            {!isCancelled && <Button
               className="flex flex-row gap-1 justify-center items-center bg-neutral-300"
               size={"sm"}
               onPress={handleCancelClass}
-              disabled={isCancelled}
             >
               <Icon name="x-circle" size={16} color={colors.neutral[900]} />
               <Text className="font-sora text-[14px] text-neutral-900">
                 Cancelar
               </Text>
-            </Button>
+            </Button>}
+            {isCancelled && <Button
+              className="flex flex-row gap-1 justify-center items-center bg-neutral-300"
+              size={"sm"}
+              onPress={handleUncancelClass}
+            >
+              <Icon name="x-circle" size={16} color={colors.neutral[900]} />
+              <Text className="font-sora text-[14px] text-neutral-900">
+                Restaurar
+              </Text>
+            </Button>}
           </View>
         </View>
       )}

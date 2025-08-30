@@ -3,7 +3,7 @@ import { TouchableOpacity } from "react-native";
 import colors from "tailwindcss/colors";
 
 interface CardActionProps {
-  icon: "trash" | "edit" | "x";
+  icon: "trash" | "edit" | "x" | "check";
   onPress: () => void;
   right: number;
   className?: string;
