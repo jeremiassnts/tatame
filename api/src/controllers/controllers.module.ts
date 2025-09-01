@@ -54,6 +54,8 @@ import { CancelClassController } from './class/cancel-class.controller';
 import { CancelClassUseCase } from 'src/use-cases/cancel-class';
 import { UncancelClassController } from './class/uncancel-class.controller';
 import { UncancelClassUseCase } from 'src/use-cases/uncancel-class';
+import { CreateCheckInController } from './check-in/create-check-in.controller';
+import { CreateCheckInUseCase } from 'src/use-cases/create-check-in';
 
 @Module({
   imports: [DatabaseModule, StorageModule],
@@ -80,6 +82,7 @@ import { UncancelClassUseCase } from 'src/use-cases/uncancel-class';
     FetchClassByIdController,
     CancelClassController,
     UncancelClassController,
+    CreateCheckInController,
   ],
   providers: [
     PrismaService,
@@ -106,6 +109,7 @@ import { UncancelClassUseCase } from 'src/use-cases/uncancel-class';
     DeleteClassUseCase,
     CancelClassUseCase,
     UncancelClassUseCase,
+    CreateCheckInUseCase,
     {
       provide: PasswordHasherService,
       useClass: BcryptHasher,

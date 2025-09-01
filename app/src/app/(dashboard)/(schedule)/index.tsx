@@ -25,7 +25,7 @@ export default function Index() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<WeekDay | null>(null);
   const scrollWeekRef = useRef<ScrollView>(null);
-  const { data: classes, isLoading: isLoadingClasses } = useQuery<Class[]>({
+  const { data: classes, isLoading: isLoadingClasses, refetch } = useQuery<Class[]>({
     queryKey: ["classes"],
     queryFn: async () => {
       const { accessToken } = await getSession();
@@ -121,6 +121,7 @@ export default function Index() {
                   instructorId={item.userId}
                   weekDay={item.dayOfWeek}
                   cancellations={item.cancellations}
+                  refetch={refetch}
                 />
               ))}
             {classes.filter((item) => item.dayOfWeek === selectedDay?.dayOfWeek)

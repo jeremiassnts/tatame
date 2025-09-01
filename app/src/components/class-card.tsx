@@ -19,6 +19,8 @@ import { deleteClass } from "../api/delete-class";
 import { queryClient } from "../lib/react-query";
 import cancelClass from "../api/cancel-class";
 import uncancelClass from "../api/uncancel-class";
+import { Button } from "./ui/button";
+import { createCheckIn } from "../api/create-check-in";
 
 interface ClassProps {
   id: string;
@@ -35,6 +37,7 @@ interface ClassProps {
   instructorName: string;
   gymName: string;
   cancellations: Date[];
+  refetch: () => void;
 }
 
 export default function ClassCard({
@@ -52,6 +55,7 @@ export default function ClassCard({
   instructorName,
   gymName,
   cancellations,
+  refetch,
 }: ClassProps) {
   const classDuration = differenceInMinutes(timeEnd, timeStart);
   const router = useRouter();
@@ -63,10 +67,29 @@ export default function ClassCard({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["classes"] });
+      refetch();
     },
     onError: (err) => {
       console.log(err);
       Alert.alert("Erro", "Erro ao excluir a aula");
+    },
+  });
+  const { mutate: createCheckInFn, isPending: isCreatingCheckIn } = useMutation({
+    mutationFn: async () => {
+      const session = await getSession();
+      return createCheckIn({
+        classId: id,
+        referenceDate: new Date(day ?? new Date()),
+        token: session?.accessToken ?? "",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      refetch();
+    },
+    onError: (err) => {
+      console.log(err);
+      Alert.alert("Erro", "Erro ao criar check-in");
     },
   });
   const { mutate: cancelClassFn, isPending: isCancellingClass } = useMutation({
@@ -80,6 +103,7 @@ export default function ClassCard({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["classes"] });
+      refetch();
     },
     onError: (err) => {
       console.log(err);
@@ -97,6 +121,7 @@ export default function ClassCard({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["classes"] });
+      refetch();
     },
     onError: (err) => {
       console.log(err);
@@ -134,8 +159,12 @@ export default function ClassCard({
     uncancelClassFn();
   }
 
+  function handleCreateCheckIn() {
+    createCheckInFn();
+  }
+
   function handleViewClass() {
-    if (isDeletingClass || isCancellingClass) return;
+    if (isDeletingClass || isCancellingClass || isCreatingCheckIn) return;
     router.push({
       pathname: "/(dashboard)/(schedule)/[classId]",
       params: { classId: id, day: day?.toISOString() },
@@ -162,7 +191,7 @@ export default function ClassCard({
           isCancelled ? "opacity-50" : ""
         }`}
       >
-        {(isDeletingClass || isCancellingClass || isUncancellingClass) && (
+        {(isDeletingClass || isCancellingClass || isUncancellingClass || isCreatingCheckIn) && (
           <View className="absolute w-full h-full z-20 bg-neutral-900 opacity-60 flex justify-center items-center">
             <ActivityIndicator size={50} color={"rgb(139 92 246)"} />
           </View>
@@ -250,6 +279,10 @@ export default function ClassCard({
               </Text>
             </View>
           </View>
+          <Button className="flex flex-row gap-1 justify-center items-baseline bg-neutral-300 mt-4" onPress={handleCreateCheckIn}>
+            <Icon name="check-circle" size={16} color={colors.neutral[900]} />
+            <Text className="text-neutral-900 text-[14px] font-sora">Eu vou</Text>
+          </Button>
         </View>
       </View>
     </Pressable>

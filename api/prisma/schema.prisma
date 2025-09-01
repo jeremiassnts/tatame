@@ -50,6 +50,7 @@ model User {
   stripeCustomerId String?       @map("stripe_customer_id")
   TrainingGym      TrainingGym[]
   Class            Class[]
+  CheckIn          CheckIn[]
 
   @@map("users")
 }
@@ -137,6 +138,7 @@ model Class {
   userId            String              @map("user_id")
   modalityId        String              @map("modality_id")
   ClassCancellation ClassCancellation[]
+  CheckIn           CheckIn[]
 
   @@map("classes")
 }
@@ -149,4 +151,16 @@ model ClassCancellation {
   classId       String   @map("class_id")
 
   @@map("class_cancellation")
+}
+
+model CheckIn {
+  id      String @id @default(uuid())
+  class   Class  @relation(fields: [classId], references: [id])
+  classId String @map("class_id")
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  referenceDate DateTime @map("reference_date")
+
+  @@map("check_ins")
 }
