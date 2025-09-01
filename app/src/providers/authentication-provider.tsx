@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from "react";
 import * as SecureStore from "expo-secure-store";
+import { jwtDecode } from "jwt-decode";
 
 interface AuthenticationProviderProps {
   children: ReactNode;
@@ -19,6 +20,7 @@ export interface AuthenticationContextType {
   }>;
   isAuthenticated: boolean;
   isLoaded: boolean;
+  getUser: () => string;
 }
 export const AuthenticationContext = createContext(
   {} as AuthenticationContextType
@@ -68,13 +70,18 @@ export default function AuthenticationProvider({
     return { accessToken, expiresIn };
   }
 
+  function getUser(): string {
+    const decoded = jwtDecode(accessToken ?? "");
+    return decoded.sub as string;
+  }
+
   useEffect(() => {
     loadSession();
   }, [loadSession]);
 
   return (
     <AuthenticationContext.Provider
-      value={{ signIn, signOut, getSession, isAuthenticated, isLoaded }}
+      value={{ signIn, signOut, getSession, isAuthenticated, isLoaded, getUser }}
     >
       {children}
     </AuthenticationContext.Provider>

@@ -6,6 +6,7 @@ import {
   Prisma,
   DayOfWeek as PrismaDayOfWeek,
   ClassCancellation as PrismaClassCancellation,
+  CheckIn as PrismaCheckIn,
 } from '@prisma/client';
 import { Class, DayOfWeek } from '../../../entities/class';
 import { ClassWithDetails } from 'src/entities/class-with-details';
@@ -33,6 +34,7 @@ export class PrismaClassMapper {
       instructor: PrismaUser;
       modality: PrismaModality;
       ClassCancellation: PrismaClassCancellation[];
+      CheckIn: PrismaCheckIn[];
     },
   ): ClassWithDetails {
     return new ClassWithDetails({
@@ -51,6 +53,10 @@ export class PrismaClassMapper {
       instructorName: raw.instructor.name,
       modalityName: raw.modality.name,
       cancellations: raw.ClassCancellation.map((c) => c.referenceDate),
+      checkIns: raw.CheckIn.map((c) => ({
+        userId: c.userId,
+        referenceDate: c.referenceDate,
+      })),
     });
   }
 

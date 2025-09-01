@@ -17,6 +17,10 @@ export interface Class {
   instructorName: string;
   modalityName: string;
   cancellations: Date[];
+  checkIns: {
+    userId: string;
+    referenceDate: Date;
+  }[];
 }
 
 export async function fetchClasses(accessToken: string) {

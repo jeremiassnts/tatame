@@ -1,10 +1,14 @@
 import { ClassProps, DayOfWeek } from './class';
-
-interface ClassWithDetailsProps extends ClassProps {
+export interface CheckInProps {
+  userId: string;
+  referenceDate: Date;
+}
+export interface ClassWithDetailsProps extends ClassProps {
   gymName: string;
   instructorName: string;
   modalityName: string;
   cancellations: Date[];
+  checkIns: CheckInProps[];
 }
 
 export class ClassWithDetails {
@@ -72,5 +76,9 @@ export class ClassWithDetails {
 
   get modalityId(): string {
     return this.props.modalityId;
+  }
+
+  get checkIns(): CheckInProps[] {
+    return this.props.checkIns;
   }
 }

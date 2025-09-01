@@ -25,7 +25,7 @@ export default function Index() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<WeekDay | null>(null);
   const scrollWeekRef = useRef<ScrollView>(null);
-  const { data: classes, isLoading: isLoadingClasses, refetch } = useQuery<Class[]>({
+  const { data: classes, isLoading: isLoadingClasses, refetch , isRefetching:isRefetchingClasses} = useQuery<Class[]>({
     queryKey: ["classes"],
     queryFn: async () => {
       const { accessToken } = await getSession();
@@ -93,13 +93,13 @@ export default function Index() {
           weekDays={weekDays}
           selectedDay={selectedDay ?? ({} as WeekDay)}
           handleSelectDay={handleSelectDay}
-          isLoadingClasses={isLoadingClasses}
+          isLoadingClasses={isLoadingClasses || isRefetchingClasses}
           classes={classes ?? []}
         />
       )}
 
       {/* Skeleton to show while loading classes */}
-      {(isLoading || isLoadingClasses) && (
+      {(isLoading || isLoadingClasses || isRefetchingClasses) && (
         <View className="flex flex-col gap-3 w-full">
           <Skeleton className="w-full h-[100px]" />
           <Skeleton className="w-full h-[100px]" />
@@ -108,7 +108,7 @@ export default function Index() {
       )}
 
       {/* Classes list filtered by selected day */}
-      {!isLoading && !isLoadingClasses && classes && (
+      {!isLoading && !isLoadingClasses && !isRefetchingClasses && classes && (
         <ScrollView>
           <View className="w-full flex flex-col gap-2">
             {classes
@@ -122,6 +122,7 @@ export default function Index() {
                   weekDay={item.dayOfWeek}
                   cancellations={item.cancellations}
                   refetch={refetch}
+                  checkIns={item.checkIns}
                 />
               ))}
             {classes.filter((item) => item.dayOfWeek === selectedDay?.dayOfWeek)

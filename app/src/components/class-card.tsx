@@ -37,6 +37,10 @@ interface ClassProps {
   instructorName: string;
   gymName: string;
   cancellations: Date[];
+  checkIns: {
+    userId: string;
+    referenceDate: Date;
+  }[];
   refetch: () => void;
 }
 
@@ -55,11 +59,12 @@ export default function ClassCard({
   instructorName,
   gymName,
   cancellations,
+  checkIns,
   refetch,
 }: ClassProps) {
   const classDuration = differenceInMinutes(timeEnd, timeStart);
   const router = useRouter();
-  const { getSession } = useAuthentication();
+  const { getSession, getUser } = useAuthentication();
   const { mutate: deleteClassFn, isPending: isDeletingClass } = useMutation({
     mutationFn: async () => {
       const session = await getSession();
@@ -74,24 +79,26 @@ export default function ClassCard({
       Alert.alert("Erro", "Erro ao excluir a aula");
     },
   });
-  const { mutate: createCheckInFn, isPending: isCreatingCheckIn } = useMutation({
-    mutationFn: async () => {
-      const session = await getSession();
-      return createCheckIn({
-        classId: id,
-        referenceDate: new Date(day ?? new Date()),
-        token: session?.accessToken ?? "",
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classes"] });
-      refetch();
-    },
-    onError: (err) => {
-      console.log(err);
-      Alert.alert("Erro", "Erro ao criar check-in");
-    },
-  });
+  const { mutate: createCheckInFn, isPending: isCreatingCheckIn } = useMutation(
+    {
+      mutationFn: async () => {
+        const session = await getSession();
+        return createCheckIn({
+          classId: id,
+          referenceDate: new Date(day ?? new Date()),
+          token: session?.accessToken ?? "",
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["classes"] });
+        refetch();
+      },
+      onError: (err) => {
+        console.log(err);
+        Alert.alert("Erro", "Erro ao criar check-in");
+      },
+    }
+  );
   const { mutate: cancelClassFn, isPending: isCancellingClass } = useMutation({
     mutationFn: async () => {
       const session = await getSession();
@@ -110,24 +117,25 @@ export default function ClassCard({
       Alert.alert("Erro", "Erro ao cancelar a aula");
     },
   });
-  const { mutate: uncancelClassFn, isPending: isUncancellingClass } = useMutation({
-    mutationFn: async () => {
-      const session = await getSession();
-      return uncancelClass({
-        classId: id,
-        token: session?.accessToken ?? "",
-        referenceDate: new Date(day ?? new Date()).toISOString(),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classes"] });
-      refetch();
-    },
-    onError: (err) => {
-      console.log(err);
-      Alert.alert("Erro", "Erro ao restaurar a aula");
-    },
-  });
+  const { mutate: uncancelClassFn, isPending: isUncancellingClass } =
+    useMutation({
+      mutationFn: async () => {
+        const session = await getSession();
+        return uncancelClass({
+          classId: id,
+          token: session?.accessToken ?? "",
+          referenceDate: new Date(day ?? new Date()).toISOString(),
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["classes"] });
+        refetch();
+      },
+      onError: (err) => {
+        console.log(err);
+        Alert.alert("Erro", "Erro ao restaurar a aula");
+      },
+    });
 
   function handleEditClass() {
     router.push({
@@ -176,6 +184,12 @@ export default function ClassCard({
     return isSameDay(cancellationDate, day ?? new Date());
   });
 
+  const isCheckedIn = checkIns.some((checkIn) => {
+    return (
+      isSameDay(checkIn.referenceDate, day ?? new Date()) && checkIn.userId === getUser()
+    );
+  });
+
   return (
     <Pressable onPress={handleViewClass}>
       {isCancelled && (
@@ -191,7 +205,10 @@ export default function ClassCard({
           isCancelled ? "opacity-50" : ""
         }`}
       >
-        {(isDeletingClass || isCancellingClass || isUncancellingClass || isCreatingCheckIn) && (
+        {(isDeletingClass ||
+          isCancellingClass ||
+          isUncancellingClass ||
+          isCreatingCheckIn) && (
           <View className="absolute w-full h-full z-20 bg-neutral-900 opacity-60 flex justify-center items-center">
             <ActivityIndicator size={50} color={"rgb(139 92 246)"} />
           </View>
@@ -275,13 +292,23 @@ export default function ClassCard({
             <View className="flex flex-row gap-1 justify-start items-baseline">
               <Icon name="users" size={16} color={colors.neutral[400]} />
               <Text className="text-neutral-400 text-[14px] font-sora">
-                15 check-ins
+                {checkIns.length} check-ins
               </Text>
             </View>
           </View>
-          <Button className="flex flex-row gap-1 justify-center items-baseline bg-neutral-300 mt-4" onPress={handleCreateCheckIn}>
-            <Icon name="check-circle" size={16} color={colors.neutral[900]} />
-            <Text className="text-neutral-900 text-[14px] font-sora">Eu vou</Text>
+          <Button
+            className="flex flex-row gap-1 justify-center items-baseline bg-neutral-300 mt-4"
+            onPress={handleCreateCheckIn}
+            disabled={isCheckedIn}
+          >
+            {isCheckedIn ? (
+              <Icon name="check-circle" size={16} color={colors.neutral[900]} />
+            ) : (
+              <Icon name="smile" size={16} color={colors.neutral[900]} />
+            )}
+            <Text className="text-neutral-900 text-[14px] font-sora">
+              Eu vou
+            </Text>
           </Button>
         </View>
       </View>
