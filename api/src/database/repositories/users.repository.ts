@@ -16,7 +16,6 @@ export abstract class UsersRepository {
     user: User,
     gym: Gym,
     graduations: Graduation[],
-    isInstructor: boolean,
   ): Promise<void>;
   abstract createInstructorWithGraduations(
     user: User,

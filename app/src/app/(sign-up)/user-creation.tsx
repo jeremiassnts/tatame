@@ -140,7 +140,7 @@ export default function UserCreation() {
           viewClassName="mb-2"
           secureTextEntry={true}
         />
-        {userType === "manager" && (
+        {/* {userType === "manager" && (
           <View className="flex-row gap-3 items-center justify-start mt-2">
             <Checkbox
               aria-labelledby="isProfessor"
@@ -155,7 +155,7 @@ export default function UserCreation() {
               Também sou professor
             </Label>
           </View>
-        )}
+        )} */}
         <ImageViewer
           placeholder="Envie uma foto para seu perfil"
           setRemoteImage={(image: string) => setValue("photo", image)}

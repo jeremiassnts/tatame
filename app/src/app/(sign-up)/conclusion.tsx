@@ -21,7 +21,7 @@ export default function Conclusion() {
   const [loading, setLoading] = useState(true);
   const [congratulationsMessage, setCongratulationsMessage] = useState("");
   const router = useRouter();
-  const { form, userType } = useSignUpContext<
+  const { form, userType, handleUpdateCurrentStep } = useSignUpContext<
     UserCreationFormSubmit &
       GymCreationFormSubmit &
       GraduationCreationFormSubmit &
@@ -116,8 +116,8 @@ export default function Conclusion() {
       if (userType === UserType.MANAGER) {
         body = {
           ...body,
-          customerId: form?.customerId,
-          isInstructor: form?.isProfessor,
+          // customerId: form?.customerId,
+          // isInstructor: form?.isProfessor,
           gymName: form?.gymName,
           gymAddress: `${form?.gymStreet}, ${form?.gymAddressNumber}, ${form?.gymNeighborhood}, ${form?.gymCity} - ${form?.gymState}, ${form?.gymCep}`,
           gymLogo: gymLogo?.url,

@@ -101,11 +101,11 @@ export default function GraduationCreation() {
     }
     handleUpdateForm(data);
     handleUpdateCurrentStep(currentStep + 1);
-    if (userType === UserType.MANAGER) {
-      router.navigate("/(sign-up)/subscription");
-    } else {
+    // if (userType === UserType.MANAGER) {
+    //   router.navigate("/(sign-up)/subscription");
+    // } else {
       router.navigate("/(sign-up)/conclusion");
-    }
+    // }
   }
   function handleNewGraduation() {
     if (!graduation.modality || !graduation.color) {

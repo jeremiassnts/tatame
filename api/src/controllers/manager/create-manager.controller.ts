@@ -22,14 +22,14 @@ export const createManagerBodySchema = z.object({
   password: z.string().min(6),
   gender: z.nativeEnum(Gender),
   birth: z.coerce.date(),
-  isInstructor: z.boolean(),
+  // isInstructor: z.boolean(),
   gymName: z.string(),
   gymAddress: z.string(),
   gymLogo: z.string(),
   gymSince: z.coerce.date(),
   authToken: z.string().optional(),
   profilePhotoUrl: z.string().optional(),
-  customerId: z.string(),
+  // customerId: z.string(),
   graduations: z.array(
     z.object({
       colorId: z.string(),

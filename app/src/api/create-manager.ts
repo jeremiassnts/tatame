@@ -10,11 +10,11 @@ interface CreateManagerProps {
     birth: string;
     profilePhotoUrl: string;
     authToken: string;
-    isInstructor: boolean;
+    // isInstructor: boolean;
     gymName: string;
     gymAddress: string;
     gymLogo: string;
-    customerId: string;
+    // customerId: string;
     gymSince: string;
     graduations: Partial<{
       colorId: string;

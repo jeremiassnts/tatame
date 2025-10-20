@@ -21,7 +21,7 @@ type LoginFormType = z.infer<typeof loginFormSchema>;
 
 export default function Login() {
   const { userType, selectUserType } = useUserType();
-  const { handleUpdateStepsCount, handleUpdateUserType } = useSignUpContext();
+  const { handleUpdateStepsCount, handleUpdateUserType, handleUpdateCurrentStep } = useSignUpContext();
   const { signIn } = useAuthentication();
   const {
     watch,
@@ -56,9 +56,10 @@ export default function Login() {
   function handleSignup() {
     if (!userType) return;
     handleUpdateUserType(userType);
+    handleUpdateCurrentStep(0);
     switch (userType) {
       case UserType.MANAGER:
-        handleUpdateStepsCount(4);
+        handleUpdateStepsCount(3);
         router.navigate("/(sign-up)/gym-creation");
         break;
       case UserType.INSTRUCTOR:
@@ -125,11 +126,11 @@ export default function Login() {
           register={register("password")}
           secureTextEntry={true}
         />
-        <Pressable onPress={() => router.navigate("/forgot-password")}>
+        {/* <Pressable onPress={() => router.navigate("/forgot-password")}>
           <Text className="text-violet-500 font-sora text-[14px] text-right">
             Esqueci a senha
           </Text>
-        </Pressable>
+        </Pressable> */}
         <Button
           size={"lg"}
           className="w-full bg-violet-800 border-[1px] disabled:bg-transparent disabled:border-stone-700 mt-7"
@@ -159,13 +160,13 @@ export default function Login() {
             </Text>
           </Pressable>
         )}
-        {userType != "instructor" && (
+        {/* {userType != "instructor" && (
           <Pressable onPress={() => handleUserTypeChange(UserType.INSTRUCTOR)}>
             <Text className="text-violet-500 font-sora text-[14px]">
               Entrar como professor
             </Text>
           </Pressable>
-        )}
+        )} */}
         {userType != "manager" && (
           <Pressable onPress={() => handleUserTypeChange(UserType.MANAGER)}>
             <Text className="text-violet-500 font-sora text-[14px]">

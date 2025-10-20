@@ -52,13 +52,13 @@ export default function UserTypeSelection() {
             onPress={() => handleUserType(UserType.STUDENT)}
             icon="user"
           />
-          <UserTypePressable
+          {/* <UserTypePressable
             title="Professor"
             description="Gerencie suas aulas, turmas e conteúdos"
             active={userType === "instructor"}
             onPress={() => handleUserType(UserType.INSTRUCTOR)}
             icon="book"
-          />
+          /> */}
           <UserTypePressable
             title="Gestor"
             description="Tenha acompanhamento financeiro completo e gerencie suas turmas com alunos e professores"

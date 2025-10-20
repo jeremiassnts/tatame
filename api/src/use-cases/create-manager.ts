@@ -14,7 +14,7 @@ interface CreateManagerUseCaseRequest {
   birth: Date;
   authToken?: string;
   profilePhotoUrl?: string;
-  isInstructor: boolean;
+  // isInstructor: boolean;
   gymName: string;
   gymAddress: string;
   gymLogo: string;
@@ -24,7 +24,7 @@ interface CreateManagerUseCaseRequest {
     modalityId: string;
     extraInfo: string;
   }[];
-  customerId: string;
+  // customerId: string;
 }
 @Injectable()
 export class CreateManagerUseCase {
@@ -46,7 +46,7 @@ export class CreateManagerUseCase {
       birth,
       authToken,
       profilePhotoUrl,
-      customerId,
+      // customerId,
     } = props;
     const hashedPassword = await this.passwordHasher.hash(password);
     const newUser = new User({
@@ -59,7 +59,7 @@ export class CreateManagerUseCase {
       createdAt: new Date(),
       authToken,
       profilePhotoUrl,
-      stripeCustomerId: customerId,
+      // stripeCustomerId: customerId,
     });
 
     const { gymName, gymAddress, gymLogo, gymSince } = props;
@@ -70,7 +70,7 @@ export class CreateManagerUseCase {
       since: gymSince,
     });
 
-    const { graduations, isInstructor } = props;
+    const { graduations } = props;
     const newGraduations = graduations.map(
       (graduation) =>
         new Graduation({
@@ -83,7 +83,6 @@ export class CreateManagerUseCase {
       newUser,
       newGym,
       newGraduations,
-      isInstructor,
     );
 
     return {

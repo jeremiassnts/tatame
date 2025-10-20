@@ -38,7 +38,6 @@ export class PrismaUsersRepository implements UsersRepository {
     user: User,
     gym: Gym,
     graduations: Graduation[],
-    isInstructor: boolean,
   ): Promise<void> {
     const userData = PrismaUserMapper.toPrisma(user);
     //removing managerId from gym data to nested creation
@@ -53,12 +52,12 @@ export class PrismaUsersRepository implements UsersRepository {
       new UserRole({ role: Role.MANAGER }),
     );
     const userRolesData = [managerRole];
-    if (isInstructor) {
-      const { userId, ...instructorRole } = PrismaUserRoleMapper.toPrisma(
-        new UserRole({ role: Role.INSTRUCTOR }),
-      );
-      userRolesData.push(instructorRole);
-    }
+    // if (isInstructor) {
+    //   const { userId, ...instructorRole } = PrismaUserRoleMapper.toPrisma(
+    //     new UserRole({ role: Role.INSTRUCTOR }),
+    //   );
+    //   userRolesData.push(instructorRole);
+    // }
 
     await this.prisma.user.create({
       data: {
