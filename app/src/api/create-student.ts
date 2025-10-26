@@ -7,12 +7,18 @@ interface CreateStudentProps {
     password: string;
     gender: string;
     birth: string;
-    profilePhotoUrl: string;
     authToken: string;
     gymId: string;
   }>;
 }
 
+interface CreateStudentResponse {
+  user: {
+    id: string;
+  };
+}
+
 export default async function createStudent({ form }: CreateStudentProps) {
-  await axiosClient.post("/students", form);
+  const response = await axiosClient.post<CreateStudentResponse>("/students", form);
+  return response.data;
 }

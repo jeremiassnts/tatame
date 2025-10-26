@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import createManager from "~/src/api/create-manager";
-import uploadPhoto from "~/src/api/send-attachment";
 import { Button } from "~/src/components/ui/button";
 import { useSignUpContext } from "~/src/providers/sign-up-provider";
 import { UserCreationFormSubmit } from "./user-creation";
@@ -16,6 +15,8 @@ import createInstructor from "~/src/api/create-instructor";
 import createStudent from "~/src/api/create-student";
 import { useAuthentication } from "~/src/providers/authentication-provider";
 import authenticate from "~/src/api/authenticate";
+import sendUserProfilePhoto from "~/src/api/send-user-profile-photo";
+import sendGymPhoto from "~/src/api/send-gym-photo";
 
 export default function Conclusion() {
   const [loading, setLoading] = useState(true);
@@ -27,8 +28,11 @@ export default function Conclusion() {
       GraduationCreationFormSubmit &
       SubscriptionFormSubmit
   >();
-  const { mutateAsync: uploadPhotoFn } = useMutation({
-    mutationFn: uploadPhoto,
+  const { mutateAsync: sendUserProfilePhotoFn } = useMutation({
+    mutationFn: sendUserProfilePhoto,
+  });
+  const { mutateAsync: sendGymPhotoFn } = useMutation({
+    mutationFn: sendGymPhoto,
   });
   const { mutate: authenticateFn } = useMutation({
     mutationFn: authenticate,
@@ -45,7 +49,11 @@ export default function Conclusion() {
   });
   const { mutateAsync: createInstructorFn } = useMutation({
     mutationFn: createInstructor,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      sendUserProfilePhotoFn({
+        photoUrl: form?.photo,
+        userId: data.user.id,
+      });
       authenticateFn({
         email: form?.email ?? "",
         password: form?.password ?? "",
@@ -58,7 +66,11 @@ export default function Conclusion() {
   });
   const { mutateAsync: createStudentFn } = useMutation({
     mutationFn: createStudent,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      sendUserProfilePhotoFn({
+        photoUrl: form?.photo,
+        userId: data.user.id,
+      });
       authenticateFn({
         email: form?.email ?? "",
         password: form?.password ?? "",
@@ -71,7 +83,15 @@ export default function Conclusion() {
   });
   const { mutateAsync: createManagerFn } = useMutation({
     mutationFn: createManager,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      sendUserProfilePhotoFn({
+        photoUrl: form?.photo,
+        userId: data.user.id,
+      });
+      sendGymPhotoFn({
+        photoUrl: form?.gymLogo,
+        gymId: data.gym.id,
+      });
       authenticateFn({
         email: form?.email ?? "",
         password: form?.password ?? "",
@@ -85,68 +105,52 @@ export default function Conclusion() {
   const { signIn, isAuthenticated } = useAuthentication();
 
   useEffect(() => {
-    const uploadPromises = [];
-    if (form?.gymLogo && userType === UserType.MANAGER)
-      uploadPromises.push(uploadPhotoFn({ photoUrl: form?.gymLogo }));
-    if (form?.photo)
-      uploadPromises.push(uploadPhotoFn({ photoUrl: form?.photo }));
-    Promise.all(uploadPromises).then((data) => {
-      let gymLogo, profilePhoto;
-      if (userType === UserType.MANAGER) {
-        [gymLogo, profilePhoto] = data;
-      } else {
-        [profilePhoto] = data;
-      }
-
-      let body: any = {
-        name: form?.name,
-        email: form?.email,
-        password: form?.password,
-        gender: form?.gender == "m" ? "MALE" : "FEMALE",
-        tier: form?.plan,
-        birth: form?.birthDate?.toISOString(),
-        profilePhotoUrl: profilePhoto.url,
-        authToken: "",
-        graduations: form?.graduations?.map((graduation) => ({
-          colorId: graduation.color,
-          modalityId: graduation.modality,
-          extraInfo: graduation.extras,
-        })),
+    let body: any = {
+      name: form?.name,
+      email: form?.email,
+      password: form?.password,
+      gender: form?.gender == "m" ? "MALE" : "FEMALE",
+      tier: form?.plan,
+      birth: form?.birthDate?.toISOString(),
+      authToken: "",
+      graduations: form?.graduations?.map((graduation) => ({
+        colorId: graduation.color,
+        modalityId: graduation.modality,
+        extraInfo: graduation.extras,
+      })),
+    };
+    if (userType === UserType.MANAGER) {
+      body = {
+        ...body,
+        // customerId: form?.customerId,
+        // isInstructor: form?.isProfessor,
+        gymName: form?.gymName,
+        gymAddress: `${form?.gymStreet}, ${form?.gymAddressNumber}, ${form?.gymNeighborhood}, ${form?.gymCity} - ${form?.gymState}, ${form?.gymCep}`,
+        gymSince: form?.gymCreationDate?.toISOString(),
       };
-      if (userType === UserType.MANAGER) {
-        body = {
-          ...body,
-          // customerId: form?.customerId,
-          // isInstructor: form?.isProfessor,
-          gymName: form?.gymName,
-          gymAddress: `${form?.gymStreet}, ${form?.gymAddressNumber}, ${form?.gymNeighborhood}, ${form?.gymCity} - ${form?.gymState}, ${form?.gymCep}`,
-          gymLogo: gymLogo?.url,
-          gymSince: form?.gymCreationDate?.toISOString(),
-        };
-        createManagerFn({ form: body });
-        setCongratulationsMessage(
-          "Agora você pode começar a gerenciar sua academia e elevar ainda mais o nível do seu negócio"
-        );
-      } else if (userType === UserType.INSTRUCTOR) {
-        body = {
-          ...body,
-          gymId: form?.gymId,
-        };
-        createInstructorFn({ form: body });
-        setCongratulationsMessage(
-          "Agora você pode começar a gerenciar suas turmas e alunos"
-        );
-      } else if (userType === UserType.STUDENT) {
-        body = {
-          ...body,
-          gymId: form?.gymId,
-        };
-        createStudentFn({ form: body });
-        setCongratulationsMessage(
-          "Agora você pode começar a acompanhar suas aulas"
-        );
-      }
-    });
+      createManagerFn({ form: body });
+      setCongratulationsMessage(
+        "Agora você pode começar a gerenciar sua academia e elevar ainda mais o nível do seu negócio"
+      );
+    } else if (userType === UserType.INSTRUCTOR) {
+      body = {
+        ...body,
+        gymId: form?.gymId,
+      };
+      createInstructorFn({ form: body });
+      setCongratulationsMessage(
+        "Agora você pode começar a gerenciar suas turmas e alunos"
+      );
+    } else if (userType === UserType.STUDENT) {
+      body = {
+        ...body,
+        gymId: form?.gymId,
+      };
+      createStudentFn({ form: body });
+      setCongratulationsMessage(
+        "Agora você pode começar a acompanhar suas aulas"
+      );
+    }
   }, []);
 
   function handleEnterDashboard() {

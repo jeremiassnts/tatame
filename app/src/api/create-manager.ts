@@ -8,12 +8,10 @@ interface CreateManagerProps {
     gender: string;
     tier: string;
     birth: string;
-    profilePhotoUrl: string;
     authToken: string;
     // isInstructor: boolean;
     gymName: string;
     gymAddress: string;
-    gymLogo: string;
     // customerId: string;
     gymSince: string;
     graduations: Partial<{
@@ -24,6 +22,16 @@ interface CreateManagerProps {
   }>;
 }
 
+interface CreateManagerResponse {
+  user: {
+    id: string;
+  };
+  gym: {
+    id: string;
+  };
+}
+
 export default async function createManager({ form }: CreateManagerProps) {
-  await axiosClient.post("/managers", form);
+  const response = await axiosClient.post<CreateManagerResponse>("/managers", form);
+  return response.data;
 }

@@ -7,14 +7,19 @@ interface CreateInstructorProps {
     password: string;
     gender: string;
     birth: string;
-    profilePhotoUrl: string;
     authToken: string;
     gymId: string;
   }>;
 }
 
+interface CreateInstructorResponse {
+  user: {
+    id: string;
+  };
+}
 export default async function createInstructor({
   form,
 }: CreateInstructorProps) {
-  await axiosClient.post("/instructors", form);
+  const response = await axiosClient.post<CreateInstructorResponse>("/instructors", form);
+  return response.data;
 }
