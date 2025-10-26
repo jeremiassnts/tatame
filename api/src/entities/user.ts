@@ -93,4 +93,7 @@ export class User {
   set stripeCustomerId(stripeCustomerId: string) {
     this.props.stripeCustomerId = stripeCustomerId;
   }
+  set profilePhotoUrl(profilePhotoUrl: string) {
+    this.props.profilePhotoUrl = profilePhotoUrl;
+  }
 }

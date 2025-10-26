@@ -40,4 +40,7 @@ export class Gym {
   get since(): Date {
     return this.props.since;
   }
+  set logo(logo: string) {
+    this.props.logo = logo;
+  }
 }

@@ -7,6 +7,8 @@ import { EnvService } from 'src/env/env.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ControllersModule } from 'src/controllers/controllers.module';
+import { BullModule } from '@nestjs/bullmq';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
@@ -25,6 +27,13 @@ import { ControllersModule } from 'src/controllers/controllers.module';
       rootPath: join(__dirname, '../../..', 'public/main'),
       serveRoot: '/',
     }),
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    QueueModule,
   ],
   providers: [EnvService],
 })

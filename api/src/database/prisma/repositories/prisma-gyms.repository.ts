@@ -26,4 +26,19 @@ export class PrismaGymsRepository implements GymsRepository {
     });
     return gym ? PrismaGymMapper.toDomain(gym) : null;
   }
+
+  async findById(id: string): Promise<Gym | null> {
+    const gym = await this.prisma.gym.findUnique({
+      where: { id },
+    });
+    return gym ? PrismaGymMapper.toDomain(gym) : null;
+  }
+
+  async update(gym: Gym): Promise<void> {
+    const data = PrismaGymMapper.toPrisma(gym);
+    await this.prisma.gym.update({
+      where: { id: gym.id },
+      data,
+    });
+  }
 }
