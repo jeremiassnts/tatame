@@ -40,7 +40,6 @@ describe('Create Manager (E2E)', () => {
       isInstructor: true,
       gymName: "Jane's Gym",
       gymAddress: '123 Main St',
-      gymLogo: 'logo.png',
       gymSince: new Date('2020-01-01').toISOString(),
       graduations: [
         {
@@ -49,7 +48,6 @@ describe('Create Manager (E2E)', () => {
           extraInfo: 'Black belt',
         },
       ],
-      customerId: 'customer-1',
     };
 
     const response = await request(app.getHttpServer())
@@ -76,7 +74,6 @@ describe('Create Manager (E2E)', () => {
       }),
     );
     expect(createdUser?.email).toEqual('jane@example.com');
-    expect(createdUser?.stripeCustomerId).toEqual('customer-1');
     expect(createdGym?.name).toEqual("Jane's Gym");
     expect(createdGraduation?.colorId).toEqual(color.id);
   });

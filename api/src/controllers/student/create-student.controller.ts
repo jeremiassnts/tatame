@@ -22,7 +22,6 @@ export const createStudentBodySchema = z.object({
   birth: z.coerce.date(),
   gymId: z.string(),
   authToken: z.string().optional(),
-  profilePhotoUrl: z.string().optional(),
   graduations: z.array(
     z.object({
       colorId: z.string(),

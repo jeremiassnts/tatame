@@ -17,7 +17,7 @@ import { Queue } from 'bullmq';
 
 @Controller('/attachments')
 @SetMetadata('isPublic', true)
-export class UploadPhotoController {
+export class UploadUserProfilePhotoController {
   constructor(@InjectQueue('image-sending') private imageSendingQueue: Queue) {}
 
   @Post('/:userId/user')
@@ -38,7 +38,6 @@ export class UploadPhotoController {
     if (!userId) {
       throw new BadRequestException('User ID is required');
     }
-
     await this.imageSendingQueue.add(
       'user-profile-image-sending',
       {

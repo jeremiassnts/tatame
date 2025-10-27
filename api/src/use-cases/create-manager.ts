@@ -13,18 +13,14 @@ interface CreateManagerUseCaseRequest {
   gender: Gender;
   birth: Date;
   authToken?: string;
-  profilePhotoUrl?: string;
-  // isInstructor: boolean;
   gymName: string;
   gymAddress: string;
-  gymLogo: string;
   gymSince: Date;
   graduations: {
     colorId: string;
     modalityId: string;
     extraInfo: string;
   }[];
-  // customerId: string;
 }
 @Injectable()
 export class CreateManagerUseCase {
@@ -39,15 +35,7 @@ export class CreateManagerUseCase {
       throw new UserAlreadyExistsError();
     }
 
-    const {
-      name,
-      password,
-      gender,
-      birth,
-      authToken,
-      profilePhotoUrl,
-      // customerId,
-    } = props;
+    const { name, password, gender, birth, authToken } = props;
     const hashedPassword = await this.passwordHasher.hash(password);
     const newUser = new User({
       name,
@@ -58,15 +46,12 @@ export class CreateManagerUseCase {
       gender,
       createdAt: new Date(),
       authToken,
-      profilePhotoUrl,
-      // stripeCustomerId: customerId,
     });
 
-    const { gymName, gymAddress, gymLogo, gymSince } = props;
+    const { gymName, gymAddress, gymSince } = props;
     const newGym = new Gym({
       name: gymName,
       address: gymAddress,
-      logo: gymLogo,
       since: gymSince,
     });
 

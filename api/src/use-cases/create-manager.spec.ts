@@ -40,10 +40,8 @@ describe('Create Manager Use Case', () => {
       password: 'password123',
       gender: Gender.MALE,
       birth: new Date('1990-01-01'),
-      isInstructor: true,
       gymName: "Doe's Gym",
       gymAddress: '123 Main St',
-      gymLogo: 'logo.png',
       gymSince: new Date('2020-01-01'),
       graduations: [
         {
@@ -52,7 +50,6 @@ describe('Create Manager Use Case', () => {
           extraInfo: 'Black belt',
         },
       ],
-      customerId: 'customer-1',
     });
 
     expect(result.user).toBeDefined();
@@ -71,8 +68,6 @@ describe('Create Manager Use Case', () => {
     const createdUser = await usersRepository.findByEmail('john@example.com');
     expect(createdUser).toBeDefined();
     expect(createdUser?.email).toBe('john@example.com');
-
-    expect(createdUser?.stripeCustomerId).toBe('customer-1');
   });
 
   it('should throw UserAlreadyExistsError when trying to create a manager with existing email', async () => {
@@ -83,10 +78,8 @@ describe('Create Manager Use Case', () => {
       password: 'password123',
       gender: Gender.MALE,
       birth: new Date('1990-01-01'),
-      isInstructor: true,
       gymName: "Doe's Gym",
       gymAddress: '123 Main St',
-      gymLogo: 'logo.png',
       gymSince: new Date('2020-01-01'),
       graduations: [
         {
@@ -95,7 +88,6 @@ describe('Create Manager Use Case', () => {
           extraInfo: 'Black belt',
         },
       ],
-      customerId: 'customer-1',
     });
 
     // Try to create another manager with the same email
@@ -106,10 +98,8 @@ describe('Create Manager Use Case', () => {
         password: 'different123',
         gender: Gender.MALE,
         birth: new Date('1992-01-01'),
-        isInstructor: false,
         gymName: 'Another Gym',
         gymAddress: '456 Second St',
-        gymLogo: 'another-logo.png',
         gymSince: new Date('2021-01-01'),
         graduations: [
           {
@@ -118,7 +108,6 @@ describe('Create Manager Use Case', () => {
             extraInfo: 'Brown belt',
           },
         ],
-        customerId: 'customer-1',
       }),
     ).rejects.toThrow(UserAlreadyExistsError);
   });

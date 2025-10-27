@@ -56,9 +56,18 @@ import { UncancelClassController } from './class/uncancel-class.controller';
 import { UncancelClassUseCase } from 'src/use-cases/uncancel-class';
 import { CreateCheckInController } from './check-in/create-check-in.controller';
 import { CreateCheckInUseCase } from 'src/use-cases/create-check-in';
+import { UploadUserProfilePhotoController } from './attachment/upload-user-profile-photo.controller';
+import { UploadGymLogoPhotoController } from './attachment/upload-gym-logo-photo.controller';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
-  imports: [DatabaseModule, StorageModule],
+  imports: [
+    DatabaseModule,
+    StorageModule,
+    BullModule.registerQueue({
+      name: 'image-sending',
+    }),
+  ],
   controllers: [
     AuthenticateController,
     ChangePasswordController,
@@ -83,6 +92,8 @@ import { CreateCheckInUseCase } from 'src/use-cases/create-check-in';
     CancelClassController,
     UncancelClassController,
     CreateCheckInController,
+    UploadUserProfilePhotoController,
+    UploadGymLogoPhotoController,
   ],
   providers: [
     PrismaService,

@@ -13,7 +13,6 @@ interface CreateStudentUseCaseRequest {
   gender: Gender;
   birth: Date;
   authToken?: string;
-  profilePhotoUrl?: string;
   gymId: string;
   graduations: {
     colorId: string;
@@ -36,8 +35,7 @@ export class CreateStudentUseCase {
       throw new UserAlreadyExistsError();
     }
 
-    const { name, password, gender, birth, authToken, profilePhotoUrl, gymId } =
-      props;
+    const { name, password, gender, birth, authToken, gymId } = props;
 
     const hashedPassword = await this.passwordHasher.hash(password);
     const newUser = new User({
@@ -48,7 +46,6 @@ export class CreateStudentUseCase {
       birth,
       gender,
       authToken,
-      profilePhotoUrl,
       createdAt: new Date(),
     });
 

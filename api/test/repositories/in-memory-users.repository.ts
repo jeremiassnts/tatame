@@ -33,7 +33,6 @@ export class InMemoryUsersRepository implements UsersRepository {
     user: User,
     gym: Gym,
     graduations: Graduation[],
-    isInstructor: boolean,
   ): Promise<void> {
     this.users.push(user);
     this.gymRepository.create(gym);
@@ -43,11 +42,6 @@ export class InMemoryUsersRepository implements UsersRepository {
     this.userRolesRepository.create(
       new UserRole({ userId: user.id, role: Role.MANAGER }),
     );
-    if (isInstructor) {
-      this.userRolesRepository.create(
-        new UserRole({ userId: user.id, role: Role.INSTRUCTOR }),
-      );
-    }
     return Promise.resolve();
   }
 

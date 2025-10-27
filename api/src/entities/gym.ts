@@ -3,7 +3,7 @@ interface GymProps {
   name: string;
   address: string;
   managerId?: string;
-  logo: string;
+  logo?: string;
   since: Date;
 }
 
@@ -34,7 +34,7 @@ export class Gym {
   }
 
   get logo(): string {
-    return this.props.logo;
+    return this.props.logo ?? '';
   }
 
   get since(): Date {
