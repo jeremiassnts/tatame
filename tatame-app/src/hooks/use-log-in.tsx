@@ -9,7 +9,7 @@ import z from "zod";
 
 export const loginFormSchema = z.object({
   email: z.email("E-mail inválido"),
-  password: z.string().min(8, "A senha precisa ter no mínimo 6 caracteres"),
+  password: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres"),
 });
 export type LoginFormType = z.infer<typeof loginFormSchema>;
 
