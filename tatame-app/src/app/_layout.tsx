@@ -1,32 +1,25 @@
-import { Stack } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import "react-native-reanimated";
-import { StyleSheet } from "react-native";
-import { COLORS } from "../constants/colors";
 import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
 import "@/global.css";
+import { COLORS } from "../constants/colors";
 
 export default function RootLayout() {
   return (
-    <GluestackUIProvider mode="dark">
-      <ClerkProvider tokenCache={tokenCache}>
+    <ClerkProvider tokenCache={tokenCache}>
+      <GluestackUIProvider mode="dark">
         <Stack
           screenOptions={{
-            contentStyle: styles.container,
             headerShown: false,
+            contentStyle: { backgroundColor: COLORS.background },
           }}
         >
-          <Stack.Screen name="login" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(home)" />
         </Stack>
-      </ClerkProvider>
-    </GluestackUIProvider>
+      </GluestackUIProvider>
+    </ClerkProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-});
