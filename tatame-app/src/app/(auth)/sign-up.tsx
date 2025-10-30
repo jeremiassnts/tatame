@@ -1,112 +1,209 @@
-import * as React from 'react'
-import { Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useSignUp } from '@clerk/clerk-expo'
-import { Link, useRouter } from 'expo-router'
+import { Link } from "expo-router";
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Image } from "@/src/components/ui/image";
+import { Heading } from "@/src/components/ui/heading";
+import { Text } from "@/src/components/ui/text";
+import { TextInput } from "@/src/components/text-input";
+import { VStack } from "@/src/components/ui/vstack";
+import {
+  Button,
+  ButtonIcon,
+  ButtonSpinner,
+  ButtonText,
+} from "@/src/components/ui/button";
+import { HStack } from "@/src/components/ui/hstack";
+import { Divider } from "@/src/components/ui/divider";
+import { AppleIcon, GoogleIcon } from "@/src/components/ui/icon";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as WebBrowser from "expo-web-browser";
+import {
+  signUpFormSchema,
+  SignUpFormType,
+  useSignUp,
+} from "@/src/hooks/use-sign-up";
+import { useLogIn } from "@/src/hooks/use-log-in";
+import EmailVerification from "@/src/components/email-verification";
 
-export default function SignUpScreen() {
-  const { isLoaded, signUp, setActive } = useSignUp()
-  const router = useRouter()
+// Handle any pending authentication sessions
+WebBrowser.maybeCompleteAuthSession();
 
-  const [emailAddress, setEmailAddress] = React.useState('')
-  const [password, setPassword] = React.useState('')
-  const [pendingVerification, setPendingVerification] = React.useState(false)
-  const [code, setCode] = React.useState('')
+export default function SignUp() {
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState("");
+  const [isSigningUp, setIsSigningUp] = useState(false);
+  const [isSigningUpWithGoogle, setIsSigningUpWithGoogle] = useState(false);
+  const [isSigningUpWithApple, setIsSigningUpWithApple] = useState(false);
+  const {
+    setValue,
+    watch,
+    formState: { errors },
+    handleSubmit,
+    register,
+    setFocus,
+    reset,
+    setError,
+  } = useForm<SignUpFormType>({
+    resolver: zodResolver(signUpFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+  const { useWarmUpBrowser, signUpWithEmailAndPassword, verifyEmail } =
+    useSignUp();
+  const { signInWithGoogle, signInWithApple } = useLogIn();
 
-  // Handle submission of sign-up form
-  const onSignUpPress = async () => {
-    if (!isLoaded) return
-
-    console.log(emailAddress, password)
-
-    // Start sign-up process using email and password provided
+  const handleSignInWithGoogle = async () => {
     try {
-      await signUp.create({
-        emailAddress,
-        password,
-      })
-
-      // Send user an email with verification code
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
-
-      // Set 'pendingVerification' to true to display second form
-      // and capture OTP code
-      setPendingVerification(true)
-    } catch (err) {
-      // See https://clerk.com/docs/guides/development/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
+      setIsSigningUpWithGoogle(true);
+      await signInWithGoogle();
+    } finally {
+      setIsSigningUpWithGoogle(false);
     }
-  }
+  };
 
-  // Handle submission of verification form
-  const onVerifyPress = async () => {
-    if (!isLoaded) return
-
+  const handleSignInWithApple = async () => {
     try {
-      // Use the code the user provided to attempt verification
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({
-        code,
-      })
+      setIsSigningUpWithApple(true);
+      await signInWithApple();
+    } finally {
+      setIsSigningUpWithApple(false);
+    }
+  };
 
-      // If verification was completed, set the session to active
-      // and redirect the user
-      if (signUpAttempt.status === 'complete') {
-        await setActive({ session: signUpAttempt.createdSessionId })
-        router.replace('/(home)')
-      } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-        console.error(JSON.stringify(signUpAttempt, null, 2))
+  const handleSignInWithEmailAndPassword = async (data: SignUpFormType) => {
+    try {
+      if (data.password !== data.confirmPassword) {
+        setError("confirmPassword", { message: "As senhas não coincidem" });
+        return;
       }
-    } catch (err) {
-      // See https://clerk.com/docs/guides/development/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
+      setError("confirmPassword", { message: "" });
+      setIsSigningUp(true);
+      await signUpWithEmailAndPassword(data);
+      setPendingVerification(true);
+      reset();
+    } finally {
+      setIsSigningUp(false);
     }
-  }
+  };
+
+  const email = watch("email");
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
+
+  useWarmUpBrowser();
 
   if (pendingVerification) {
-    return (
-      <>
-        <Text>Verify your email</Text>
-        <TextInput
-          value={code}
-          placeholder="Enter your verification code"
-          onChangeText={(code) => setCode(code)}
-        />
-        <TouchableOpacity onPress={onVerifyPress}>
-          <Text>Verify</Text>
-        </TouchableOpacity>
-      </>
-    )
+    return <EmailVerification />;
   }
 
   return (
-    <View>
-      <>
-        <Text>Sign up</Text>
+    <SafeAreaView className="flex flex-1 items-center justify-center pl-10 pr-10">
+      <Image
+        source={{
+          uri: require("@/assets/images/logo.png"),
+        }}
+        alt="logo"
+        className="w-[170px]"
+        resizeMode="contain"
+      />
+      <VStack className="pl-10 pr-10 mt-4 mb-4">
+        <Heading size="2xl" className="text-center">
+          Cadastro
+        </Heading>
+        <Text className="text-neutral-500 text-md text-center">
+          Preencha seus dados para criar sua conta
+        </Text>
+      </VStack>
+      <VStack className="w-full gap-3">
         <TextInput
-          autoCapitalize="none"
-          value={emailAddress}
-          placeholder="Enter email"
-          onChangeText={(email) => setEmailAddress(email)}
+          value={email}
+          onChangeText={(text) => {
+            setValue("email", text);
+          }}
+          placeholder="Digite seu email"
+          label="Email"
+          error={errors.email?.message}
+          {...register("email")}
+          onSubmitEditing={() => setFocus("password", { shouldSelect: true })}
+          returnKeyType="next"
         />
         <TextInput
           value={password}
-          placeholder="Enter password"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
+          onChangeText={(text) => {
+            setValue("password", text);
+          }}
+          placeholder="Digite sua senha"
+          label="Senha"
+          isPassword={true}
+          error={errors.password?.message}
+          {...register("password")}
+          onSubmitEditing={() =>
+            setFocus("confirmPassword", { shouldSelect: true })
+          }
+          returnKeyType="next"
         />
-        <TouchableOpacity onPress={onSignUpPress}>
-          <Text>Continue</Text>
-        </TouchableOpacity>
-        <View style={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-          <Text>Already have an account?</Text>
-          <Link href="/sign-in">
-            <Text>Sign in</Text>
+        <TextInput
+          value={confirmPassword}
+          onChangeText={(text) => {
+            setValue("confirmPassword", text);
+          }}
+          placeholder="Digite sua senha"
+          label="Confirmar senha"
+          isPassword={true}
+          error={errors.confirmPassword?.message}
+          {...register("confirmPassword")}
+          onSubmitEditing={handleSubmit(handleSignInWithEmailAndPassword)}
+          returnKeyType="send"
+        />
+        <Button
+          className="mt-2 bg-violet-700"
+          size="xl"
+          onPress={handleSubmit(handleSignInWithEmailAndPassword)}
+        >
+          {isSigningUp && <ButtonSpinner color="white" />}
+          <ButtonText className="text-white">
+            {isSigningUp ? "Cadastrando..." : "Cadastrar"}
+          </ButtonText>
+        </Button>
+      </VStack>
+      <HStack className="w-full items-center justify-center gap-2 mt-4 mb-4">
+        <Divider className="bg-neutral-700" />
+        <Text className="text-neutral-500 text-md">ou</Text>
+        <Divider className="bg-neutral-700" />
+      </HStack>
+      <VStack className="w-full">
+        <Button
+          className="h-14 rounded-md"
+          size="md"
+          onPress={handleSignInWithGoogle}
+        >
+          {isSigningUpWithGoogle && <ButtonSpinner color="white" />}
+          <ButtonIcon as={GoogleIcon} size="md" />
+          <ButtonText className="text-neutral-900">
+            {isSigningUpWithGoogle ? "Cadastrando..." : "Cadastrar com google"}
+          </ButtonText>
+        </Button>
+        <Button
+          className="mt-4 h-14 rounded-md"
+          onPress={handleSignInWithApple}
+        >
+          {isSigningUpWithApple && <ButtonSpinner color="white" />}
+          <ButtonIcon as={AppleIcon} size="md" />
+          <ButtonText className="text-neutral-900">
+            {isSigningUpWithApple ? "Cadastrando..." : "Cadastrar com apple"}
+          </ButtonText>
+        </Button>
+        <Text className="text-neutral-400 text-md text-center mt-4">
+          Já possui uma conta?{" "}
+          <Link href="/sign-in" className="text-violet-500 font-bold">
+            Faça login
           </Link>
-        </View>
-      </>
-    </View>
-  )
+        </Text>
+      </VStack>
+    </SafeAreaView>
+  );
 }
