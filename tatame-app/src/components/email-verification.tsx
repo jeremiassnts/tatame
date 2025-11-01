@@ -6,11 +6,24 @@ import { Text } from "./ui/text";
 import { TextInput } from "./text-input";
 import { useSignUp } from "../hooks/use-sign-up";
 import { useState } from "react";
-import { Button, ButtonText } from "./ui/button";
+import { Button, ButtonSpinner, ButtonText } from "./ui/button";
 
 export default function EmailVerification() {
   const [code, setCode] = useState("");
   const { verifyEmail } = useSignUp();
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  async function handleVerifyEmail() {
+    setIsVerifying(true);
+    try {
+      await verifyEmail(code);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsVerifying(false);
+    }
+  }
+
   return (
     <SafeAreaView className="flex flex-1 items-center justify-center pl-10 pr-10">
       <Image
@@ -40,9 +53,12 @@ export default function EmailVerification() {
         <Button
           className="mt-4 bg-violet-700"
           size="xl"
-          onPress={() => verifyEmail(code)}
+          onPress={handleVerifyEmail}
         >
-          <ButtonText className="text-white">Verificar</ButtonText>
+          {isVerifying && <ButtonSpinner color="white" />}
+          <ButtonText className="text-white">
+            {isVerifying ? "Verificando..." : "Verificar"}
+          </ButtonText>
         </Button>
       </VStack>
     </SafeAreaView>

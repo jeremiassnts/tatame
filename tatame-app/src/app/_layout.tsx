@@ -6,28 +6,33 @@ import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { COLORS } from "../constants/colors";
 
-export default function RootLayout() {
-  const { isSignedIn } = useAuth();
-
+export default function RootApp() {
   return (
     <ClerkProvider tokenCache={tokenCache}>
       <GluestackUIProvider mode="dark">
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: COLORS.background },
-          }}
-        >
-          {/* public routes */}
-          <Stack.Protected guard={!isSignedIn}>
-            <Stack.Screen name="(auth)" />
-          </Stack.Protected>
-          {/* protected routes */}
-          <Stack.Protected guard={isSignedIn!}>
-            <Stack.Screen name="(home)" />
-          </Stack.Protected>
-        </Stack>
+        <RootLayout />
       </GluestackUIProvider>
     </ClerkProvider>
+  );
+}
+
+function RootLayout() {
+  const { isSignedIn } = useAuth();
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: COLORS.background },
+      }}
+    >
+      {/* public routes */}
+      <Stack.Protected guard={!isSignedIn}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+      {/* protected routes */}
+      <Stack.Protected guard={isSignedIn!}>
+        <Stack.Screen name="(home)" />
+      </Stack.Protected>
+    </Stack>
   );
 }
