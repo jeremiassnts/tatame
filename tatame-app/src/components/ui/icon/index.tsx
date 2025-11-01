@@ -5,7 +5,7 @@ import {
   IPrimitiveIcon,
   Svg,
 } from "@gluestack-ui/core/icon/creator";
-import { Path } from "react-native-svg";
+import { Path, Circle } from "react-native-svg";
 import { tva, VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { cssInterop } from "nativewind";
 
@@ -1624,3 +1624,16 @@ const AppleIcon = createIcon({
 });
 AppleIcon.displayName = "AppleIcon";
 export { AppleIcon };
+
+const UserIcon = createIcon({
+  Root: Svg,
+  viewBox: "0 0 24 24",
+  path: (
+    <>
+      <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <Circle cx="12" cy="7" r="4" />
+    </>
+  ),
+});
+UserIcon.displayName = "UserIcon";
+export { UserIcon };
