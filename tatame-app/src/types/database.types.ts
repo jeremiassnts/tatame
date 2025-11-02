@@ -14,6 +14,67 @@ export type Database = {
   }
   public: {
     Tables: {
+      class: {
+        Row: {
+          created_at: string
+          created_by: number | null
+          day: string | null
+          description: string | null
+          end: string | null
+          gym_id: number | null
+          id: number
+          instructor_id: number | null
+          modality: string | null
+          start: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: number | null
+          day?: string | null
+          description?: string | null
+          end?: string | null
+          gym_id?: number | null
+          id?: number
+          instructor_id?: number | null
+          modality?: string | null
+          start?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: number | null
+          day?: string | null
+          description?: string | null
+          end?: string | null
+          gym_id?: number | null
+          id?: number
+          instructor_id?: number | null
+          modality?: string | null
+          start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_instructor_id_fkey"
+            columns: ["instructor_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gyms: {
         Row: {
           address: string
