@@ -11,6 +11,7 @@ export default function Layout() {
     >
       <Stack.Screen name="user-type-selection" />
       <Stack.Screen name="index" />
+      <Stack.Screen name="create-gym" />
     </Stack>
   );
 }

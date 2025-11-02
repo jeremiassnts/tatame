@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      gyms: {
+        Row: {
+          address: string
+          created_at: string
+          id: number
+          logo: string | null
+          managerId: number
+          name: string
+          since: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          id?: number
+          logo?: string | null
+          managerId: number
+          name: string
+          since: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: number
+          logo?: string | null
+          managerId?: number
+          name?: string
+          since?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gyms_managerId_fkey"
+            columns: ["managerId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       roles: {
         Row: {
           created_at: string

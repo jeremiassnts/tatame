@@ -5,7 +5,7 @@ import {
   IPrimitiveIcon,
   Svg,
 } from "@gluestack-ui/core/icon/creator";
-import { Path, Circle, Polyline } from "react-native-svg";
+import { Path, Circle, Polyline, Rect } from "react-native-svg";
 import { tva, VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { cssInterop } from "nativewind";
 
@@ -1650,3 +1650,17 @@ const HomeIcon = createIcon({
 });
 HomeIcon.displayName = "HomeIcon";
 export { HomeIcon };
+
+const ImageIcon = createIcon({
+  Root: Svg,
+  viewBox: "0 0 24 24",
+  path: (
+    <>
+      <Rect x="3" y="3" width="18" height="18" rx="2" ry="2"></Rect>
+      <Circle cx="8.5" cy="8.5" r="1.5"></Circle>
+      <Polyline points="21 15 16 10 5 21"></Polyline>
+    </>
+  ),
+});
+ImageIcon.displayName = "ImageIcon";
+export { ImageIcon };
