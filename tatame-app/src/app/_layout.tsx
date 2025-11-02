@@ -31,7 +31,7 @@ function RootLayout() {
       </Stack.Protected>
       {/* protected routes */}
       <Stack.Protected guard={isSignedIn!}>
-        <Stack.Screen name="(home)" />
+        <Stack.Screen name="(logged)" />
       </Stack.Protected>
     </Stack>
   );

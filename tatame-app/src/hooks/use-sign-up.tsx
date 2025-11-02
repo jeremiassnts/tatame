@@ -29,7 +29,7 @@ export function useSignUp() {
       });
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace("/(home)");
+        router.replace("/(logged)/(home)");
       } else {
         showErrorToast(
           "Erro ao verificar email!",

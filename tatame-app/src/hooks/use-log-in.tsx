@@ -42,7 +42,7 @@ export function useLogIn() {
       // and redirect the user
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/(home)");
+        router.replace("/(logged)/(home)");
       } else {
         // If the status isn't complete, check why. User might need to
         // complete further steps.
@@ -72,7 +72,7 @@ export function useLogIn() {
         setActive!({
           session: createdSessionId,
           navigate: async ({ session }) => {
-            router.replace("/(home)");
+            router.replace("/(logged)/(home)");
           },
         });
       } else {
@@ -101,7 +101,7 @@ export function useLogIn() {
         setActive!({
           session: createdSessionId,
           navigate: async ({ session }) => {
-            router.replace("/(home)");
+            router.replace("/(logged)/(home)");
           },
         });
       } else {
