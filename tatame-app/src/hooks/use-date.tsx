@@ -1,18 +1,9 @@
 import { format, getDaysInMonth } from "date-fns";
+import { DayOfWeek } from "../constants/date";
 
 export interface Month {
   label: string;
   value: number;
-}
-
-export enum DayOfWeek {
-  SUNDAY = "SUNDAY",
-  MONDAY = "MONDAY",
-  TUESDAY = "TUESDAY",
-  WEDNESDAY = "WEDNESDAY",
-  THURSDAY = "THURSDAY",
-  FRIDAY = "FRIDAY",
-  SATURDAY = "SATURDAY",
 }
 export interface Day {
   date: number;
