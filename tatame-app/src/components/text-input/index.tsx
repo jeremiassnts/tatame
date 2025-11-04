@@ -11,18 +11,19 @@ type TextInputProps = RNTextInputProps & {
   label?: string;
   isPassword?: boolean;
   error?: string;
+  isDisabled?: boolean;
 };
 
 const TextInput = React.forwardRef<
   React.ElementRef<typeof RNTextInput>,
   TextInputProps
->(({ label, isPassword, error, ...props }, ref) => {
+>(({ label, isPassword, error, isDisabled, ...props }, ref) => {
   return (
     <VStack>
       {label && (
         <Text className="text-white font-bold mb-2 text-md">{label}</Text>
       )}
-      <Input className="bg-neutral-800 border-0 h-[45px]">
+      <Input className="bg-neutral-800 border-0 h-[45px]" isDisabled={isDisabled}>
         <InputField type={isPassword ? "password" : "text"} {...props} />
       </Input>
       {error && <Text className="text-red-500 text-sm">{error}</Text>}

@@ -27,7 +27,7 @@ export default function DateTimePicker({
   return (
     <Pressable onPress={() => setShow(true)} className={className}>
       <Text
-        className={`w-full bg-neutral-800 p-3 pl-4 pr-4 text-neutral-400 rounded-md mt-2 text-md`}
+        className={`w-full bg-neutral-800 p-3 pl-4 pr-4 rounded-md text-md`}
       >
         {date
           ? mode === "date"
