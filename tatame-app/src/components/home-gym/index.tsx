@@ -2,7 +2,6 @@ import { useUser } from "@clerk/clerk-expo";
 import { Badge, BadgeText } from "../ui/badge";
 import { Box } from "../ui/box";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
-import { HStack } from "../ui/hstack";
 import { AddIcon } from "../ui/icon";
 import { Skeleton } from "../ui/skeleton";
 import { VStack } from "../ui/vstack";
@@ -13,9 +12,8 @@ import { useEffect, useState } from "react";
 import { Database } from "@/src/types/database.types";
 import { HomeGymHeader } from "./header";
 import { useClass } from "@/src/api/use-class";
-import { Text } from "../ui/text";
-import { Card } from "../ui/card";
-import { Heading } from "../ui/heading";
+import { ClassRow } from "@/src/types/extendend-database.types";
+import { ClassCard } from "../class-card";
 
 export function HomeGym() {
   const router = useRouter();
@@ -27,9 +25,7 @@ export function HomeGym() {
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const { fetchNextClass } = useClass();
-  const [nextClass, setNextClass] = useState<
-    Database["public"]["Tables"]["class"]["Row"] | null
-  >(null);
+  const [nextClass, setNextClass] = useState<ClassRow | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -72,12 +68,7 @@ export function HomeGym() {
           </Box>
         )}
         {gym && !isLoading && nextClass && (
-          <Card size="md" variant="elevated" className="m-3">
-            <Heading size="md" className="mb-1">
-              {nextClass.description}
-            </Heading>
-            <Text size="sm">{nextClass.start}</Text>
-          </Card>
+          <ClassCard data={nextClass} topBadgeText="Próxima aula" />
         )}
         {!gym && !isLoading && (
           <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">

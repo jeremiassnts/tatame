@@ -101,7 +101,7 @@ export default function SignUp() {
   }
 
   return (
-    <SafeAreaView className="flex flex-1 items-center justify-center pl-10 pr-10">
+    <SafeAreaView className="flex flex-1 items-center justify-center pl-5 pr-5">
       <Image
         source={{
           uri: require("@/assets/images/logo.png"),
@@ -110,7 +110,7 @@ export default function SignUp() {
         className="w-[170px]"
         resizeMode="contain"
       />
-      <VStack className="pl-10 pr-10 mt-4 mb-4">
+      <VStack className="pl-5 pr-5 mt-4 mb-4">
         <Heading size="2xl" className="text-center">
           Cadastro
         </Heading>

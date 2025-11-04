@@ -25,7 +25,7 @@ export default function EmailVerification() {
   }
 
   return (
-    <SafeAreaView className="flex flex-1 items-center justify-center pl-10 pr-10">
+    <SafeAreaView className="flex flex-1 items-center justify-center pl-5 pr-5">
       <Image
         source={{
           uri: require("@/assets/images/logo.png"),

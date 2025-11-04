@@ -3,16 +3,25 @@ import { createSupabaseClerkClient } from "../utils/supabase";
 import { useToast } from "../hooks/use-toast";
 import { addDays, format } from "date-fns";
 import { Database } from "../types/database.types";
+import { ClassRow } from "../types/extendend-database.types";
+import { useUsers } from "./use-users";
 
 export function useClass() {
   const { getToken } = useAuth();
   const supabase = createSupabaseClerkClient(getToken());
   const { showErrorToast } = useToast();
+  const { getClerkUserById } = useUsers();
 
   async function fetchNextClass(gymId: number) {
     const { data, error } = await supabase
       .from("class")
-      .select("*")
+      .select(
+        `
+        *,
+        gym:gyms!gym_id(name),
+        instructor:users!instructor_id(clerk_user_id)
+        `
+      )
       .filter("gym_id", "eq", gymId)
       .order("start", { ascending: true });
 
@@ -36,7 +45,14 @@ export function useClass() {
       today = addDays(today, 1);
     }
 
-    return nextClass;
+    const instructor = nextClass?.instructor?.clerk_user_id
+      ? await getClerkUserById(nextClass.instructor?.clerk_user_id)
+      : null;
+
+    return {
+      ...nextClass,
+      instructor_name: instructor?.name,
+    } as ClassRow;
   }
 
   async function createClass(

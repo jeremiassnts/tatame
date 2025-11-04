@@ -68,11 +68,11 @@ export default function Home() {
     <SafeAreaView className="flex-1">
       <ImageBackground
         source={require("@/assets/images/home-bg.png")}
-        className="flex-1 pl-10 pr-10"
+        className="flex-1 pl-5 pr-5"
         resizeMode="cover"
       >
         <Box className="flex-1 bg-neutral-900 absolute top-0 left-0 right-0 bottom-0 opacity-50" />
-        <VStack className="items-center justify-center mt-[40%] pl-10 pr-10">
+        <VStack className="items-center justify-center mt-[40%] pl-5 pr-5">
           <Text className="font-medium text-neutral-400 text-lg">
             Bem vindo ao
           </Text>
