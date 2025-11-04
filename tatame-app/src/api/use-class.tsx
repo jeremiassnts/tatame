@@ -67,8 +67,57 @@ export function useClass() {
     return data;
   }
 
+  async function fetchClassesByGymId(gymId: number) {
+    const { data, error } = await supabase
+      .from("class")
+      .select(
+        `
+        *,
+        gym:gyms!gym_id(name),
+        instructor:users!instructor_id(clerk_user_id)
+        `
+      )
+      .filter("gym_id", "eq", gymId);
+
+    if (error) {
+      showErrorToast("Erro", "Ocorreu um erro ao buscar as aulas");
+      throw error;
+    }
+    //fetching instructors
+    const instructors: { clerk_user_id: string; name: string }[] = [];
+    for (const item of data) {
+      if (
+        item.instructor?.clerk_user_id &&
+        !instructors.some(
+          (i) => i.clerk_user_id === item.instructor?.clerk_user_id
+        )
+      ) {
+        const instructor = await getClerkUserById(
+          item.instructor?.clerk_user_id
+        );
+        if (instructor) {
+          instructors.push({
+            clerk_user_id: item.instructor?.clerk_user_id,
+            name: instructor.name,
+          });
+        }
+      }
+    }
+
+    return data.map((item) => {
+      const instructor = instructors.find(
+        (i) => i.clerk_user_id === item.instructor?.clerk_user_id
+      );
+      return {
+        ...item,
+        instructor_name: instructor?.name,
+      } as ClassRow;
+    });
+  }
+
   return {
     fetchNextClass,
     createClass,
+    fetchClassesByGymId,
   };
 }

@@ -6,3 +6,5 @@ export interface ClassRow extends BaseClassRow {
   gym: Database["public"]["Tables"]["gyms"]["Row"];
   instructor_name: string | null;
 }
+
+export type BaseGymRow = Database["public"]["Tables"]["gyms"]["Row"];

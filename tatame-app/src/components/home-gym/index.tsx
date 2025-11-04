@@ -68,7 +68,9 @@ export function HomeGym() {
           </Box>
         )}
         {gym && !isLoading && nextClass && (
-          <ClassCard data={nextClass} topBadgeText="Próxima aula" />
+          <Box className="ml-[-10px] mr-[-10px]">
+            <ClassCard data={nextClass} topBadgeText="Próxima aula" />
+          </Box>
         )}
         {!gym && !isLoading && (
           <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">

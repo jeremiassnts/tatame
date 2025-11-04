@@ -8,7 +8,7 @@ import { Text } from "../ui/text";
 
 interface ClassCardProps {
   data: ClassRow;
-  topBadgeText: string;
+  topBadgeText?: string;
 }
 
 export function ClassCard({ data, topBadgeText }: ClassCardProps) {
@@ -19,10 +19,12 @@ export function ClassCard({ data, topBadgeText }: ClassCardProps) {
 
   return (
     <Card size="md" variant="elevated" className="m-3 bg-neutral-800">
-      <Badge variant="outline" className="gap-1 self-start mb-3">
-        {topBadgeText && <BadgeText>{topBadgeText}</BadgeText>}
-        <BadgeIcon as={ArrowRightIcon} />
-      </Badge>
+      {topBadgeText && (
+        <Badge variant="outline" className="gap-1 self-start mb-3">
+          <BadgeText>{topBadgeText}</BadgeText>
+          <BadgeIcon as={ArrowRightIcon} />
+        </Badge>
+      )}
       <Heading className="text-white font-bold" size="md">
         {data.description}
       </Heading>
