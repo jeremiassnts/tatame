@@ -1,8 +1,8 @@
 import { createContext, useState } from "react";
 
 export interface ChangeContextType {
-  lastChangeId: number;
-  updateLastChangeId: () => void;
+  lastChangeId: Map<string, number>;
+  updateLastChangeId: (key: string) => void;
 }
 
 export interface ChangeProviderProps {
@@ -12,10 +12,12 @@ export interface ChangeProviderProps {
 export const ChangeContext = createContext({} as ChangeContextType);
 
 export function ChangeProvider({ children }: ChangeProviderProps) {
-  const [lastChangeId, setLastChangeId] = useState(Math.random());
+  const [lastChangeId, setLastChangeId] = useState<Map<string, number>>(
+    new Map()
+  );
 
-  function updateLastChangeId() {
-    setLastChangeId(Math.random());
+  function updateLastChangeId(key: string) {
+    setLastChangeId(lastChangeId.set(key, Math.random()));
   }
 
   return (

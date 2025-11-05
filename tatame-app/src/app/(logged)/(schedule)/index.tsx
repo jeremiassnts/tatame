@@ -1,6 +1,6 @@
 import { WeekDay } from "@/src/types/date";
 import { addDays, format, isBefore, subDays } from "date-fns";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Days } from "@/src/constants/date";
@@ -18,7 +18,7 @@ import { Button, ButtonIcon } from "@/src/components/ui/button";
 import { VStack } from "@/src/components/ui/vstack";
 import { Box } from "@/src/components/ui/box";
 import { useRouter } from "expo-router";
-import { ChangeContext } from "../../providers/change-provider";
+import { useChangeContext } from "@/src/hooks/use-change-context";
 
 export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
@@ -31,7 +31,7 @@ export default function Schedule() {
   const { fetchGymByManagerId } = useGyms();
   const [gym, setGym] = useState<BaseGymRow | null>(null);
   const router = useRouter();
-  const { lastChangeId } = useContext(ChangeContext);
+  const { lastChangeId } = useChangeContext()
 
   useEffect(() => {
     async function defineWeekDays() {
@@ -79,7 +79,7 @@ export default function Schedule() {
     Promise.all([defineWeekDays(), fetchData()]).then(() => {
       setIsLoading(false);
     });
-  }, [lastChangeId]);
+  }, [lastChangeId.get("classes")]);
 
   function handleSelectDay(day: WeekDay) {
     setSelectedDay(day);

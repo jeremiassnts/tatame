@@ -29,12 +29,12 @@ import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
-import { ChangeContext } from "../../providers/change-provider";
+import { useChangeContext } from "@/src/hooks/use-change-context";
 
 const createClassFormSchema = z.object({
   description: z.string().min(1, "A descrição da aula é obrigatória"),
@@ -45,7 +45,7 @@ const createClassFormSchema = z.object({
 });
 
 export default function CreateClass() {
-  const { updateLastChangeId } = useContext(ChangeContext);
+  const { updateLastChangeId } = useChangeContext()
   const router = useRouter();
   const { createClass } = useClass();
   const { fetchGymByManagerId } = useGyms();
@@ -94,7 +94,7 @@ export default function CreateClass() {
 
     await Promise.all(promises)
       .then(() => {
-        updateLastChangeId();
+        updateLastChangeId("classes");
         setIsCreatingClass(false);
         reset();
         router.replace("/(logged)/(home)");
