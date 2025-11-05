@@ -9,16 +9,27 @@ import { Text } from "../ui/text";
 interface ClassCardProps {
   data: ClassRow;
   topBadgeText?: string;
+  currentClass: boolean;
 }
 
-export function ClassCard({ data, topBadgeText }: ClassCardProps) {
+export function ClassCard({
+  data,
+  topBadgeText,
+  currentClass,
+}: ClassCardProps) {
   function formatTime(time: string | null) {
     if (!time) return "";
     return time.split(":")[0] + ":" + time.split(":")[1];
   }
 
   return (
-    <Card size="md" variant="elevated" className="bg-neutral-800 w-full">
+    <Card
+      size="md"
+      variant="elevated"
+      className={`bg-neutral-800 w-full border-2 ${
+        currentClass ? "border-violet-800" : "border-neutral-800"
+      }`}
+    >
       {topBadgeText && (
         <Badge variant="outline" className="gap-1 self-start mb-3">
           <BadgeText>{topBadgeText}</BadgeText>

@@ -77,7 +77,8 @@ export function useClass() {
         instructor:users!instructor_id(clerk_user_id)
         `
       )
-      .filter("gym_id", "eq", gymId);
+      .filter("gym_id", "eq", gymId)
+      .order("start", { ascending: true });
 
     if (error) {
       showErrorToast("Erro", "Ocorreu um erro ao buscar as aulas");

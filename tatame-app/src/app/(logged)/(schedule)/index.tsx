@@ -1,5 +1,5 @@
 import { WeekDay } from "@/src/types/date";
-import { addDays, format, isBefore, subDays } from "date-fns";
+import { addDays, format, isAfter, isBefore, parse, subDays } from "date-fns";
 import { useEffect, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -86,6 +86,22 @@ export default function Schedule() {
     setSelectedDay(day);
   }
 
+  function parseTimeToDate(time: string | null) {
+    if (!time) return new Date();
+    const date = parse(
+      `${new Date().toISOString().split("T")[0]} ${time}`,
+      "yyyy-MM-dd HH:mm:ss",
+      new Date()
+    );
+    return date ?? new Date();
+  }
+
+  const today = Days.find(
+    (w) =>
+      w.label.toLowerCase() ===
+      format(new Date(), "EEEE", { locale: ptBR }).toLowerCase()
+  )?.value;
+
   return (
     <SafeAreaView className="pt-10 pl-5 pr-5 flex-1 flex flex-col items-start">
       <Button
@@ -121,11 +137,22 @@ export default function Schedule() {
               className="w-full h-[100px] bg-neutral-800 rounded-md"
             />
           ))}
-          {!isLoading && classes
-            .filter((item) => item.day === selectedDay?.dayOfWeek)
-            .map((item) => (
-              <ClassCard key={item.id} data={item} />
-            ))}
+          {!isLoading &&
+            classes
+              .filter((item) => item.day === selectedDay?.dayOfWeek)
+              .map((item) => {
+                const currentClass =
+                  item.day === today &&
+                  isAfter(new Date(), parseTimeToDate(item.start)) &&
+                  isBefore(new Date(), parseTimeToDate(item.end));
+                return (
+                  <ClassCard
+                    key={item.id}
+                    data={item}
+                    currentClass={currentClass}
+                  />
+                );
+              })}
         </VStack>
       </ScrollView>
     </SafeAreaView>
