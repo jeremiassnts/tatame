@@ -19,6 +19,7 @@ import { VStack } from "@/src/components/ui/vstack";
 import { Box } from "@/src/components/ui/box";
 import { useRouter } from "expo-router";
 import { useChangeContext } from "@/src/hooks/use-change-context";
+import { Skeleton } from "@/src/components/ui/skeleton";
 
 export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
@@ -31,7 +32,7 @@ export default function Schedule() {
   const { fetchGymByManagerId } = useGyms();
   const [gym, setGym] = useState<BaseGymRow | null>(null);
   const router = useRouter();
-  const { lastChangeId } = useChangeContext()
+  const { lastChangeId } = useChangeContext();
 
   useEffect(() => {
     async function defineWeekDays() {
@@ -86,11 +87,11 @@ export default function Schedule() {
   }
 
   return (
-    <SafeAreaView className="pt-10 pl-5 pr-5 pb-10 flex-1 flex flex-col items-start">
+    <SafeAreaView className="pt-10 pl-5 pr-5 flex-1 flex flex-col items-start">
       <Button
         size="md"
         variant="solid"
-        className="bg-violet-800 rounded-full w-[50px] h-[50px] absolute bottom-5 right-5"
+        className="bg-violet-800 rounded-full w-[50px] h-[50px] absolute bottom-5 right-5 z-10"
         onPress={() => router.push("/(logged)/(home)/create-class")}
       >
         <ButtonIcon as={AddIcon} color="white" />
@@ -111,9 +112,16 @@ export default function Schedule() {
           isLoading={isLoading}
         />
       </Box>
-      <ScrollView className="w-full pt-6">
-        <VStack className="gap-4 w-full">
-          {classes
+      <ScrollView className="w-full pt-6 z-0">
+        <VStack className="gap-4 w-full mb-10">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              isLoaded={!isLoading}
+              className="w-full h-[100px] bg-neutral-800 rounded-md"
+            />
+          ))}
+          {!isLoading && classes
             .filter((item) => item.day === selectedDay?.dayOfWeek)
             .map((item) => (
               <ClassCard key={item.id} data={item} />
