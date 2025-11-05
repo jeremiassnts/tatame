@@ -39,6 +39,7 @@ export default function DateTimePicker({
         return (
           show && (
             <RNDateTimePicker
+              display={mode === "time" ? "spinner" : "default"}
               maximumDate={new Date()}
               minimumDate={new Date(1950, 0, 1)}
               timeZoneName={"America/Sao_Paulo"}

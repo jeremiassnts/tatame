@@ -5,12 +5,15 @@ import "react-native-reanimated";
 import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { COLORS } from "../constants/colors";
+import { ChangeProvider } from "./providers/change-provider";
 
 export default function RootApp() {
   return (
     <ClerkProvider tokenCache={tokenCache}>
       <GluestackUIProvider mode="dark">
-        <RootLayout />
+        <ChangeProvider>
+          <RootLayout />
+        </ChangeProvider>
       </GluestackUIProvider>
     </ClerkProvider>
   );

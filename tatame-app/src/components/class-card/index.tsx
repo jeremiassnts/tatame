@@ -18,7 +18,7 @@ export function ClassCard({ data, topBadgeText }: ClassCardProps) {
   }
 
   return (
-    <Card size="md" variant="elevated" className="m-3 bg-neutral-800">
+    <Card size="md" variant="elevated" className="bg-neutral-800 w-full">
       {topBadgeText && (
         <Badge variant="outline" className="gap-1 self-start mb-3">
           <BadgeText>{topBadgeText}</BadgeText>

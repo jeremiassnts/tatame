@@ -1,10 +1,9 @@
 import { WeekDay } from "@/src/types/date";
 import { addDays, format, isBefore, subDays } from "date-fns";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Days } from "@/src/constants/date";
-import { Skeleton } from "@/src/components/ui/skeleton";
 import { Badge, BadgeText } from "@/src/components/ui/badge";
 import WeekDays from "@/src/components/weekDays";
 import { ScrollView } from "react-native";
@@ -14,6 +13,12 @@ import { useUser } from "@clerk/clerk-expo";
 import { useUsers } from "@/src/api/use-users";
 import { useGyms } from "@/src/api/use-gyms";
 import { ClassCard } from "@/src/components/class-card";
+import { AddIcon } from "@/src/components/ui/icon";
+import { Button, ButtonIcon } from "@/src/components/ui/button";
+import { VStack } from "@/src/components/ui/vstack";
+import { Box } from "@/src/components/ui/box";
+import { useRouter } from "expo-router";
+import { ChangeContext } from "../../providers/change-provider";
 
 export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
@@ -25,6 +30,8 @@ export default function Schedule() {
   const { getUserByClerkUserId } = useUsers();
   const { fetchGymByManagerId } = useGyms();
   const [gym, setGym] = useState<BaseGymRow | null>(null);
+  const router = useRouter();
+  const { lastChangeId } = useContext(ChangeContext);
 
   useEffect(() => {
     async function defineWeekDays() {
@@ -68,17 +75,26 @@ export default function Schedule() {
       setIsLoading(false);
     }
 
+    setIsLoading(true);
     Promise.all([defineWeekDays(), fetchData()]).then(() => {
       setIsLoading(false);
     });
-  }, []);
+  }, [lastChangeId]);
 
   function handleSelectDay(day: WeekDay) {
     setSelectedDay(day);
   }
 
   return (
-    <SafeAreaView className="pt-10 pl-5 pr-5 pb-10">
+    <SafeAreaView className="pt-10 pl-5 pr-5 pb-10 flex-1 flex flex-col items-start">
+      <Button
+        size="md"
+        variant="solid"
+        className="bg-violet-800 rounded-full w-[50px] h-[50px] absolute bottom-5 right-5"
+        onPress={() => router.push("/(logged)/(home)/create-class")}
+      >
+        <ButtonIcon as={AddIcon} color="white" />
+      </Button>
       <Badge
         size="lg"
         variant="solid"
@@ -87,18 +103,22 @@ export default function Schedule() {
       >
         <BadgeText>Agenda</BadgeText>
       </Badge>
-      <WeekDays
-        weekDays={weekDays}
-        selectedDay={selectedDay ?? ({} as WeekDay)}
-        handleSelectDay={handleSelectDay}
-        isLoading={isLoading}
-      />
-      <ScrollView className="ml-[-10px] mr-[-10px]">
-        {classes
-          .filter((item) => item.day === selectedDay?.dayOfWeek)
-          .map((item) => (
-            <ClassCard key={item.id} data={item} />
-          ))}
+      <Box className="w-full max-h-[100px]">
+        <WeekDays
+          weekDays={weekDays}
+          selectedDay={selectedDay ?? ({} as WeekDay)}
+          handleSelectDay={handleSelectDay}
+          isLoading={isLoading}
+        />
+      </Box>
+      <ScrollView className="w-full pt-6">
+        <VStack className="gap-4 w-full">
+          {classes
+            .filter((item) => item.day === selectedDay?.dayOfWeek)
+            .map((item) => (
+              <ClassCard key={item.id} data={item} />
+            ))}
+        </VStack>
       </ScrollView>
     </SafeAreaView>
   );
