@@ -60,7 +60,7 @@ export function HomeGym() {
         {gym && !isLoading && !nextClass && (
           <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
             <Button
-              onPress={() => router.push("/(logged)/(home)/create-class")}
+              onPress={() => router.push("/(logged)/(schedule)/create-class")}
             >
               <ButtonIcon as={AddIcon} />
               <ButtonText>Cadastrar aula</ButtonText>
@@ -68,8 +68,8 @@ export function HomeGym() {
           </Box>
         )}
         {gym && !isLoading && nextClass && (
-          <Box className="ml-[-10px] mr-[-10px]">
-            <ClassCard data={nextClass} topBadgeText="Próxima aula" />
+          <Box>
+            <ClassCard data={nextClass} topBadgeText="Próxima aula" currentClass={false} />
           </Box>
         )}
         {!gym && !isLoading && (

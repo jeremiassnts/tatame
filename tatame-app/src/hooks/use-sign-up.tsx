@@ -35,7 +35,6 @@ export function useSignUp() {
           "Erro ao verificar email!",
           "Não foi possível verificar o email, tente novamente."
         );
-        console.error(JSON.stringify(signUpAttempt, null, 2));
       }
     } catch (err) {
       showErrorToast(

@@ -116,9 +116,58 @@ export function useClass() {
     });
   }
 
+  async function fetchClassById(classId: number) {
+    const { data, error } = await supabase
+      .from("class")
+      .select(
+        `
+        *,
+        instructor:users!instructor_id(clerk_user_id)
+        `
+      )
+      .filter("id", "eq", classId);
+
+    if (error) {
+      showErrorToast("Erro", "Ocorreu um erro ao buscar a próxima aula");
+      throw error;
+    }
+    if (data.length === 0) {
+      return null;
+    }
+    const instructor = data[0]?.instructor?.clerk_user_id
+      ? await getClerkUserById(data[0]?.instructor?.clerk_user_id)
+      : null;
+
+    return {
+      ...data[0],
+      instructor_name: instructor?.name,
+    } as ClassRow;
+  }
+
+  async function editClass(
+    data: Database["public"]["Tables"]["class"]["Update"]
+  ) {
+    if (!data.id) {
+      showErrorToast("Erro", "O ID da aula é obrigatório");
+      throw new Error("O ID da aula é obrigatório");
+    }
+    const { error } = await supabase
+      .from("class")
+      .update(data)
+      .eq("id", data.id);
+    if (error) {
+      console.log(JSON.stringify(error, null, 2));
+      showErrorToast("Erro", "Ocorreu um erro ao editar a aula");
+      throw error;
+    }
+    return data;
+  }
+
   return {
     fetchNextClass,
     createClass,
     fetchClassesByGymId,
+    fetchClassById,
+    editClass,
   };
 }

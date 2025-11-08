@@ -97,7 +97,7 @@ export default function CreateClass() {
         updateLastChangeId("classes");
         setIsCreatingClass(false);
         reset();
-        router.replace("/(logged)/(home)");
+        router.replace("/(logged)/(schedule)");
       })
       .catch(() => {
         setIsCreatingClass(false);

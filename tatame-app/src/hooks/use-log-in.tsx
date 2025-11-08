@@ -50,7 +50,6 @@ export function useLogIn() {
           "Erro ao realizar login!",
           "Não foi possível entrar com suas credenciais, tente novamente."
         );
-        console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));

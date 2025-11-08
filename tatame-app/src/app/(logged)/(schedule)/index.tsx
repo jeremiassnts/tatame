@@ -20,6 +20,7 @@ import { Box } from "@/src/components/ui/box";
 import { useRouter } from "expo-router";
 import { useChangeContext } from "@/src/hooks/use-change-context";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { Text } from "@/src/components/ui/text";
 
 export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
@@ -30,10 +31,11 @@ export default function Schedule() {
   const { user } = useUser();
   const { getUserByClerkUserId } = useUsers();
   const { fetchGymByManagerId } = useGyms();
-  const [gym, setGym] = useState<BaseGymRow | null>(null);
+  // const [gym, setGym] = useState<BaseGymRow | null>(null);
   const router = useRouter();
   const { lastChangeId } = useChangeContext();
 
+  const lastChangeIdValue = lastChangeId.get("classes");
   useEffect(() => {
     async function defineWeekDays() {
       const today = new Date();
@@ -66,7 +68,7 @@ export default function Schedule() {
         const sp_user = await getUserByClerkUserId(user.id);
         if (sp_user) {
           const sp_gym = await fetchGymByManagerId(sp_user.id);
-          setGym(sp_gym);
+          // setGym(sp_gym);
           if (sp_gym) {
             const sp_classes = await fetchClassesByGymId(sp_gym.id);
             setClasses(sp_classes);
@@ -80,7 +82,7 @@ export default function Schedule() {
     Promise.all([defineWeekDays(), fetchData()]).then(() => {
       setIsLoading(false);
     });
-  }, [lastChangeId.get("classes")]);
+  }, [lastChangeIdValue]);
 
   function handleSelectDay(day: WeekDay) {
     setSelectedDay(day);
@@ -108,7 +110,7 @@ export default function Schedule() {
         size="md"
         variant="solid"
         className="bg-violet-800 rounded-full w-[50px] h-[50px] absolute bottom-5 right-5 z-10"
-        onPress={() => router.push("/(logged)/(home)/create-class")}
+        onPress={() => router.push("/(logged)/(schedule)/create-class")}
       >
         <ButtonIcon as={AddIcon} color="white" />
       </Button>
@@ -153,6 +155,9 @@ export default function Schedule() {
                   />
                 );
               })}
+          {!isLoading && classes.filter((item) => item.day === selectedDay?.dayOfWeek).length === 0 && (
+            <Text className="text-white text-center text-md">Não existem aulas cadastradas para esse dia</Text>
+          )}
         </VStack>
       </ScrollView>
     </SafeAreaView>

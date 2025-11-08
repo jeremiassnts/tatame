@@ -19,12 +19,23 @@ type SelectInputProps = {
   options: { label: string; value: string }[];
   error?: string;
   onValueChange?: (value: string) => void;
+  selectedValue?: string;
 };
 
-export function SelectInput({ placeholder, options, error, onValueChange }: SelectInputProps) {
+export function SelectInput({
+  placeholder,
+  options,
+  error,
+  onValueChange,
+  selectedValue,
+}: SelectInputProps) {
   return (
     <VStack>
-      <Select className="bg-neutral-800 rounded-md" onValueChange={onValueChange}>
+      <Select
+        className="bg-neutral-800 rounded-md"
+        onValueChange={onValueChange}
+        selectedValue={selectedValue}
+      >
         <SelectTrigger
           variant="outline"
           size="md"

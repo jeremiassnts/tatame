@@ -3,8 +3,25 @@ import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
-import { ArrowRightIcon, UserIcon } from "../ui/icon";
+import {
+  ArrowDownIcon,
+  ArrowRightIcon,
+  ChevronDownIcon,
+  UserIcon,
+} from "../ui/icon";
 import { Text } from "../ui/text";
+import { Button, ButtonIcon, ButtonText } from "../ui/button";
+import { useState } from "react";
+import {
+  Actionsheet,
+  ActionsheetBackdrop,
+  ActionsheetContent,
+  ActionsheetDragIndicator,
+  ActionsheetDragIndicatorWrapper,
+  ActionsheetItem,
+  ActionsheetItemText,
+} from "../ui/actionsheet";
+import { useRouter } from "expo-router";
 
 interface ClassCardProps {
   data: ClassRow;
@@ -17,9 +34,26 @@ export function ClassCard({
   topBadgeText,
   currentClass,
 }: ClassCardProps) {
+  const [showOptions, setShowOptions] = useState(false);
+  const router = useRouter();
+
   function formatTime(time: string | null) {
     if (!time) return "";
     return time.split(":")[0] + ":" + time.split(":")[1];
+  }
+
+  function handleClose() {
+    setShowOptions(false);
+  }
+
+  function handleEditClass() {
+    router.push({
+      pathname: "/(logged)/(schedule)/edit-class",
+      params: {
+        classId: data.id,
+      },
+    });
+    handleClose();
   }
 
   return (
@@ -36,9 +70,37 @@ export function ClassCard({
           <BadgeIcon as={ArrowRightIcon} />
         </Badge>
       )}
-      <Heading className="text-white font-bold" size="md">
-        {data.description}
-      </Heading>
+      <HStack className="justify-between">
+        <Heading className="text-white font-bold" size="md">
+          {data.description}
+        </Heading>
+        {!topBadgeText && (
+          <Button
+            onPress={() => setShowOptions(true)}
+            className="bg-neutral-300 rounded-full w-[30px] h-[30px]"
+          >
+            <ButtonIcon as={ChevronDownIcon} size="sm" />
+          </Button>
+        )}
+        <Actionsheet isOpen={showOptions} onClose={handleClose}>
+          <ActionsheetBackdrop />
+          <ActionsheetContent>
+            <ActionsheetDragIndicatorWrapper>
+              <ActionsheetDragIndicator />
+            </ActionsheetDragIndicatorWrapper>
+            <ActionsheetItem onPress={handleEditClass}>
+              <ActionsheetItemText className="text-white text-md">
+                Editar aula
+              </ActionsheetItemText>
+            </ActionsheetItem>
+            <ActionsheetItem onPress={handleClose}>
+              <ActionsheetItemText className="text-white text-md">
+                Excluir aula
+              </ActionsheetItemText>
+            </ActionsheetItem>
+          </ActionsheetContent>
+        </Actionsheet>
+      </HStack>
       <Text>
         {formatTime(data.start)} - {formatTime(data.end)}
       </Text>
