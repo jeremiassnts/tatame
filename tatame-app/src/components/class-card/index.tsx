@@ -22,6 +22,8 @@ import {
   ActionsheetItemText,
 } from "../ui/actionsheet";
 import { useRouter } from "expo-router";
+import { useClass } from "@/src/api/use-class";
+import { queryClient } from "@/src/lib/react-query";
 
 interface ClassCardProps {
   data: ClassRow;
@@ -36,6 +38,8 @@ export function ClassCard({
 }: ClassCardProps) {
   const [showOptions, setShowOptions] = useState(false);
   const router = useRouter();
+  const { deleteClass } = useClass();
+  const { mutateAsync: deleteClassFn } = deleteClass;
 
   function formatTime(time: string | null) {
     if (!time) return "";
@@ -53,6 +57,13 @@ export function ClassCard({
         classId: data.id,
       },
     });
+    handleClose();
+  }
+
+  async function handleDeleteClass() {
+    await deleteClassFn(data.id);
+    queryClient.invalidateQueries({ queryKey: ["classes"] });
+    queryClient.invalidateQueries({ queryKey: ["next-class"] });
     handleClose();
   }
 
@@ -93,7 +104,7 @@ export function ClassCard({
                 Editar aula
               </ActionsheetItemText>
             </ActionsheetItem>
-            <ActionsheetItem onPress={handleClose}>
+            <ActionsheetItem onPress={handleDeleteClass}>
               <ActionsheetItemText className="text-white text-md">
                 Excluir aula
               </ActionsheetItemText>

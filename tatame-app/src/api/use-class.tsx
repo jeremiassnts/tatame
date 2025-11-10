@@ -186,11 +186,22 @@ export function useClass() {
     },
   });
 
+  const deleteClass = useMutation({
+    mutationFn: async (classId: number) => {
+      const { error } = await supabase.from("class").delete().eq("id", classId);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao deletar a aula");
+        throw error;
+      }
+    },
+  });
+
   return {
     fetchNextClass,
     createClass,
     fetchClasses,
     fetchClassById,
     editClass,
+    deleteClass,
   };
 }
