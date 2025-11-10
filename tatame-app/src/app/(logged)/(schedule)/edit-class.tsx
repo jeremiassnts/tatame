@@ -1,6 +1,4 @@
 import { useClass } from "@/src/api/use-class";
-import { useGyms } from "@/src/api/use-gyms";
-import { useUsers } from "@/src/api/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
 import { SelectInput } from "@/src/components/select-input";
 import { TextInput } from "@/src/components/text-input";
@@ -21,7 +19,6 @@ import { Grid, GridItem } from "@/src/components/ui/grid";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
 import {
-  AddIcon,
   ArrowLeftIcon,
   CheckIcon,
   EditIcon,

@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+# Load nvm and use Node 22.3.0
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+nvm use 22.3.0
+
+# Navigate to tatame-app directory and run lint-staged
+cd tatame-app
+npx lint-staged
+
