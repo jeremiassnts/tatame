@@ -15,12 +15,13 @@ import { AddIcon, ArrowLeftIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useToast } from "@/src/hooks/use-toast";
+import { queryClient } from "@/src/lib/react-query";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView } from "react-native";
+import { KeyboardAvoidingView, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
 
@@ -41,10 +42,12 @@ const createGymFormSchema = z.object({
 export default function CreateGym() {
   const router = useRouter();
   const { createGym } = useGyms();
-  const [isCreatingGym, setIsCreatingGym] = useState(false);
   const { getUserByClerkUserId } = useUsers();
   const { user } = useUser();
   const { uploadImage } = useAttachments();
+  const { mutateAsync: createGymFn } = createGym;
+  const [isCreatingGym, setIsCreatingGym] = useState(false);
+  const { mutateAsync: uploadImageFn } = uploadImage;
   const { showErrorToast } = useToast();
   const {
     watch,
@@ -72,7 +75,7 @@ export default function CreateGym() {
   });
 
   async function uploadLogo(logo: string) {
-    const imageUrl = await uploadImage(logo);
+    const imageUrl = await uploadImageFn(logo);
     return imageUrl;
   }
 
@@ -87,17 +90,17 @@ export default function CreateGym() {
         if (!imageUrl) continue;
         data.logo = imageUrl;
         break;
-      } catch {
+      } catch (error) {
+        console.log(JSON.stringify(error, null, 2));
         continue;
       }
     }
     if (!imageUrl) {
       showErrorToast("Erro", "Erro ao enviar a logo da academia");
-      setIsCreatingGym(false);
       return;
     }
     const sp_user = await getUserByClerkUserId(user.id);
-    createGym({
+    createGymFn({
       name: data.name,
       address: `${data.address.street}, ${data.address.number} - ${data.address.neighborhood}, ${data.address.city} - ${data.address.state}`,
       managerId: sp_user?.id,
@@ -105,11 +108,15 @@ export default function CreateGym() {
       logo: imageUrl,
     })
       .then(() => {
-        setIsCreatingGym(false);
         reset();
-        router.replace("/(logged)/(home)");
+        queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
+        queryClient.invalidateQueries({ queryKey: ["next-class"] });
+        router.replace("/(logged)/(home)/home");
       })
       .catch(() => {
+        setIsCreatingGym(false);
+      })
+      .finally(() => {
         setIsCreatingGym(false);
       });
   }
@@ -118,7 +125,7 @@ export default function CreateGym() {
   const address = watch("address");
 
   return (
-    <SafeAreaView className="p-10">
+    <SafeAreaView className="p-5">
       <VStack className="items-start gap-6">
         <Button
           action="secondary"
@@ -181,19 +188,19 @@ export default function CreateGym() {
               returnKeyType="next"
               keyboardType="numeric"
             />
-            <TextInput
-              value={address.street}
-              onChangeText={(text) => {
-                setValue("address.street", text);
-              }}
-              placeholder="Digite a rua"
-              error={errors.address?.street?.message}
-              {...register("address.street")}
-              onSubmitEditing={() =>
-                setFocus("address.number", { shouldSelect: true })
-              }
-              returnKeyType="next"
-            />
+              <TextInput
+                value={address.street}
+                onChangeText={(text) => {
+                  setValue("address.street", text);
+                }}
+                placeholder="Digite a rua"
+                error={errors.address?.street?.message}
+                {...register("address.street")}
+                onSubmitEditing={() =>
+                  setFocus("address.number", { shouldSelect: true })
+                }
+                returnKeyType="next"
+              />
             <TextInput
               value={address.number}
               onChangeText={(text) => {

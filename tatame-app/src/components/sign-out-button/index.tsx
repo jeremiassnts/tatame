@@ -1,4 +1,5 @@
 import { useToast } from "@/src/hooks/use-toast";
+import { useUserTypeCache } from "@/src/hooks/use-user-type-cache";
 import { useClerk } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity } from "react-native";
@@ -8,9 +9,11 @@ export const SignOutButton = () => {
   const { signOut } = useClerk();
   const router = useRouter();
   const { showErrorToast } = useToast();
+  const { clearUserType } = useUserTypeCache();
 
   const handleSignOut = async () => {
     try {
+      await clearUserType();
       await signOut();
       // Redirect to your desired page
       router.replace("/(auth)/sign-in");

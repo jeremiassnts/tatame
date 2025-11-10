@@ -14,5 +14,9 @@ export function useUserTypeCache() {
   async function setUserType(userType: UserType) {
     return AsyncStorage.setItem(getCacheKey(), userType);
   }
-  return { getUserType, setUserType };
+  async function clearUserType() {
+    return AsyncStorage.removeItem(getCacheKey());
+  }
+
+  return { getUserType, setUserType, clearUserType };
 }

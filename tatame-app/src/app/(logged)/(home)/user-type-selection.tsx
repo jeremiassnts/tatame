@@ -21,20 +21,18 @@ export default function Home() {
   const router = useRouter();
   const { getUserByClerkUserId, createUser } = useUsers();
   const { userId } = useAuth();
+  const { mutateAsync: createUserFn, isPending: isLoading } = createUser
   const [tempUserType, setTempUserType] = useState<UserType | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   async function handleContinue() {
     if (!tempUserType) return;
 
-    setIsLoading(true);
-    await createUser({
+    await createUserFn({
       clerkUserId: userId ?? "",
       role: tempUserType as UserType,
     });
     setUserType(tempUserType as UserType);
-    setIsLoading(false);
-    router.replace("/(logged)/(home)");
+    router.replace("/(logged)/(home)/home");
   }
 
   useEffect(() => {
@@ -44,12 +42,12 @@ export default function Home() {
         const user = await getUserByClerkUserId(userId ?? "");
         if (user && user.role) {
           setUserType(user.role as UserType);
-          router.replace("/(logged)/(home)");
+          router.replace("/(logged)/(home)/home");
         } else {
           setIsUserTypeLoaded(true);
         }
       } else {
-        router.replace("/(logged)/(home)");
+        router.replace("/(logged)/(home)/home");
       }
     };
     fetchUserType();

@@ -132,22 +132,32 @@ export type Database = {
         Row: {
           clerk_user_id: string
           created_at: string
+          gym_id: number | null
           id: number
           role: string | null
         }
         Insert: {
           clerk_user_id: string
           created_at?: string
+          gym_id?: number | null
           id?: number
           role?: string | null
         }
         Update: {
           clerk_user_id?: string
           created_at?: string
+          gym_id?: number | null
           id?: number
           role?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "users_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "users_role_fkey"
             columns: ["role"]

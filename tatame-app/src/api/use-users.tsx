@@ -3,6 +3,7 @@ import { createSupabaseClerkClient } from "../utils/supabase";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import axiosClient from "../lib/axios";
+import { useMutation } from "@tanstack/react-query";
 
 export interface CreateUserProps {
   clerkUserId: string;
@@ -14,19 +15,20 @@ export function useUsers() {
   const supabase = createSupabaseClerkClient(getToken());
   const { showErrorToast } = useToast();
 
-  const createUser = async (props: CreateUserProps) => {
-    const { clerkUserId, role } = props;
-    const { data, error } = await supabase.from("users").insert({
-      clerk_user_id: clerkUserId,
-      role: role,
-    });
-    if (error) {
-      showErrorToast("Erro", "Ocorreu um erro ao criar o usuário");
-      throw error;
-    }
+  const createUser = useMutation({
+    mutationFn: async ({ clerkUserId, role }: CreateUserProps) => {
+      const { data, error } = await supabase.from("users").insert({
+        clerk_user_id: clerkUserId,
+        role: role,
+      });
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao criar o usuário");
+        throw error;
+      }
 
-    return data;
-  };
+      return data;
+    },
+  });
 
   const getUserByClerkUserId = async (clerkUserId: string) => {
     const { data, error } = await supabase

@@ -25,6 +25,7 @@ import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { Days } from "@/src/constants/date";
 import { Modalities } from "@/src/constants/modalities";
+import { queryClient } from "@/src/lib/react-query";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -34,7 +35,6 @@ import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
-import { useChangeContext } from "@/src/hooks/use-change-context";
 
 const createClassFormSchema = z.object({
   description: z.string().min(1, "A descrição da aula é obrigatória"),
@@ -45,13 +45,13 @@ const createClassFormSchema = z.object({
 });
 
 export default function CreateClass() {
-  const { updateLastChangeId } = useChangeContext()
   const router = useRouter();
   const { createClass } = useClass();
-  const { fetchGymByManagerId } = useGyms();
-  const [isCreatingClass, setIsCreatingClass] = useState(false);
   const { getUserByClerkUserId } = useUsers();
   const { user } = useUser();
+  const [isCreatingClass, setIsCreatingClass] = useState(false);
+  const { mutateAsync: createClassFn } =
+    createClass;
   const {
     watch,
     setValue,
@@ -76,30 +76,31 @@ export default function CreateClass() {
     if (!user?.id) return;
     setIsCreatingClass(true);
     const sp_user = await getUserByClerkUserId(user.id);
-    const sp_gym = await fetchGymByManagerId(sp_user?.id);
 
-    const promises = data.days.map(
-      async (day) =>
-        await createClass({
-          description: data.description,
-          start: data.start,
-          end: data.end,
-          day: day,
-          gym_id: sp_gym?.id,
-          instructor_id: sp_user?.id,
-          modality: data.modality,
-          created_by: sp_user?.id,
-        })
+    const promises = data.days.map((day) =>
+      createClassFn({
+        description: data.description,
+        start: data.start,
+        end: data.end,
+        day: day,
+        gym_id: sp_user?.gym_id,
+        instructor_id: sp_user?.id,
+        modality: data.modality,
+        created_by: sp_user?.id,
+      })
     );
 
     await Promise.all(promises)
       .then(() => {
-        updateLastChangeId("classes");
-        setIsCreatingClass(false);
         reset();
+        queryClient.invalidateQueries({ queryKey: ["classes"] });
+        queryClient.invalidateQueries({ queryKey: ["next-class"] });
         router.replace("/(logged)/(schedule)");
       })
       .catch(() => {
+        setIsCreatingClass(false);
+      })
+      .finally(() => {
         setIsCreatingClass(false);
       });
   }
@@ -108,7 +109,7 @@ export default function CreateClass() {
   const days = watch("days");
 
   return (
-    <SafeAreaView className="p-10">
+    <SafeAreaView className="p-5">
       <VStack className="items-start gap-6">
         <Button
           action="secondary"

@@ -39,9 +39,9 @@ import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
-import { useChangeContext } from "@/src/hooks/use-change-context";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { queryClient } from "@/src/lib/react-query";
 
 const createClassFormSchema = z.object({
   description: z.string().min(1, "A descrição da aula é obrigatória"),
@@ -58,10 +58,8 @@ export default function EditClass() {
   const { fetchClassById, editClass } = useClass();
   const [isLoading, setIsLoading] = useState(true);
   const [classData, setClassData] = useState<ClassRow | null>(null);
-
-  const { updateLastChangeId } = useChangeContext();
+  const { mutateAsync: editClassFn, isPending: isEditingClass } = editClass;
   const router = useRouter();
-  const [isEditingClass, setIsEditingClass] = useState(false);
   const { user } = useUser();
   const {
     watch,
@@ -83,10 +81,9 @@ export default function EditClass() {
 
   async function handleEditClass(data: z.infer<typeof createClassFormSchema>) {
     if (!user?.id) return;
-    setIsEditingClass(true);
 
     try {
-      await editClass({
+      await editClassFn({
         description: data.description,
         start: data.start,
         end: data.end,
@@ -98,13 +95,10 @@ export default function EditClass() {
         created_by: classData?.created_by,
         created_at: classData?.created_at,
       });
-      updateLastChangeId("classes");
-      setIsEditingClass(false);
       reset();
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
       router.replace("/(logged)/(schedule)");
-    } catch {
-      setIsEditingClass(false);
-    }
+    } catch {}
   }
 
   useEffect(() => {

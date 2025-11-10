@@ -42,7 +42,7 @@ export function useLogIn() {
       // and redirect the user
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/(logged)/(home)");
+        router.replace("/(logged)/(home)/user-type-selection");
       } else {
         // If the status isn't complete, check why. User might need to
         // complete further steps.
@@ -63,7 +63,7 @@ export function useLogIn() {
   const signInWithGoogle = useCallback(async () => {
     try {
       const { createdSessionId, setActive } = await startSSOFlow({
-        strategy: "oauth_google",
+        strategy: "oauth_google", 
         redirectUrl: AuthSession.makeRedirectUri(),
       });
 
@@ -71,7 +71,7 @@ export function useLogIn() {
         setActive!({
           session: createdSessionId,
           navigate: async ({ session }) => {
-            router.replace("/(logged)/(home)");
+            router.replace("/(logged)/(home)/user-type-selection");
           },
         });
       } else {
@@ -100,7 +100,7 @@ export function useLogIn() {
         setActive!({
           session: createdSessionId,
           navigate: async ({ session }) => {
-            router.replace("/(logged)/(home)");
+            router.replace("/(logged)/(home)/user-type-selection");
           },
         });
       } else {

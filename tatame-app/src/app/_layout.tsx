@@ -5,15 +5,16 @@ import "react-native-reanimated";
 import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { COLORS } from "../constants/colors";
-import { ChangeProvider } from "./providers/change-provider";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "../lib/react-query";
 
 export default function RootApp() {
   return (
     <ClerkProvider tokenCache={tokenCache}>
       <GluestackUIProvider mode="dark">
-        <ChangeProvider>
+        <QueryClientProvider client={queryClient}>
           <RootLayout />
-        </ChangeProvider>
+        </QueryClientProvider>
       </GluestackUIProvider>
     </ClerkProvider>
   );

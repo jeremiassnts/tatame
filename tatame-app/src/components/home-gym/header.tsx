@@ -7,7 +7,7 @@ import { Database } from "@/src/types/database.types";
 import { useMemo } from "react";
 
 interface HomeGymHeaderProps {
-  gym: Database["public"]["Tables"]["gyms"]["Row"] | null;
+  gym: Database["public"]["Tables"]["gyms"]["Row"] | undefined | null;
 }
 
 export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
