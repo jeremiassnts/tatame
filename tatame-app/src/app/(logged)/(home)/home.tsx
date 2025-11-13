@@ -6,7 +6,6 @@ export default function Home() {
   return (
     <SafeAreaView className="p-5">
       <HomeGym />
-      <SignOutButton/>
     </SafeAreaView>
   );
 }

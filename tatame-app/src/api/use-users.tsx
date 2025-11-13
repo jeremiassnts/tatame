@@ -1,9 +1,10 @@
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { createSupabaseClerkClient } from "../utils/supabase";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import axiosClient from "../lib/axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useGyms } from "./use-gyms";
 
 export interface CreateUserProps {
   clerkUserId: string;
@@ -14,6 +15,7 @@ export function useUsers() {
   const { getToken } = useAuth();
   const supabase = createSupabaseClerkClient(getToken());
   const { showErrorToast } = useToast();
+  const { user } = useUser();
 
   const createUser = useMutation({
     mutationFn: async ({ clerkUserId, role }: CreateUserProps) => {
@@ -71,10 +73,29 @@ export function useUsers() {
     }
   };
 
+  const getUserProfile = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const data = await getUserByClerkUserId(user?.id!);
+      const gym = await supabase
+        .from("gyms")
+        .select("*")
+        .eq("id", data?.gym_id!)
+        .single();
+
+      return {
+        ...user,
+        ...data,
+        gym,
+      };
+    },
+  });
+
   return {
     createUser,
     getUserByClerkUserId,
     getUserById,
     getClerkUserById,
+    getUserProfile,
   };
 }

@@ -41,7 +41,6 @@ const createClassFormSchema = z.object({
   start: z.string().min(1, "O horário de início é obrigatório"),
   end: z.string().min(1, "O horário de término é obrigatório"),
   days: z.array(z.string()).min(1, "Selecione pelo menos um dia"),
-  modality: z.string().min(1, "A modalidade é obrigatória"),
 });
 
 export default function CreateClass() {
@@ -66,7 +65,6 @@ export default function CreateClass() {
       start: "",
       end: "",
       days: [],
-      modality: "",
     },
   });
 
@@ -85,7 +83,7 @@ export default function CreateClass() {
         day: day,
         gym_id: sp_user?.gym_id,
         instructor_id: sp_user?.id,
-        modality: data.modality,
+        modality: "jiu-jitsu",
         created_by: sp_user?.id,
       })
     );
@@ -139,16 +137,10 @@ export default function CreateClass() {
             {...register("description")}
             returnKeyType="next"
           />
-          <SelectInput
-            options={Modalities.map((modality) => ({
-              label: modality.name,
-              value: modality.value,
-            }))}
-            placeholder="Selecione a modalidade"
-            error={errors?.modality?.message}
-            onValueChange={(value) => {
-              setValue("modality", value);
-            }}
+          <TextInput
+            value={"Modalidade: Jiu-Jitsu"}
+            readOnly
+            isDisabled
           />
           <HStack className="gap-2 items-center justify-center">
             <DateTimePicker

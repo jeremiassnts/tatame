@@ -20,6 +20,7 @@ type SelectInputProps = {
   error?: string;
   onValueChange?: (value: string) => void;
   selectedValue?: string;
+  disabled?: boolean;
 };
 
 export function SelectInput({
@@ -28,6 +29,7 @@ export function SelectInput({
   error,
   onValueChange,
   selectedValue,
+  disabled,
 }: SelectInputProps) {
   return (
     <VStack>
@@ -40,6 +42,7 @@ export function SelectInput({
           variant="outline"
           size="md"
           className="border-0 h-[40px] justify-between"
+          disabled={disabled}
         >
           <UISelectInput placeholder={placeholder} />
           <SelectIcon className="mr-3" as={ChevronDownIcon} />

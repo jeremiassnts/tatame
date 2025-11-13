@@ -1,5 +1,5 @@
 import { Box } from "@/src/components/ui/box";
-import { CalendarDaysIcon, HomeIcon, Icon } from "@/src/components/ui/icon";
+import { CalendarDaysIcon, HomeIcon, Icon, UserIcon } from "@/src/components/ui/icon";
 import { COLORS } from "@/src/constants/colors";
 import { Tabs, useSegments } from "expo-router";
 
@@ -40,6 +40,19 @@ export default function Layout() {
               as={CalendarDaysIcon}
               size="md"
               color={pathname === "schedule" ? COLORS.active : COLORS.inactive}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="(profile)"
+        options={{
+          title: "Perfil",
+          tabBarIcon: () => (
+            <Icon
+              as={UserIcon}
+              size="md"
+              color={pathname === "profile" ? COLORS.active : COLORS.inactive}
             />
           ),
         }}

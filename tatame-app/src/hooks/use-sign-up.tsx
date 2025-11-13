@@ -7,6 +7,8 @@ import { useRouter } from "expo-router";
 import { useToast } from "./use-toast";
 
 export const signUpFormSchema = z.object({
+  firstName: z.string().min(1, "O nome é obrigatório"),
+  lastName: z.string().min(1, "O sobrenome é obrigatório"),
   email: z.string().email("E-mail inválido"),
   password: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres"),
   confirmPassword: z
@@ -62,6 +64,8 @@ export function useSignUp() {
       await signUp.create({
         emailAddress: data.email,
         password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
       });
       // Send user an email with verification code
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });

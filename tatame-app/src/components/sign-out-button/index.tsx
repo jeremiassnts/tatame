@@ -3,6 +3,8 @@ import { useUserTypeCache } from "@/src/hooks/use-user-type-cache";
 import { useClerk } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity } from "react-native";
+import { Button, ButtonIcon, ButtonText } from "../ui/button";
+import { ExternalLinkIcon } from "../ui/icon";
 
 export const SignOutButton = () => {
   // Use `useClerk()` to access the `signOut()` function
@@ -27,8 +29,13 @@ export const SignOutButton = () => {
   };
 
   return (
-    <TouchableOpacity onPress={handleSignOut} className="bg-red-500 p-2 rounded-md">
-      <Text>Sign out</Text>
-    </TouchableOpacity>
+    <Button
+      variant="link"
+      size="md"
+      action="negative"
+      onPress={handleSignOut}
+    >
+      <ButtonText className="text-error-500">Encerrar sessão</ButtonText>
+    </Button>
   );
 };
