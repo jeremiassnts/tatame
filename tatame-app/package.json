@@ -8,7 +8,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "prepare": "cd .. && node .husky/install.mjs"
+    "prepare": "cd .. && node .husky/install.mjs",
+    "db:pull": "supabase db pull",
+    "db:types": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --yes --schema public > src/types/database.types.ts"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.17.1",

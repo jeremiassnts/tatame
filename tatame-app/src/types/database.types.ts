@@ -75,6 +75,41 @@ export type Database = {
           },
         ]
       }
+      graduations: {
+        Row: {
+          belt: string | null
+          created_at: string
+          degree: number | null
+          id: number
+          modality: string | null
+          userId: number
+        }
+        Insert: {
+          belt?: string | null
+          created_at?: string
+          degree?: number | null
+          id?: number
+          modality?: string | null
+          userId: number
+        }
+        Update: {
+          belt?: string | null
+          created_at?: string
+          degree?: number | null
+          id?: number
+          modality?: string | null
+          userId?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "graduations_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gyms: {
         Row: {
           address: string
