@@ -9,6 +9,7 @@ import { useGyms } from "@/src/api/use-gyms";
 import { HomeGymHeader } from "./header";
 import { useClass } from "@/src/api/use-class";
 import { ClassCard } from "../class-card";
+import { GraduationCard } from "../graduation-card";
 
 export function HomeGym() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export function HomeGym() {
         <BadgeText>Home</BadgeText>
       </Badge>
       <HomeGymHeader gym={gym} />
+      <GraduationCard showBelt={false} afterCreation={() => router.push("/(logged)/(home)/home")} />
       <VStack className="w-full">
         <Skeleton
           className="h-[150px] w-full bg-neutral-800 rounded-md"
