@@ -5,18 +5,19 @@ import { BELT_COLORS } from "@/src/constants/belts";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
 import { AddIcon } from "../ui/icon";
 import { HStack } from "../ui/hstack";
+import { useRouter } from "expo-router";
 
 interface GraduationCardProps {
   showBelt?: boolean;
-  afterCreation: () => void;
 }
 
-export function GraduationCard({ showBelt, afterCreation }: GraduationCardProps) {
+export function GraduationCard({ showBelt }: GraduationCardProps) {
   const { getGraduation } = useGraduation();
   const { data: graduation, isLoading: isLoadingGraduation } = getGraduation;
+  const router = useRouter();
 
-  function handleAfterCreation() {
-    afterCreation();
+  function handleCreateGraduation() {
+    router.push("/(logged)/(profile)/create-graduation");
   }
 
   // @ts-ignore
@@ -31,7 +32,7 @@ export function GraduationCard({ showBelt, afterCreation }: GraduationCardProps)
       {!isLoadingGraduation && !graduation && (
         <Box className="w-full bg-neutral-800 rounded-md h-[70px] items-center justify-center mt-4">
           <Button
-            onPress={handleAfterCreation}
+            onPress={handleCreateGraduation}
           >
             <ButtonIcon as={AddIcon} />
             <ButtonText>Cadastrar graduação</ButtonText>

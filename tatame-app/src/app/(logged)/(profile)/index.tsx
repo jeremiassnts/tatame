@@ -49,10 +49,7 @@ export default function Profile() {
           <Text className="text-neutral-400 text-md">
             {userProfile.emailAddresses?.[0]?.emailAddress}
           </Text>
-          <GraduationCard
-            showBelt={true}
-            afterCreation={() => router.push("/(logged)/(profile)")}
-          />
+          <GraduationCard showBelt={true} />
           <HStack className="bg-neutral-800 w-full p-5 rounded-md gap-4 items-center justify-center mt-4">
             <Avatar size="lg">
               <AvatarFallbackText>

@@ -24,7 +24,7 @@ export function HomeGym() {
         <BadgeText>Home</BadgeText>
       </Badge>
       <HomeGymHeader gym={gym} />
-      <GraduationCard showBelt={false} afterCreation={() => router.push("/(logged)/(home)/home")} />
+      <GraduationCard showBelt={false} />
       <VStack className="w-full">
         <Skeleton
           className="h-[150px] w-full bg-neutral-800 rounded-md"

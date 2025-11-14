@@ -1,11 +1,6 @@
-import { useAttachments } from "@/src/api/use-attachments";
 import useGraduation from "@/src/api/use-graduation";
-import { useGyms } from "@/src/api/use-gyms";
 import { useUsers } from "@/src/api/use-users";
-import DateTimePicker from "@/src/components/date-time-picker";
-import ImageViewer from "@/src/components/image-picker";
 import { SelectInput } from "@/src/components/select-input";
-import { TextInput } from "@/src/components/text-input";
 import {
   Button,
   ButtonIcon,
@@ -18,14 +13,13 @@ import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { BELTS } from "@/src/constants/belts";
 import { DEGREES } from "@/src/constants/degrees";
-import { useToast } from "@/src/hooks/use-toast";
 import { queryClient } from "@/src/lib/react-query";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
 
@@ -34,7 +28,7 @@ const createGraduationFormSchema = z.object({
   degree: z.number().min(0, "O grau é obrigatório").max(10, "O grau é obrigatório"),
 });
 
-export default function CreateGym() {
+export default function CreateGraduation() {
   const router = useRouter();
   const { getUserByClerkUserId } = useUsers();
   const { user } = useUser();
@@ -73,7 +67,7 @@ export default function CreateGym() {
       .then(() => {
         reset();
         queryClient.invalidateQueries({ queryKey: ["graduation"] });
-        router.replace("/(logged)/(profile)");
+        router.back()
       })
       .catch(() => {
         setIsCreatingGraduation(false);
