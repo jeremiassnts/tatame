@@ -23,6 +23,7 @@ import {
 import { useRouter } from "expo-router";
 import { useClass } from "@/src/api/use-class";
 import { queryClient } from "@/src/lib/react-query";
+import { useRoles } from "@/src/api/use-roles";
 
 interface ClassCardProps {
   data: ClassRow;
@@ -39,6 +40,8 @@ export function ClassCard({
   const router = useRouter();
   const { deleteClass } = useClass();
   const { mutateAsync: deleteClassFn } = deleteClass;
+  const { getRole } = useRoles();
+  const { data: role } = getRole;
 
   function formatTime(time: string | null) {
     if (!time) return "";
@@ -84,7 +87,7 @@ export function ClassCard({
         <Heading className="text-white font-bold" size="md">
           {data.description}
         </Heading>
-        {!topBadgeText && (
+        {!topBadgeText && role === "MANAGER" && (
           <Button
             onPress={() => setShowOptions(true)}
             className="bg-neutral-300 rounded-full w-[30px] h-[30px]"

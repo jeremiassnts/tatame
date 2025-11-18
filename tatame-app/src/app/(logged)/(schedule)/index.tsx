@@ -16,6 +16,7 @@ import { Box } from "@/src/components/ui/box";
 import { useRouter } from "expo-router";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
+import { useRoles } from "@/src/api/use-roles";
 
 export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
@@ -24,6 +25,8 @@ export default function Schedule() {
   const { fetchClasses } = useClass();
   const { data: classes, isLoading: isLoadingClasses } = fetchClasses;
   const router = useRouter();
+  const { getRole } = useRoles();
+  const { data: role } = getRole;
 
   useEffect(() => {
     async function defineWeekDays() {
@@ -78,14 +81,16 @@ export default function Schedule() {
 
   return (
     <SafeAreaView className="pt-10 pl-5 pr-5 flex-1 flex flex-col items-start">
-      <Button
-        size="md"
-        variant="solid"
-        className="bg-violet-800 rounded-full w-[50px] h-[50px] absolute bottom-5 right-5 z-10"
-        onPress={() => router.push("/(logged)/(schedule)/create-class")}
-      >
-        <ButtonIcon as={AddIcon} color="white" />
-      </Button>
+      {role === "MANAGER" && (
+        <Button
+          size="md"
+          variant="solid"
+          className="bg-violet-800 rounded-full w-[50px] h-[50px] absolute bottom-5 right-5 z-10"
+          onPress={() => router.push("/(logged)/(schedule)/create-class")}
+        >
+          <ButtonIcon as={AddIcon} color="white" />
+        </Button>
+      )}
       <Badge
         size="lg"
         variant="solid"

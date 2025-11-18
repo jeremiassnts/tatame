@@ -49,8 +49,36 @@ export function useGyms() {
     },
   });
 
+  const fetchAll = useQuery({
+    queryKey: ["gyms"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("gyms").select("*");
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao buscar as academias");
+        throw error;
+      }
+      return data;
+    },
+  });
+
+  const associateGym = useMutation({
+    mutationFn: async (gymId: number) => {
+      if (!user?.id) {
+        showErrorToast("Erro", "Usuário não encontrado");
+        throw new Error("Usuário não encontrado");
+      }
+      const { data, error } = await supabase.from("users").update({ gym_id: gymId }).eq("clerk_user_id", user.id);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao associar a academia");
+        throw error;
+      }
+    },
+  });
+
   return {
     createGym,
     fetchByUser,
+    fetchAll,
+    associateGym,
   };
 }
