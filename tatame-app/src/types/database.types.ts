@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      checkins: {
+        Row: {
+          classId: number | null
+          created_at: string
+          date: string | null
+          id: number
+          userId: number | null
+        }
+        Insert: {
+          classId?: number | null
+          created_at?: string
+          date?: string | null
+          id?: number
+          userId?: number | null
+        }
+        Update: {
+          classId?: number | null
+          created_at?: string
+          date?: string | null
+          id?: number
+          userId?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkins_classId_fkey"
+            columns: ["classId"]
+            isOneToOne: false
+            referencedRelation: "class"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checkins_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class: {
         Row: {
           created_at: string

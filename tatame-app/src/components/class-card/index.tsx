@@ -3,27 +3,12 @@ import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
-import {
-  ArrowRightIcon,
-  ChevronDownIcon,
-  UserIcon,
-} from "../ui/icon";
+import { ArrowRightIcon, UserIcon } from "../ui/icon";
 import { Text } from "../ui/text";
-import { Button, ButtonIcon } from "../ui/button";
-import { useState } from "react";
-import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  ActionsheetItem,
-  ActionsheetItemText,
-} from "../ui/actionsheet";
-import { useRouter } from "expo-router";
-import { useClass } from "@/src/api/use-class";
-import { queryClient } from "@/src/lib/react-query";
 import { useRoles } from "@/src/api/use-roles";
+import { CheckIn } from "./check-in";
+import { Box } from "../ui/box";
+import { Actions } from "./actions";
 
 interface ClassCardProps {
   data: ClassRow;
@@ -36,37 +21,12 @@ export function ClassCard({
   topBadgeText,
   currentClass,
 }: ClassCardProps) {
-  const [showOptions, setShowOptions] = useState(false);
-  const router = useRouter();
-  const { deleteClass } = useClass();
-  const { mutateAsync: deleteClassFn } = deleteClass;
   const { getRole } = useRoles();
   const { data: role } = getRole;
 
   function formatTime(time: string | null) {
     if (!time) return "";
     return time.split(":")[0] + ":" + time.split(":")[1];
-  }
-
-  function handleClose() {
-    setShowOptions(false);
-  }
-
-  function handleEditClass() {
-    router.push({
-      pathname: "/(logged)/(schedule)/edit-class",
-      params: {
-        classId: data.id,
-      },
-    });
-    handleClose();
-  }
-
-  async function handleDeleteClass() {
-    await deleteClassFn(data.id);
-    queryClient.invalidateQueries({ queryKey: ["classes"] });
-    queryClient.invalidateQueries({ queryKey: ["next-class"] });
-    handleClose();
   }
 
   return (
@@ -87,32 +47,7 @@ export function ClassCard({
         <Heading className="text-white font-bold" size="md">
           {data.description}
         </Heading>
-        {!topBadgeText && role === "MANAGER" && (
-          <Button
-            onPress={() => setShowOptions(true)}
-            className="bg-neutral-300 rounded-full w-[30px] h-[30px]"
-          >
-            <ButtonIcon as={ChevronDownIcon} size="sm" />
-          </Button>
-        )}
-        <Actionsheet isOpen={showOptions} onClose={handleClose}>
-          <ActionsheetBackdrop />
-          <ActionsheetContent>
-            <ActionsheetDragIndicatorWrapper>
-              <ActionsheetDragIndicator />
-            </ActionsheetDragIndicatorWrapper>
-            <ActionsheetItem onPress={handleEditClass}>
-              <ActionsheetItemText className="text-white text-md">
-                Editar aula
-              </ActionsheetItemText>
-            </ActionsheetItem>
-            <ActionsheetItem onPress={handleDeleteClass}>
-              <ActionsheetItemText className="text-white text-md">
-                Excluir aula
-              </ActionsheetItemText>
-            </ActionsheetItem>
-          </ActionsheetContent>
-        </Actionsheet>
+        <Actions topBadgeText={topBadgeText} role={role} data={data} />
       </HStack>
       <Text>
         {formatTime(data.start)} - {formatTime(data.end)}
@@ -126,6 +61,9 @@ export function ClassCard({
           <BadgeText>{data.modality}</BadgeText>
         </Badge>
       </HStack>
+      <Box className="mt-6">
+        <CheckIn role={role} class={data} />
+      </Box>
     </Card>
   );
 }
