@@ -1,11 +1,13 @@
 import { useCheckins } from "@/src/api/use-checkins";
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "../ui/button";
-import { CircleIcon } from "../ui/icon";
+import { CheckCircleIcon, CircleIcon } from "../ui/icon";
 import { useState } from "react";
 import { useUsers } from "@/src/api/use-users";
 import { useUser } from "@clerk/clerk-expo";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { queryClient } from "@/src/lib/react-query";
+import { Skeleton } from "../ui/skeleton";
+import { format } from "date-fns";
 
 interface CheckInProps {
   role: string | null | undefined;
@@ -14,8 +16,10 @@ interface CheckInProps {
 
 export function CheckIn({ role, class: classData }: CheckInProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { create } = useCheckins();
+  const { create, fetchAll, remove } = useCheckins();
   const { mutateAsync: createCheckinFn } = create;
+  const { data: checkins, isLoading: isLoadingCheckins } = fetchAll;
+  const { mutateAsync: removeCheckinFn } = remove;
   const { getUserByClerkUserId } = useUsers();
   const { user } = useUser();
 
@@ -35,6 +39,7 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
       .then(() => {
         queryClient.invalidateQueries({ queryKey: ["classes"] });
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
+        queryClient.invalidateQueries({ queryKey: ["checkins"] });
         setIsLoading(false);
       })
       .catch(() => {
@@ -42,16 +47,65 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
       });
   }
 
-  if (role !== "STUDENT") return null;
+  async function handleDeleteCheckin() {
+    const checkin = checkins?.find(
+      (checkin) => checkin.classId === classData.id
+    );
+    if (!checkin) {
+      return;
+    }
+
+    setIsLoading(true);
+    removeCheckinFn(checkin.id)
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ["classes"] });
+        queryClient.invalidateQueries({ queryKey: ["next-class"] });
+        queryClient.invalidateQueries({ queryKey: ["checkins"] });
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
+  }
+
+  const currentDay = format(new Date(), "EEEE").toUpperCase()
+
+  if (role !== "STUDENT" || currentDay !== classData.day) return null;
+
+  if (isLoadingCheckins) {
+    return <Skeleton className="w-full h-[40px] bg-neutral-700 rounded-md" />;
+  }
+
+  if (checkins?.some((checkin) => checkin.classId === classData.id)) {
+    return (
+      <Button
+        className="rounded-xl"
+        variant="solid"
+        onPress={handleDeleteCheckin}
+        disabled={isLoading}
+        action="primary"
+      >
+        {isLoading && <ButtonSpinner />}
+        {!isLoading && <ButtonIcon as={CheckCircleIcon} size="sm" />}
+        {!isLoading && (
+          <ButtonText className="text-neutral-900">
+            Não vou comparecer
+          </ButtonText>
+        )}
+      </Button>
+    );
+  }
+
   return (
     <Button
-      className="bg-neutral-300 rounded-xl"
+      className="rounded-xl"
       variant="solid"
       onPress={handleCreateCheckin}
       disabled={isLoading}
+      action="primary"
     >
-      <ButtonIcon as={CircleIcon} size="sm" />
       {isLoading && <ButtonSpinner />}
+      {!isLoading && <ButtonIcon as={CircleIcon} size="sm" />}
       {!isLoading && (
         <ButtonText className="text-neutral-900">Vou comparecer</ButtonText>
       )}

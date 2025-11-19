@@ -42,7 +42,7 @@ export default function WeekDays({
               <ButtonText className="capitalize text-white text-sm">
                 {day.shortTitle}
               </ButtonText>
-              <ButtonText className="text-white text-lg">
+              <ButtonText className="text-white text-xl font-black">
                 {day.date.getDate() < 10 ? "0" : ""}
                 {day.date.getDate()}
               </ButtonText>
