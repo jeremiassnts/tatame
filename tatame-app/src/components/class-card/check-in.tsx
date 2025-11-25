@@ -40,6 +40,7 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         queryClient.invalidateQueries({ queryKey: ["classes"] });
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
+        queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classData.id] });
         setIsLoading(false);
       })
       .catch(() => {
@@ -61,6 +62,7 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         queryClient.invalidateQueries({ queryKey: ["classes"] });
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
+        queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classData.id] });
         setIsLoading(false);
       })
       .catch(() => {
@@ -83,15 +85,10 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         variant="solid"
         onPress={handleDeleteCheckin}
         disabled={isLoading}
-        action="primary"
+        action="secondary"
       >
         {isLoading && <ButtonSpinner />}
-        {!isLoading && <ButtonIcon as={CheckCircleIcon} size="sm" />}
-        {!isLoading && (
-          <ButtonText className="text-neutral-900">
-            Não vou comparecer
-          </ButtonText>
-        )}
+        {!isLoading && <ButtonIcon as={CheckCircleIcon} size="md" />}
       </Button>
     );
   }
@@ -105,9 +102,9 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
       action="primary"
     >
       {isLoading && <ButtonSpinner />}
-      {!isLoading && <ButtonIcon as={CircleIcon} size="sm" />}
+      {!isLoading && <ButtonIcon as={CircleIcon} size="md" />}
       {!isLoading && (
-        <ButtonText className="text-neutral-900">Vou comparecer</ButtonText>
+        <ButtonText className="text-neutral-900">Eu vou</ButtonText>
       )}
     </Button>
   );

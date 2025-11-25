@@ -68,7 +68,30 @@ export function useUsers() {
       );
       return data;
     } catch (error) {
-      showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
+      showErrorToast(
+        "Erro",
+        "Ocorreu um erro ao buscar o usuário clerk"
+      );
+      return null;
+    }
+  };
+
+  const getClerkUsers = async (userIds: string[]) => {
+    try {
+      const { data } = await axiosClient.post(
+        `/clerk-get-users`,
+        {
+          user_id: userIds,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+          },
+        }
+      );
+      return data;
+    } catch (error) {
+      showErrorToast("Erro", "Ocorreu um erro ao buscar os usuários");
       return null;
     }
   };
@@ -96,6 +119,7 @@ export function useUsers() {
     getUserByClerkUserId,
     getUserById,
     getClerkUserById,
+    getClerkUsers,
     getUserProfile,
   };
 }

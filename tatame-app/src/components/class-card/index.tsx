@@ -9,6 +9,8 @@ import { useRoles } from "@/src/api/use-roles";
 import { CheckIn } from "./check-in";
 import { Box } from "../ui/box";
 import { Actions } from "./actions";
+import { CheckIns } from "./check-ins";
+import { VStack } from "../ui/vstack";
 
 interface ClassCardProps {
   data: ClassRow;
@@ -44,14 +46,18 @@ export function ClassCard({
         </Badge>
       )}
       <HStack className="justify-between">
-        <Heading className="text-white font-bold" size="md">
-          {data.description}
-        </Heading>
+        <VStack className="items-start">
+          <Heading className="text-white font-bold" size="md">
+            {data.description}
+          </Heading>
+          <Text>
+            {formatTime(data.start)} - {formatTime(data.end)}
+          </Text>
+        </VStack>
         <Actions topBadgeText={topBadgeText} role={role} data={data} />
+        <CheckIn role={role} class={data} />
       </HStack>
-      <Text>
-        {formatTime(data.start)} - {formatTime(data.end)}
-      </Text>
+      <CheckIns classId={data.id} />
       <HStack className="justify-between pt-4">
         <Badge className="gap-1">
           <BadgeIcon as={UserIcon} />
@@ -61,9 +67,6 @@ export function ClassCard({
           <BadgeText>{data.modality}</BadgeText>
         </Badge>
       </HStack>
-      <Box className="mt-6">
-        <CheckIn role={role} class={data} />
-      </Box>
     </Card>
   );
 }
