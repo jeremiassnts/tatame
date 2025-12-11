@@ -12,8 +12,8 @@ import { AddIcon, ArrowLeftIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { BELTS } from "@/src/constants/belts";
-import { DEGREES } from "@/src/constants/degrees";
 import { queryClient } from "@/src/lib/react-query";
+import { getBeltDegrees } from "@/src/utils/belt";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
@@ -106,14 +106,10 @@ export default function CreateGraduation() {
             selectedValue={belt}
             placeholder="Selecione a faixa"
             onValueChange={(value) => {
-                setValue("belt", value)
-                // @ts-ignore
-                const beltDegrees = Object.keys(DEGREES[value]).map(key => ({
-                    value: key,
-                    // @ts-ignore
-                    label: DEGREES[value][key]
-                }))
-                setDegrees(beltDegrees)
+              setValue("belt", value)
+              console.log(value)
+              const beltDegrees = getBeltDegrees(value)
+              setDegrees(beltDegrees)
             }}
             error={errors.belt?.message}
           />

@@ -1,9 +1,9 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useUsers } from "./use-users";
 import { useToast } from "../hooks/use-toast";
-import { Database } from "../types/database.types";
 import { useSupabase } from "../hooks/useSupabase";
+import { Database } from "../types/database.types";
+import { useUsers } from "./use-users";
 
 export default function useGraduation() {
   const { user } = useUser();
@@ -50,8 +50,19 @@ export default function useGraduation() {
     },
   });
 
+  const updateGraduation = useMutation({
+    mutationFn: async (graduation: Database["public"]["Tables"]["graduations"]["Update"]) => {
+      const { error } = await supabase.from("graduations").update(graduation).eq("id", graduation.id);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao atualizar a graduação");
+        throw error;
+      }
+    },
+  });
+
   return {
     getGraduation,
     createGraduation,
+    updateGraduation,
   };
 }

@@ -1,11 +1,12 @@
 import useGraduation from "@/src/api/use-graduation";
-import { Box } from "../ui/box";
-import { Skeleton } from "../ui/skeleton";
 import { BELT_COLORS } from "@/src/constants/belts";
-import { Button, ButtonIcon, ButtonText } from "../ui/button";
-import { AddIcon } from "../ui/icon";
-import { HStack } from "../ui/hstack";
 import { useRouter } from "expo-router";
+import { Box } from "../ui/box";
+import { Button, ButtonIcon, ButtonText } from "../ui/button";
+import { HStack } from "../ui/hstack";
+import { AddIcon } from "../ui/icon";
+import { Skeleton } from "../ui/skeleton";
+import { VStack } from "../ui/vstack";
 
 interface GraduationCardProps {
   showBelt?: boolean;
@@ -18,6 +19,17 @@ export function GraduationCard({ showBelt }: GraduationCardProps) {
 
   function handleCreateGraduation() {
     router.push("/(logged)/(profile)/create-graduation");
+  }
+
+  function handleUpdateGraduation() {
+    router.push({
+      pathname: "/(logged)/(profile)/update-graduation",
+      params: {
+        id: graduation?.id,
+        belt: graduation?.belt,
+        degree: graduation?.degree,
+      },
+    })
   }
 
   // @ts-ignore
@@ -40,19 +52,23 @@ export function GraduationCard({ showBelt }: GraduationCardProps) {
         </Box>
       )}
       {!isLoadingGraduation && graduation && showBelt && (
-        <HStack className="w-[200px] h-[20px] border-[1px] border-neutral-800 rounded-sm mt-2">
-          <Box className="flex-1" style={{ backgroundColor: beltColor }} />
-          <HStack
-            className={`w-[25%] justify-evenly ${
-              graduation.belt === "black" ? "bg-red-800" : "bg-neutral-900"
-            }`}
-          >
-            {Array.from({ length: graduation.degree ?? 0 }).map((_, index) => (
-              <Box key={index} className="w-[4px] h-full bg-white" />
-            ))}
+        <VStack>
+          <HStack className="w-[200px] h-[20px] border-[1px] border-neutral-800 rounded-sm mt-2">
+            <Box className="flex-1" style={{ backgroundColor: beltColor }} />
+            <HStack
+              className={`w-[25%] justify-evenly ${graduation.belt === "black" ? "bg-red-800" : "bg-neutral-900"
+                }`}
+            >
+              {Array.from({ length: graduation.degree ?? 0 }).map((_, index) => (
+                <Box key={index} className="w-[4px] h-full bg-white" />
+              ))}
+            </HStack>
+            <Box className="w-[5%]" style={{ backgroundColor: beltColor }} />
           </HStack>
-          <Box className="w-[5%]" style={{ backgroundColor: beltColor }} />
-        </HStack>
+          <Button variant="link" onPress={handleUpdateGraduation}>
+            <ButtonText className="text-neutral-400 text-md font-normal">Atualizar graduação</ButtonText>
+          </Button>
+        </VStack>
       )}
     </Box>
   );
