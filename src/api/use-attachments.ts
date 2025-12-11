@@ -1,5 +1,5 @@
-import axiosClient from "../lib/axios";
 import { useMutation } from "@tanstack/react-query";
+import axiosClient from "../lib/axios";
 
 export function useAttachments() {
   const uploadImage = useMutation({
@@ -17,12 +17,16 @@ export function useAttachments() {
         name: filename,
         type: mimeType,
       } as any);
-      const response = await axiosClient.post<{ url: string }>('/attachment-image', formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-      });
+      const response = await axiosClient.post<{ url: string }>(
+        "/attachment-image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+        }
+      );
       return response.data.url;
     },
   });

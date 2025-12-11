@@ -1,9 +1,9 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Database } from "../types/database.types";
 import { useUser } from "@clerk/clerk-expo";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../hooks/use-toast";
-import { useUsers } from "./use-users";
 import { useSupabase } from "../hooks/useSupabase";
+import { Database } from "../types/database.types";
+import { useUsers } from "./use-users";
 
 export function useCheckins() {
   const supabase = useSupabase();

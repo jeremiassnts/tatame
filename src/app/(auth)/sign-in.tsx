@@ -1,31 +1,30 @@
-import { Link, Redirect } from "expo-router";
-import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image } from "@/src/components/ui/image";
-import { Heading } from "@/src/components/ui/heading";
-import { Text } from "@/src/components/ui/text";
 import { TextInput } from "@/src/components/text-input";
-import { VStack } from "@/src/components/ui/vstack";
 import {
   Button,
   ButtonIcon,
   ButtonSpinner,
   ButtonText,
 } from "@/src/components/ui/button";
-import { HStack } from "@/src/components/ui/hstack";
 import { Divider } from "@/src/components/ui/divider";
-import { AppleIcon, GoogleIcon } from "@/src/components/ui/icon";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { Heading } from "@/src/components/ui/heading";
+import { HStack } from "@/src/components/ui/hstack";
+import { GoogleIcon } from "@/src/components/ui/icon";
+import { Image } from "@/src/components/ui/image";
+import { Text } from "@/src/components/ui/text";
+import { VStack } from "@/src/components/ui/vstack";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, Redirect } from "expo-router";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import * as WebBrowser from "expo-web-browser";
 import {
   loginFormSchema,
   LoginFormType,
   useLogIn,
 } from "@/src/hooks/use-log-in";
 import { useAuth } from "@clerk/clerk-expo";
+import * as WebBrowser from "expo-web-browser";
 
 // Handle any pending authentication sessions
 WebBrowser.maybeCompleteAuthSession();
