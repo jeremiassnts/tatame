@@ -1,6 +1,0 @@
-import { Redirect } from "expo-router";
-  
-export default function SSOCallback() {
-
-  return <Redirect href="/(logged)/(home)/user-type-selection" />;
-}
