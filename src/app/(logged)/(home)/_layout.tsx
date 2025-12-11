@@ -1,0 +1,18 @@
+import { COLORS } from "@/src/constants/colors";
+import { Stack } from "expo-router";
+
+export default function Layout() {
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: COLORS.background },
+      }}
+    >
+      <Stack.Screen name="user-type-selection" />
+      <Stack.Screen name="home" />
+      <Stack.Screen name="create-gym" />
+      <Stack.Screen name="select-gym" />
+    </Stack>
+  );
+}
