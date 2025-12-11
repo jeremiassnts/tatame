@@ -1,10 +1,9 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { createSupabaseClerkClient } from "../utils/supabase";
+import { useUser } from "@clerk/clerk-expo";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import axiosClient from "../lib/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useGyms } from "./use-gyms";
+import { useSupabase } from "../hooks/useSupabase";
 
 export interface CreateUserProps {
   clerkUserId: string;
@@ -12,8 +11,7 @@ export interface CreateUserProps {
 }
 
 export function useUsers() {
-  const { getToken } = useAuth();
-  const supabase = createSupabaseClerkClient(getToken());
+  const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
 
@@ -38,6 +36,7 @@ export function useUsers() {
       .select("*")
       .eq("clerk_user_id", clerkUserId);
     if (error) {
+      console.error(JSON.stringify(error, null, 2));
       showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
       throw error;
     }
@@ -50,6 +49,7 @@ export function useUsers() {
       .select("*")
       .eq("id", userId);
     if (error) {
+      console.error(JSON.stringify(error, null, 2));
       showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
       throw error;
     }
@@ -62,16 +62,14 @@ export function useUsers() {
         `/clerk-get-user/${userId}`,
         {
           headers: {
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
           },
         }
       );
       return data;
     } catch (error) {
-      showErrorToast(
-        "Erro",
-        "Ocorreu um erro ao buscar o usuário clerk"
-      );
+      console.error(JSON.stringify(error, null, 2));
+      showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário clerk");
       return null;
     }
   };
@@ -85,7 +83,7 @@ export function useUsers() {
         },
         {
           headers: {
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
           },
         }
       );

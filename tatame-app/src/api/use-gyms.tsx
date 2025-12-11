@@ -1,13 +1,12 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { createSupabaseClerkClient } from "../utils/supabase";
+import { useUser } from "@clerk/clerk-expo";
 import { Database } from "../types/database.types";
 import { useToast } from "../hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useUsers } from "./use-users";
+import { useSupabase } from "../hooks/useSupabase";
 
 export function useGyms() {
-  const { getToken } = useAuth();
-  const supabase = createSupabaseClerkClient(getToken());
+  const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
   const { getUserByClerkUserId } = useUsers();
@@ -16,7 +15,6 @@ export function useGyms() {
     mutationFn: async (gym: Database["public"]["Tables"]["gyms"]["Insert"]) => {
       const { data, error } = await supabase.from("gyms").upsert(gym).select();
       if (error || !data) {
-        console.log(JSON.stringify(error, null, 2));
         showErrorToast("Erro", "Ocorreu um erro ao criar a academia");
         throw error;
       }

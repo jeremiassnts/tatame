@@ -60,68 +60,80 @@ export function useLogIn() {
     }
   };
 
-  const signInWithGoogle = useCallback(async () => {
+  const signInWithGoogle = async () => {
     try {
-      const { createdSessionId, setActive } = await startSSOFlow({
-        strategy: "oauth_google", 
-        redirectUrl: AuthSession.makeRedirectUri(),
+      const redirectUrl = __DEV__
+        ? AuthSession.makeRedirectUri()
+        : `${AuthSession.makeRedirectUri()}sso-callback`;
+      const { createdSessionId, setActive: setActiveSSO } = await startSSOFlow({
+        strategy: "oauth_google",
+        redirectUrl,
       });
-
       if (createdSessionId) {
-        setActive!({
+        setActiveSSO!({
           session: createdSessionId,
-          navigate: async ({ session }) => {
+          navigate: async () => {
             router.replace("/(logged)/(home)/user-type-selection");
           },
         });
       } else {
-        showErrorToast(
-          "Erro ao realizar login!",
-          "Não foi possível entrar com sua conta Google, tente novamente."
-        );
+        throw new Error();
       }
+      // if (flowResult.createdSessionId) {
+      //   setActive!({
+      //     session: flowResult.createdSessionId,
+      //     navigate: async () => {
+      //       router.replace("/(logged)/(home)/user-type-selection");
+      //     },
+      //   });
+      // } else {
+      //   showErrorToast(
+      //     "Erro ao realizar login!",
+      //     "Não foi possível concluir o login com sua conta Google, tente novamente."
+      //   );
+      // }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
       showErrorToast(
         "Erro ao realizar login!",
-        "Não foi possível entrar com sua conta Google, tente novamente."
+        "Ocorreu um erro ao concluir o login com sua conta Google, tente novamente."
       );
     }
-  }, []);
+  };
 
-  const signInWithApple = useCallback(async () => {
-    try {
-      const { createdSessionId, setActive } = await startSSOFlow({
-        strategy: "oauth_apple",
-        redirectUrl: AuthSession.makeRedirectUri(),
-      });
+  // const signInWithApple = useCallback(async () => {
+  //   try {
+  //     const { createdSessionId, setActive } = await startSSOFlow({
+  //       strategy: "oauth_apple",
+  //       redirectUrl: AuthSession.makeRedirectUri(),
+  //     });
 
-      if (createdSessionId) {
-        setActive!({
-          session: createdSessionId,
-          navigate: async ({ session }) => {
-            router.replace("/(logged)/(home)/user-type-selection");
-          },
-        });
-      } else {
-        showErrorToast(
-          "Erro ao realizar login!",
-          "Não foi possível entrar com sua conta Apple, tente novamente."
-        );
-      }
-    } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
-      showErrorToast(
-        "Erro ao realizar login!",
-        "Não foi possível entrar com sua conta Apple, tente novamente."
-      );
-    }
-  }, []);
+  //     if (createdSessionId) {
+  //       setActive!({
+  //         session: createdSessionId,
+  //         navigate: async ({ session }) => {
+  //           router.replace("/(logged)/(home)/user-type-selection");
+  //         },
+  //       });
+  //     } else {
+  //       showErrorToast(
+  //         "Erro ao realizar login!",
+  //         "Não foi possível entrar com sua conta Apple, tente novamente."
+  //       );
+  //     }
+  //   } catch (err) {
+  //     console.error(JSON.stringify(err, null, 2));
+  //     showErrorToast(
+  //       "Erro ao realizar login!",
+  //       "Não foi possível entrar com sua conta Apple, tente novamente."
+  //     );
+  //   }
+  // }, []);
 
   return {
     useWarmUpBrowser,
     signInWithEmailAndPassword,
     signInWithGoogle,
-    signInWithApple,
+    // signInWithApple,
   };
 }

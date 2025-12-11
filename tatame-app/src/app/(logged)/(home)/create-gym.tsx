@@ -96,7 +96,7 @@ export default function CreateGym() {
       }
     }
     if (!imageUrl) {
-      showErrorToast("Erro", "Erro ao enviar a logo da academia");
+      showErrorToast("Erro", "Erro ao enviar a logo da academia, tentando novamente...");
       return;
     }
     const sp_user = await getUserByClerkUserId(user.id);

@@ -57,7 +57,7 @@ export default function SignUp() {
   });
   const { useWarmUpBrowser, signUpWithEmailAndPassword, verifyEmail } =
     useSignUp();
-  const { signInWithGoogle, signInWithApple } = useLogIn();
+  const { signInWithGoogle } = useLogIn();
 
   const handleSignInWithGoogle = async () => {
     try {
@@ -68,14 +68,14 @@ export default function SignUp() {
     }
   };
 
-  const handleSignInWithApple = async () => {
-    try {
-      setIsSigningUpWithApple(true);
-      await signInWithApple();
-    } finally {
-      setIsSigningUpWithApple(false);
-    }
-  };
+  // const handleSignInWithApple = async () => {
+  //   try {
+  //     setIsSigningUpWithApple(true);
+  //     await signInWithApple();
+  //   } finally {
+  //     setIsSigningUpWithApple(false);
+  //   }
+  // };
 
   const handleSignInWithEmailAndPassword = async (data: SignUpFormType) => {
     try {
@@ -219,7 +219,7 @@ export default function SignUp() {
                 : "Cadastrar com google"}
             </ButtonText>
           </Button>
-          <Button
+          {/* <Button
             className="mt-4 h-14 rounded-md"
             onPress={handleSignInWithApple}
           >
@@ -228,7 +228,7 @@ export default function SignUp() {
             <ButtonText className="text-neutral-900">
               {isSigningUpWithApple ? "Cadastrando..." : "Cadastrar com apple"}
             </ButtonText>
-          </Button>
+          </Button> */}
           <Text className="text-neutral-400 text-md text-center mt-4">
             Já possui uma conta?{" "}
             <Link href="/sign-in" className="text-violet-500 font-bold">

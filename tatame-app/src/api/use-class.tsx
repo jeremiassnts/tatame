@@ -1,16 +1,14 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { createSupabaseClerkClient } from "../utils/supabase";
+import { useUser } from "@clerk/clerk-expo";
 import { useToast } from "../hooks/use-toast";
 import { addDays, format } from "date-fns";
 import { Database } from "../types/database.types";
 import { ClassRow } from "../types/extendend-database.types";
 import { useUsers } from "./use-users";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useGyms } from "./use-gyms";
+import { useSupabase } from "../hooks/useSupabase";
 
 export function useClass() {
-  const { getToken } = useAuth();
-  const supabase = createSupabaseClerkClient(getToken());
+  const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { getClerkUserById } = useUsers();
   const { user } = useUser();
@@ -74,7 +72,6 @@ export function useClass() {
     ) => {
       const { data, error } = await supabase.from("class").insert(classData);
       if (error) {
-        console.log(JSON.stringify(error, null, 2));
         showErrorToast("Erro", "Ocorreu um erro ao criar a aula");
         throw error;
       }
@@ -178,7 +175,6 @@ export function useClass() {
         .update(data)
         .eq("id", data.id);
       if (error) {
-        console.log(JSON.stringify(error, null, 2));
         showErrorToast("Erro", "Ocorreu um erro ao editar a aula");
         throw error;
       }

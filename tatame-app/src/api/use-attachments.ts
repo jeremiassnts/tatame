@@ -20,7 +20,7 @@ export function useAttachments() {
       const response = await axiosClient.post<{ url: string }>('/attachment-image', formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
         },
       });
       return response.data.url;

@@ -1,22 +1,17 @@
 {
   "expo": {
-    "name": "tatame",
+    "name": "Tatame",
     "slug": "tatame",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "tatameapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#262626"
-    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#262626"
+        "monochromeImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#141414"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.anonymous.tatame"
@@ -30,15 +25,34 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash.png",
-          "resizeMode": "cover",
-          "backgroundColor": "#262626"
+          "image": "./assets/images/splash-icon-dark.png",
+          "backgroundColor": "#141414",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "light": {
+            "image": "./assets/images/splash-icon-light.png",
+            "backgroundColor": "#FFFFFF"
+          },
+          "dark": {
+            "image": "./assets/images/splash-icon-dark.png",
+            "backgroundColor": "#141414"
+          }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "521fca59-6f7d-4701-bdde-b061eed2c7c2"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.anonymous.tatame"
     }
   }
 }

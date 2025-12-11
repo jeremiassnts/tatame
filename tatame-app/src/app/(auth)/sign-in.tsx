@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "@/src/components/ui/image";
@@ -25,17 +25,21 @@ import {
   LoginFormType,
   useLogIn,
 } from "@/src/hooks/use-log-in";
+import { useAuth } from "@clerk/clerk-expo";
 
 // Handle any pending authentication sessions
 WebBrowser.maybeCompleteAuthSession();
 
 export default function SignIn() {
+  const { isSignedIn } = useAuth();
+  if (isSignedIn) {
+    return <Redirect href={"/(logged)/(home)/user-type-selection"} />;
+  }
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isSigningInWithGoogle, setIsSigningInWithGoogle] = useState(false);
   const [isSigningInWithApple, setIsSigningInWithApple] = useState(false);
   const {
     useWarmUpBrowser,
-    signInWithApple,
     signInWithGoogle,
     signInWithEmailAndPassword,
   } = useLogIn();
@@ -63,14 +67,14 @@ export default function SignIn() {
     }
   };
 
-  const handleSignInWithApple = async () => {
-    try {
-      setIsSigningInWithApple(true);
-      await signInWithApple();
-    } finally {
-      setIsSigningInWithApple(false);
-    }
-  };
+  // const handleSignInWithApple = async () => {
+  //   try {
+  //     setIsSigningInWithApple(true);
+  //     await signInWithApple();
+  //   } finally {
+  //     setIsSigningInWithApple(false);
+  //   }
+  // };
 
   const handleSignInWithEmailAndPassword = async (data: LoginFormType) => {
     try {
@@ -158,7 +162,7 @@ export default function SignIn() {
             {isSigningInWithGoogle ? "Entrando..." : "Entrar com google"}
           </ButtonText>
         </Button>
-        <Button
+        {/* <Button
           className="mt-4 h-14 rounded-md"
           onPress={handleSignInWithApple}
         >
@@ -167,7 +171,7 @@ export default function SignIn() {
           <ButtonText className="text-neutral-900">
             {isSigningInWithApple ? "Entrando..." : "Entrar com apple"}
           </ButtonText>
-        </Button>
+        </Button> */}
         <Text className="text-neutral-400 text-md text-center mt-4">
           Ainda não tem uma conta?{" "}
           <Link href="/sign-up" className="text-violet-500 font-bold">

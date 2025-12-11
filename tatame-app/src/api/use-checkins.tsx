@@ -1,13 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Database } from "../types/database.types";
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { createSupabaseClerkClient } from "../utils/supabase";
+import { useUser } from "@clerk/clerk-expo";
 import { useToast } from "../hooks/use-toast";
 import { useUsers } from "./use-users";
+import { useSupabase } from "../hooks/useSupabase";
 
 export function useCheckins() {
-  const { getToken } = useAuth();
-  const supabase = createSupabaseClerkClient(getToken());
+  const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
   const { getClerkUsers } = useUsers();

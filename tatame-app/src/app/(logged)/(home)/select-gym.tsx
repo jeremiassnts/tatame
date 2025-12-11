@@ -56,6 +56,7 @@ export default function SelectGym() {
       .then(() => {
         queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
+        queryClient.invalidateQueries({ queryKey: ["user-profile"] });
         reset();
         router.replace("/(logged)/(home)/home");
       })

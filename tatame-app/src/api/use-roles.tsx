@@ -1,12 +1,11 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useUser } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
-import { createSupabaseClerkClient } from "../utils/supabase";
 import { useToast } from "../hooks/use-toast";
+import { useSupabase } from "../hooks/useSupabase";
 
 export function useRoles() {
   const { user } = useUser();
-  const { getToken } = useAuth();
-  const supabase = createSupabaseClerkClient(getToken());
+  const supabase = useSupabase();
   const { showErrorToast } = useToast();
 
   const getRole = useQuery({
