@@ -1,3 +1,4 @@
+import { useRoles } from "@/src/api/use-roles";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
@@ -5,12 +6,10 @@ import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 import { ArrowRightIcon, UserIcon } from "../ui/icon";
 import { Text } from "../ui/text";
-import { useRoles } from "@/src/api/use-roles";
-import { CheckIn } from "./check-in";
-import { Box } from "../ui/box";
-import { Actions } from "./actions";
-import { CheckIns } from "./check-ins";
 import { VStack } from "../ui/vstack";
+import { Actions } from "./actions";
+import { CheckIn } from "./check-in";
+import { CheckIns } from "./check-ins";
 
 interface ClassCardProps {
   data: ClassRow;
@@ -35,9 +34,8 @@ export function ClassCard({
     <Card
       size="md"
       variant="elevated"
-      className={`bg-neutral-800 w-full border-2 ${
-        currentClass ? "border-violet-800" : "border-neutral-800"
-      }`}
+      className={`bg-neutral-800 w-full border-2 ${currentClass ? "border-violet-800" : "border-neutral-800"
+        }`}
     >
       {topBadgeText && (
         <Badge variant="outline" className="gap-1 self-start mb-3">
@@ -47,7 +45,7 @@ export function ClassCard({
       )}
       <HStack className="justify-between">
         <VStack className="items-start">
-          <Heading className="text-white font-bold" size="md">
+          <Heading className="text-white font-bold max-w-[200px]" size="md">
             {data.description}
           </Heading>
           <Text>

@@ -1,12 +1,12 @@
 import { Database } from "@/src/types/database.types";
+import { useRouter } from "expo-router";
+import { Avatar, AvatarFallbackText, AvatarImage } from "../ui/avatar";
 import { Box } from "../ui/box";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
-import { useRouter } from "expo-router";
-import { AddIcon } from "../ui/icon";
 import { HStack } from "../ui/hstack";
-import { Avatar, AvatarFallbackText, AvatarImage } from "../ui/avatar";
-import { VStack } from "../ui/vstack";
+import { AddIcon } from "../ui/icon";
 import { Text } from "../ui/text";
+import { VStack } from "../ui/vstack";
 
 interface ProfileGymCardProps {
   gym: Database["public"]["Tables"]["gyms"]["Row"] | undefined | null;
@@ -36,7 +36,7 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
           }}
         />
       </Avatar>
-      <VStack className="justify-center items-start">
+      <VStack className="justify-center items-start max-w-[80%]">
         <Text className="text-white text-lg font-bold">{gym.name}</Text>
         <Text className="text-neutral-400 text-md">{gym.address}</Text>
       </VStack>

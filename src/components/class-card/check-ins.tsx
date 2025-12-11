@@ -1,7 +1,7 @@
 import { useCheckins } from "@/src/api/use-checkins";
-import { Skeleton } from "../ui/skeleton";
-import { HStack } from "../ui/hstack";
 import { Avatar, AvatarFallbackText, AvatarImage } from "../ui/avatar";
+import { HStack } from "../ui/hstack";
+import { Skeleton } from "../ui/skeleton";
 import { Text } from "../ui/text";
 
 interface CheckInsProps {
@@ -12,7 +12,7 @@ export function CheckIns({ classId }: CheckInsProps) {
   const { fetchByClassId } = useCheckins();
   const { data: checkins, isLoading: isLoadingCheckins } = fetchByClassId(classId);
 
-  if(isLoadingCheckins){
+  if (isLoadingCheckins) {
     return <Skeleton className="w-full h-[30px] bg-neutral-700 rounded-md mt-2 mb-2" />;
   }
   return (
