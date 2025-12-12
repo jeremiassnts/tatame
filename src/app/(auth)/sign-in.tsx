@@ -36,11 +36,12 @@ export default function SignIn() {
   }
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isSigningInWithGoogle, setIsSigningInWithGoogle] = useState(false);
-  const [isSigningInWithApple, setIsSigningInWithApple] = useState(false);
+  // const [isSigningInWithApple, setIsSigningInWithApple] = useState(false);
   const {
     useWarmUpBrowser,
-    signInWithGoogle,
+    signInWithSSO,
     signInWithEmailAndPassword,
+
   } = useLogIn();
   const {
     setValue,
@@ -60,7 +61,7 @@ export default function SignIn() {
   const handleSignInWithGoogle = async () => {
     try {
       setIsSigningInWithGoogle(true);
-      await signInWithGoogle();
+      await signInWithSSO("oauth_google");
     } finally {
       setIsSigningInWithGoogle(false);
     }
@@ -69,7 +70,7 @@ export default function SignIn() {
   // const handleSignInWithApple = async () => {
   //   try {
   //     setIsSigningInWithApple(true);
-  //     await signInWithApple();
+  //     await signInWithSSO("oauth_apple");
   //   } finally {
   //     setIsSigningInWithApple(false);
   //   }

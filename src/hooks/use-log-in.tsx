@@ -1,11 +1,11 @@
-import { useCallback, useEffect } from "react";
-import { Platform } from "react-native";
-import * as WebBrowser from "expo-web-browser";
 import { useSignIn, useSSO } from "@clerk/clerk-expo";
 import * as AuthSession from "expo-auth-session";
 import { useRouter } from "expo-router";
-import { useToast } from "./use-toast";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect } from "react";
+import { Platform } from "react-native";
 import z from "zod";
+import { useToast } from "./use-toast";
 
 export const loginFormSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -60,13 +60,13 @@ export function useLogIn() {
     }
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithSSO = async (strategy: "oauth_google" | "oauth_apple") => {
     try {
       const redirectUrl = __DEV__
         ? AuthSession.makeRedirectUri()
         : `${AuthSession.makeRedirectUri()}sso-callback`;
       const { createdSessionId, setActive: setActiveSSO } = await startSSOFlow({
-        strategy: "oauth_google",
+        strategy,
         redirectUrl,
       });
       if (createdSessionId) {
@@ -79,61 +79,19 @@ export function useLogIn() {
       } else {
         throw new Error();
       }
-      // if (flowResult.createdSessionId) {
-      //   setActive!({
-      //     session: flowResult.createdSessionId,
-      //     navigate: async () => {
-      //       router.replace("/(logged)/(home)/user-type-selection");
-      //     },
-      //   });
-      // } else {
-      //   showErrorToast(
-      //     "Erro ao realizar login!",
-      //     "Não foi possível concluir o login com sua conta Google, tente novamente."
-      //   );
-      // }
     } catch (err) {
+      const platform = strategy === "oauth_google" ? "Google" : "Apple";
       console.error(JSON.stringify(err, null, 2));
       showErrorToast(
         "Erro ao realizar login!",
-        "Ocorreu um erro ao concluir o login com sua conta Google, tente novamente."
+        `Ocorreu um erro ao concluir o login com sua conta ${platform}, tente novamente.`
       );
     }
   };
 
-  // const signInWithApple = useCallback(async () => {
-  //   try {
-  //     const { createdSessionId, setActive } = await startSSOFlow({
-  //       strategy: "oauth_apple",
-  //       redirectUrl: AuthSession.makeRedirectUri(),
-  //     });
-
-  //     if (createdSessionId) {
-  //       setActive!({
-  //         session: createdSessionId,
-  //         navigate: async ({ session }) => {
-  //           router.replace("/(logged)/(home)/user-type-selection");
-  //         },
-  //       });
-  //     } else {
-  //       showErrorToast(
-  //         "Erro ao realizar login!",
-  //         "Não foi possível entrar com sua conta Apple, tente novamente."
-  //       );
-  //     }
-  //   } catch (err) {
-  //     console.error(JSON.stringify(err, null, 2));
-  //     showErrorToast(
-  //       "Erro ao realizar login!",
-  //       "Não foi possível entrar com sua conta Apple, tente novamente."
-  //     );
-  //   }
-  // }, []);
-
   return {
     useWarmUpBrowser,
     signInWithEmailAndPassword,
-    signInWithGoogle,
-    // signInWithApple,
+    signInWithSSO,
   };
 }
