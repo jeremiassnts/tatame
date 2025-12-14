@@ -1,11 +1,11 @@
 import { useUser } from "@clerk/clerk-expo";
-import { useToast } from "../hooks/use-toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { addDays, format } from "date-fns";
+import { useToast } from "../hooks/use-toast";
+import { useSupabase } from "../hooks/useSupabase";
 import { Database } from "../types/database.types";
 import { ClassRow } from "../types/extendend-database.types";
 import { useUsers } from "./use-users";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSupabase } from "../hooks/useSupabase";
 
 export function useClass() {
   const supabase = useSupabase();
@@ -81,6 +81,8 @@ export function useClass() {
 
   const fetchClasses = useQuery({
     queryKey: ["classes"],
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     queryFn: async () => {
       if (!user?.id) return [];
       const sp_user = await getUserByClerkUserId(user.id);

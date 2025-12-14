@@ -1,29 +1,29 @@
-import { WeekDay } from "@/src/types/date";
-import { addDays, format, isAfter, isBefore, parse, subDays } from "date-fns";
-import { useEffect, useState } from "react";
-import { ptBR } from "date-fns/locale";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Days } from "@/src/constants/date";
-import { Badge, BadgeText } from "@/src/components/ui/badge";
-import WeekDays from "@/src/components/weekDays";
-import { ScrollView } from "react-native";
 import { useClass } from "@/src/api/use-class";
+import { useRoles } from "@/src/api/use-roles";
 import { ClassCard } from "@/src/components/class-card";
-import { AddIcon } from "@/src/components/ui/icon";
-import { Button, ButtonIcon } from "@/src/components/ui/button";
-import { VStack } from "@/src/components/ui/vstack";
+import { Badge, BadgeText } from "@/src/components/ui/badge";
 import { Box } from "@/src/components/ui/box";
-import { useRouter } from "expo-router";
+import { Button, ButtonIcon } from "@/src/components/ui/button";
+import { AddIcon } from "@/src/components/ui/icon";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
-import { useRoles } from "@/src/api/use-roles";
+import { VStack } from "@/src/components/ui/vstack";
+import WeekDays from "@/src/components/weekDays";
+import { Days } from "@/src/constants/date";
+import { WeekDay } from "@/src/types/date";
+import { addDays, format, isAfter, isBefore, parse, subDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { RefreshControl, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<WeekDay | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { fetchClasses } = useClass();
-  const { data: classes, isLoading: isLoadingClasses } = fetchClasses;
+  const { data: classes, isLoading: isLoadingClasses, refetch: refetchClasses, isFetching: isFetchingClasses } = fetchClasses;
   const router = useRouter();
   const { getRole } = useRoles();
   const { data: role } = getRole;
@@ -107,7 +107,11 @@ export default function Schedule() {
           isLoading={isLoading}
         />
       </Box>
-      <ScrollView className="w-full pt-6 z-0">
+      <ScrollView className="w-full pt-6 z-0"
+        refreshControl={<RefreshControl
+          refreshing={isFetchingClasses && !isLoadingClasses}
+          onRefresh={refetchClasses}
+        />}>
         <VStack className="gap-4 w-full mb-10">
           {Array.from({ length: 3 }).map((_, index) => (
             <Skeleton
