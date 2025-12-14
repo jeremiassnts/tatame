@@ -1,4 +1,5 @@
 import { useRoles } from "@/src/api/use-roles";
+import { Days } from "@/src/constants/date";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
@@ -30,6 +31,11 @@ export function ClassCard({
     return time.split(":")[0] + ":" + time.split(":")[1];
   }
 
+  function formatDay(day: string | null) {
+    if (!day) return "";
+    return Days.find(d => d.value === day)?.label;
+  }
+
   return (
     <Card
       size="md"
@@ -49,7 +55,7 @@ export function ClassCard({
             {data.description}
           </Heading>
           <Text>
-            {formatTime(data.start)} - {formatTime(data.end)}
+            {formatDay(data.day)} / {formatTime(data.start)} - {formatTime(data.end)}
           </Text>
         </VStack>
         <Actions topBadgeText={topBadgeText} role={role} data={data} />
