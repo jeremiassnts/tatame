@@ -1,6 +1,6 @@
 import { Database } from "@/src/types/database.types";
 import { useRouter } from "expo-router";
-import { Avatar, AvatarFallbackText, AvatarImage } from "../ui/avatar";
+import AvatarWithDialog from "../ui/avatar/avatar-with-dialog";
 import { Box } from "../ui/box";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
 import { HStack } from "../ui/hstack";
@@ -28,14 +28,7 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
 
   return (
     <HStack className="bg-neutral-800 w-full p-5 rounded-md gap-4 items-center justify-center mt-4">
-      <Avatar size="lg">
-        <AvatarFallbackText>{gym.name}</AvatarFallbackText>
-        <AvatarImage
-          source={{
-            uri: `${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`,
-          }}
-        />
-      </Avatar>
+      <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" />
       <VStack className="justify-center items-start max-w-[80%]">
         <Text className="text-white text-lg font-bold">{gym.name}</Text>
         <Text className="text-neutral-400 text-md">{gym.address}</Text>

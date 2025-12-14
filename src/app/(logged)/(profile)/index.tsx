@@ -2,11 +2,7 @@ import { useUsers } from "@/src/api/use-users";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { ProfileGymCard } from "@/src/components/profile-gym-card";
 import { SignOutButton } from "@/src/components/sign-out-button";
-import {
-  Avatar,
-  AvatarFallbackText,
-  AvatarImage,
-} from "@/src/components/ui/avatar";
+import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Badge, BadgeText } from "@/src/components/ui/badge";
 import { HStack } from "@/src/components/ui/hstack";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -38,10 +34,7 @@ export default function Profile() {
       )}
       {!isLoading && userProfile && (
         <VStack className="items-center justify-center pt-8 pl-5 pr-5">
-          <Avatar size="xl">
-            <AvatarFallbackText>{userProfile.fullName}</AvatarFallbackText>
-            <AvatarImage source={{ uri: userProfile.imageUrl }} />
-          </Avatar>
+          <AvatarWithDialog fullName={userProfile.fullName} imageUrl={userProfile.imageUrl} size="xl" />
           <Text className="text-white text-lg font-bold mt-3">
             {userProfile.fullName}
           </Text>
