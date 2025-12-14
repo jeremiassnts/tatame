@@ -241,6 +241,27 @@ export type Database = {
           },
         ]
       }
+      versions: {
+        Row: {
+          appVersion: string | null
+          created_at: string
+          disabled_at: string | null
+          id: number
+        }
+        Insert: {
+          appVersion?: string | null
+          created_at?: string
+          disabled_at?: string | null
+          id?: number
+        }
+        Update: {
+          appVersion?: string | null
+          created_at?: string
+          disabled_at?: string | null
+          id?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

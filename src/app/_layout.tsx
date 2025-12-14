@@ -1,13 +1,17 @@
-import { Stack } from "expo-router";
+import "@/global.css";
+import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
-import "react-native-reanimated";
-import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
-import "@/global.css";
-import { COLORS } from "../constants/colors";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "../lib/react-query";
+import * as Application from "expo-application";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import "react-native-reanimated";
+import { useVersions } from "../api/use-versions";
+import { SplashScreen as SplashScreenComponent } from "../components/splash-screen";
+import { VersionAlert } from "../components/version-alert";
+import { COLORS } from "../constants/colors";
+import { queryClient } from "../lib/react-query";
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -31,6 +35,17 @@ export default function RootApp() {
 
 function RootLayout() {
   const { isSignedIn } = useAuth();
+  const { getLastVersion } = useVersions();
+  const { data: lastVersion, isLoading: isLoadingLastVersion } = getLastVersion
+
+  if (isLoadingLastVersion) {
+    return <SplashScreenComponent />
+  }
+
+  if (!__DEV__ && lastVersion?.appVersion !== Application.nativeBuildVersion) {
+    return <VersionAlert />
+  }
+
   return (
     <Stack
       screenOptions={{
