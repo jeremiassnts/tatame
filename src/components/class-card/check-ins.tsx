@@ -29,7 +29,7 @@ export function CheckIns({ classId }: CheckInsProps) {
           </Avatar>
         ))}
       </HStack>
-      {checkins?.length && checkins.length > 10 && (
+      {checkins && checkins.length > 10 && (
         <Text className="text-neutral-400 text-md ml-5">
           +{checkins.length - 10}
         </Text>

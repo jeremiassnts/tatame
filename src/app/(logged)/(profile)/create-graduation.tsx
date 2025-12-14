@@ -67,7 +67,7 @@ export default function CreateGraduation() {
       .then(() => {
         reset();
         queryClient.invalidateQueries({ queryKey: ["graduation"] });
-        router.navigate("/(logged)/(profile)")
+        router.replace("/(logged)/(profile)")
       })
       .catch(() => {
         setIsCreatingGraduation(false);

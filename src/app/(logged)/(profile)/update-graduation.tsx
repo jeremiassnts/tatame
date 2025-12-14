@@ -63,7 +63,7 @@ export default function UpdateGraduation() {
             .then(() => {
                 reset();
                 queryClient.invalidateQueries({ queryKey: ["graduation"] });
-                router.navigate("/(logged)/(profile)")
+                router.replace("/(logged)/(profile)")
             })
     }
 
