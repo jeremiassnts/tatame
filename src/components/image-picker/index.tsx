@@ -1,12 +1,11 @@
-import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { Box } from "../ui/box";
-import { VStack } from "../ui/vstack";
-import { Icon, ImageIcon } from "../ui/icon";
+import { useState } from "react";
 import { Pressable } from "react-native";
-import { Image } from "../ui/image";
-import { Text } from "../ui/text";
 import { Avatar, AvatarImage } from "../ui/avatar";
+import { Box } from "../ui/box";
+import { Icon, ImageIcon } from "../ui/icon";
+import { Text } from "../ui/text";
+import { VStack } from "../ui/vstack";
 
 interface ImageViewerProps {
   placeholder: string;

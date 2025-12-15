@@ -8,7 +8,6 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import "react-native-reanimated";
 import { useVersions } from "../api/use-versions";
-import { SplashScreen as SplashScreenComponent } from "../components/splash-screen";
 import { VersionAlert } from "../components/version-alert";
 import { COLORS } from "../constants/colors";
 import { queryClient } from "../lib/react-query";
@@ -36,11 +35,7 @@ export default function RootApp() {
 function RootLayout() {
   const { isSignedIn } = useAuth();
   const { getLastVersion } = useVersions();
-  const { data: lastVersion, isLoading: isLoadingLastVersion } = getLastVersion
-
-  if (isLoadingLastVersion) {
-    return <SplashScreenComponent />
-  }
+  const { data: lastVersion } = getLastVersion
 
   if (!__DEV__ && lastVersion?.appVersion !== Application.nativeBuildVersion) {
     return <VersionAlert />

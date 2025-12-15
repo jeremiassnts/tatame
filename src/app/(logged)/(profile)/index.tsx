@@ -1,3 +1,4 @@
+import { useAttachments } from "@/src/api/use-attachments";
 import { useUsers } from "@/src/api/use-users";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { ProfileGymCard } from "@/src/components/profile-gym-card";
@@ -8,11 +9,14 @@ import { HStack } from "@/src/components/ui/hstack";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
   const { getUserProfile } = useUsers();
   const { data: userProfile, isLoading } = getUserProfile;
+  const { updateUserImage } = useAttachments();
+  const { user } = useUser();
 
   return (
     <SafeAreaView>
@@ -34,7 +38,13 @@ export default function Profile() {
       )}
       {!isLoading && userProfile && (
         <VStack className="items-center justify-center pt-8 pl-5 pr-5">
-          <AvatarWithDialog fullName={userProfile.fullName} imageUrl={userProfile.imageUrl} size="xl" />
+          <AvatarWithDialog fullName={userProfile.fullName}
+            imageUrl={user?.imageUrl ?? ""}
+            size="xl"
+            updateImageFn={async (image) => {
+              await updateUserImage.mutateAsync({ image, userId: userProfile.clerk_user_id });
+            }}
+          />
           <Text className="text-white text-lg font-bold mt-3">
             {userProfile.fullName}
           </Text>

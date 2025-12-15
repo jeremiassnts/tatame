@@ -1,9 +1,9 @@
 import { useUser } from "@clerk/clerk-expo";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
-import axiosClient from "../lib/axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSupabase } from "../hooks/useSupabase";
+import axiosClient from "../lib/axios";
 
 export interface CreateUserProps {
   clerkUserId: string;
@@ -62,7 +62,7 @@ export function useUsers() {
         `/clerk-get-user/${userId}`,
         {
           headers: {
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
           },
         }
       );
@@ -83,7 +83,7 @@ export function useUsers() {
         },
         {
           headers: {
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
           },
         }
       );
