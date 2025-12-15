@@ -1,13 +1,13 @@
 import { useCheckins } from "@/src/api/use-checkins";
+import { useUsers } from "@/src/api/use-users";
+import { queryClient } from "@/src/lib/react-query";
+import { ClassRow } from "@/src/types/extendend-database.types";
+import { useUser } from "@clerk/clerk-expo";
+import { format } from "date-fns";
+import { useState } from "react";
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "../ui/button";
 import { CheckCircleIcon, CircleIcon } from "../ui/icon";
-import { useState } from "react";
-import { useUsers } from "@/src/api/use-users";
-import { useUser } from "@clerk/clerk-expo";
-import { ClassRow } from "@/src/types/extendend-database.types";
-import { queryClient } from "@/src/lib/react-query";
 import { Skeleton } from "../ui/skeleton";
-import { format } from "date-fns";
 
 interface CheckInProps {
   role: string | null | undefined;
@@ -41,6 +41,7 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
         queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classData.id] });
+        queryClient.invalidateQueries({ queryKey: ["last-checkins"] });
         setIsLoading(false);
       })
       .catch(() => {

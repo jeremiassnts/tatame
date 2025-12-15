@@ -1,4 +1,5 @@
 import { useAttachments } from "@/src/api/use-attachments";
+import { useRoles } from "@/src/api/use-roles";
 import { queryClient } from "@/src/lib/react-query";
 import { Database } from "@/src/types/database.types";
 import { useUser } from "@clerk/clerk-expo";
@@ -16,6 +17,8 @@ interface ProfileGymCardProps {
 }
 
 export function ProfileGymCard({ gym }: ProfileGymCardProps) {
+  const { getRole } = useRoles();
+  const { data: role } = getRole;
   const router = useRouter();
   const { updateGymLogo, uploadImage } = useAttachments();
   const { user } = useUser();
@@ -50,7 +53,7 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
 
   return (
     <HStack className="bg-neutral-800 w-full p-5 rounded-md gap-4 items-center justify-center mt-4">
-      <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={updateGymImage} />
+      <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={role == "MANAGER" ? updateGymImage : undefined} />
       <VStack className="justify-center items-start max-w-[80%]">
         <Text className="text-white text-lg font-bold">{gym.name}</Text>
         <Text className="text-neutral-400 text-md">{gym.address}</Text>

@@ -1,5 +1,6 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { subDays } from "date-fns";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import { Database } from "../types/database.types";
@@ -58,6 +59,27 @@ export function useCheckins() {
     },
   });
 
+  const fetchLastCheckins = useQuery({
+    queryKey: ["last-checkins"],
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      const { data, error } = await supabase
+        .from("checkins")
+        .select("*, users(clerk_user_id)")
+        .eq("users.clerk_user_id", user?.id!)
+        .gte('date', subDays(new Date(), 15).toISOString())
+        .lte('date', new Date().toISOString())
+
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
   const fetchByClassId = (classId: number) => {
     return useQuery({
       queryKey: ["checkins-by-class-id", classId],
@@ -95,5 +117,6 @@ export function useCheckins() {
     fetchAll,
     remove,
     fetchByClassId,
+    fetchLastCheckins,
   };
 }

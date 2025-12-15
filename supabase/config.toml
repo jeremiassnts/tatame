@@ -304,8 +304,8 @@ enabled = false
 [auth.third_party.clerk]
 enabled = true
 # Obtain from https://clerk.com/setup/supabase
-domain = "clerk.apptatame.com.br"
-# domain = "good-pelican-91.clerk.accounts.dev"
+# domain = "clerk.apptatame.com.br"
+domain = "good-pelican-91.clerk.accounts.dev"
 
 # OAuth server configuration
 [auth.oauth_server]
