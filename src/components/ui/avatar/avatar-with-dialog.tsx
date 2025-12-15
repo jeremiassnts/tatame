@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Pressable } from "react-native";
 import { Avatar, AvatarFallbackText, AvatarImage } from ".";
 import { Button, ButtonSpinner, ButtonText } from "../button";
+import { EditIcon, Icon } from "../icon";
 import { Image } from "../image";
 import { Modal, ModalBackdrop, ModalBody, ModalContent } from "../modal";
 import { VStack } from "../vstack";
@@ -59,6 +60,7 @@ export default function AvatarWithDialog({ fullName, imageUrl, children, size, c
                     <AvatarImage source={{ uri: imageUrl }} className={avatarImageClassName} />
                     {children}
                 </Avatar>
+                {updateImageFn && <Icon as={EditIcon} size="md" className="absolute bottom-1 right-1" />}
             </Pressable>
             <Modal isOpen={isOpen}
                 onClose={() => {
