@@ -1,7 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
+import { useToast } from "../hooks/use-toast";
+import { useSupabase } from "../hooks/useSupabase";
 import axiosClient from "../lib/axios";
 
 export function useAttachments() {
+  const supabase = useSupabase();
+  const { showErrorToast } = useToast();
+
   const uploadImage = useMutation({
     mutationFn: async (image: string) => {
       if (!image) return;
@@ -62,8 +67,27 @@ export function useAttachments() {
     },
   });
 
+  const updateGymLogo = useMutation({
+    mutationFn: async (props: { logo: string; gymId: number }) => {
+      const { logo, gymId } = props;
+      const { data, error } = await supabase
+        .from("gyms")
+        .update({ logo })
+        .eq("id", gymId);
+      if (error) {
+        showErrorToast(
+          "Erro",
+          "Ocorreu um erro ao atualizar a logo da academia"
+        );
+        throw error;
+      }
+      return data;
+    },
+  });
+
   return {
     uploadImage,
     updateUserImage,
+    updateGymLogo,
   };
 }

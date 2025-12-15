@@ -60,7 +60,7 @@ export default function AvatarWithDialog({ fullName, imageUrl, children, size, c
                     <AvatarImage source={{ uri: imageUrl }} className={avatarImageClassName} />
                     {children}
                 </Avatar>
-                {updateImageFn && <Icon as={EditIcon} size="md" className="absolute bottom-1 right-1" />}
+                {updateImageFn && <Icon as={EditIcon} size="sm" className="absolute bottom-0 right-0" />}
             </Pressable>
             <Modal isOpen={isOpen}
                 onClose={() => {

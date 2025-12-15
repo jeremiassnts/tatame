@@ -1,4 +1,7 @@
+import { useAttachments } from "@/src/api/use-attachments";
+import { queryClient } from "@/src/lib/react-query";
 import { Database } from "@/src/types/database.types";
+import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import AvatarWithDialog from "../ui/avatar/avatar-with-dialog";
 import { Box } from "../ui/box";
@@ -14,6 +17,25 @@ interface ProfileGymCardProps {
 
 export function ProfileGymCard({ gym }: ProfileGymCardProps) {
   const router = useRouter();
+  const { updateGymLogo, uploadImage } = useAttachments();
+  const { user } = useUser();
+
+  async function updateGymImage(logo: string) {
+    if (!gym?.id) return;
+    //tries to upload the logo 4 times
+    for (let i = 0; i < 4; i++) {
+      try {
+        const imageUrl = await uploadImage.mutateAsync(logo);
+        if (!imageUrl) continue;
+        await updateGymLogo.mutateAsync({ logo: imageUrl, gymId: gym.id });
+        queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
+        break;
+      } catch (error) {
+        console.log(JSON.stringify(error, null, 2));
+        continue;
+      }
+    }
+  }
 
   if (!gym) {
     return (
@@ -28,7 +50,7 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
 
   return (
     <HStack className="bg-neutral-800 w-full p-5 rounded-md gap-4 items-center justify-center mt-4">
-      <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" />
+      <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={updateGymImage} />
       <VStack className="justify-center items-start max-w-[80%]">
         <Text className="text-white text-lg font-bold">{gym.name}</Text>
         <Text className="text-neutral-400 text-md">{gym.address}</Text>
