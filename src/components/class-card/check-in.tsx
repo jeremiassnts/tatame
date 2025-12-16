@@ -64,6 +64,7 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
         queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classData.id] });
+        queryClient.invalidateQueries({ queryKey: ["last-checkins"] });
         setIsLoading(false);
       })
       .catch(() => {
