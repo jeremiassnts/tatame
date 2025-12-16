@@ -107,7 +107,6 @@ export default function CreateGraduation() {
             placeholder="Selecione a faixa"
             onValueChange={(value) => {
               setValue("belt", value)
-              console.log(value)
               const beltDegrees = getBeltDegrees(value)
               setDegrees(beltDegrees)
             }}

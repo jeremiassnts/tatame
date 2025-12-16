@@ -38,7 +38,6 @@ export function useAttachments() {
 
   const updateUserImage = useMutation({
     mutationFn: async (props: { image: string; userId: number }) => {
-      console.log(props);
       const { image, userId } = props;
       if (!image) return;
       const formData = new FormData();

@@ -7,7 +7,8 @@ export function useVersions() {
     const getLastVersion = useQuery({
         queryKey: ["versions"],
         queryFn: async () => {
-            const { data, error } = await supabase.from("versions").select("*").eq("disabled_at", null).limit(1);
+            const { data, error } = await supabase.from("versions").select("*").is("disabled_at", null).limit(1);
+
             if (error) {
                 throw error;
             }

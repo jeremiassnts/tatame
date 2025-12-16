@@ -1,3 +1,4 @@
+import * as Application from "expo-application";
 import * as Linking from 'expo-linking';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, ButtonText } from "../ui/button";
@@ -6,7 +7,10 @@ import { Image } from "../ui/image";
 import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
-export function VersionAlert() {
+interface VersionAlertProps {
+    lastVersion: string;
+}
+export function VersionAlert({ lastVersion }: VersionAlertProps) {
     const googlePlayAppLink = process.env.EXPO_PUBLIC_GOOGLE_PLAY_APP_LINK;
     function handleUpdateVersion() {
         Linking.openURL(googlePlayAppLink as string);
@@ -26,7 +30,7 @@ export function VersionAlert() {
                     Versão obsoleta
                 </Heading>
                 <Text className="text-center">
-                    Por favor, atualize o aplicativo para a versão mais recente.
+                    Por favor, atualize o aplicativo para a versão mais recente. (versão atual: {Application.nativeApplicationVersion}) (versão necessária: {lastVersion})
                 </Text>
                 <Button
                     className="mt-4 bg-violet-700"

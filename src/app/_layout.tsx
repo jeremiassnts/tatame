@@ -37,8 +37,8 @@ function RootLayout() {
   const { getLastVersion } = useVersions();
   const { data: lastVersion } = getLastVersion
 
-  if (!__DEV__ && lastVersion?.appVersion !== Application.nativeBuildVersion) {
-    return <VersionAlert />
+  if (!__DEV__ && lastVersion && lastVersion?.appVersion !== Application.nativeApplicationVersion) {
+    return <VersionAlert lastVersion={lastVersion?.appVersion} />
   }
 
   return (
