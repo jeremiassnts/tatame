@@ -46,7 +46,7 @@ export function useCheckins() {
 
       const { data, error } = await supabase
         .from("checkins")
-        .select("*, users(clerk_user_id)")
+        .select("*, users!inner(clerk_user_id)")
         .eq("users.clerk_user_id", user?.id!)
         .eq("date", new Date().toISOString());
 
@@ -66,7 +66,7 @@ export function useCheckins() {
 
       const { data, error } = await supabase
         .from("checkins")
-        .select("*, users(clerk_user_id)")
+        .select("*, users!inner(clerk_user_id)")
         .eq("users.clerk_user_id", user?.id!)
         .gte('date', subDays(new Date(), 15).toISOString())
         .lte('date', new Date().toISOString())
