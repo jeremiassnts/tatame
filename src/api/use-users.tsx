@@ -12,6 +12,7 @@ export interface CreateUserProps {
 }
 
 export interface Student {
+  email: string;
   approved_at: string | null;
   denied_at: string | null;
   id: number;
@@ -151,6 +152,7 @@ export function useUsers() {
             degree: user.graduations?.[0]?.degree,
             approved_at: user.approved_at,
             denied_at: user.denied_at,
+            email: clerkUser?.email_addresses?.[0]?.email_address,
           } as Student;
         });
       },
@@ -161,7 +163,7 @@ export function useUsers() {
     mutationFn: async (userId: number) => {
       const { error } = await supabase
         .from("users")
-        .update({ approved_at: new Date().toISOString() })
+        .update({ approved_at: new Date().toISOString(), denied_at: null })
         .eq("id", userId);
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao aprovar o aluno");
@@ -174,7 +176,7 @@ export function useUsers() {
     mutationFn: async (userId: number) => {
       const { error } = await supabase
         .from("users")
-        .update({ denied_at: new Date().toISOString() })
+        .update({ denied_at: new Date().toISOString(), approved_at: null })
         .eq("id", userId);
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao negar o aluno");

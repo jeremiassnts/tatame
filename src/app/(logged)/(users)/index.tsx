@@ -13,6 +13,7 @@ export default function Users() {
 
     const studentsWaitingApproval = students?.filter((student) => student.id !== userProfile?.id && !student.approved_at && !student.denied_at)
     const studentsApproved = students?.filter((student) => student.id !== userProfile?.id && student.approved_at)
+    const studentsDenied = students?.filter((student) => student.id !== userProfile?.id && student.denied_at)
 
     return <SafeAreaView className="pt-10 pl-5 pr-5 flex-1 flex flex-col items-start">
         <Badge
@@ -34,6 +35,9 @@ export default function Users() {
                 <StudentRow key={student.id} student={student} />
             ))}
             {studentsApproved?.map((student) => (
+                <StudentRow key={student.id} student={student} />
+            ))}
+            {studentsDenied?.map((student) => (
                 <StudentRow key={student.id} student={student} />
             ))}
         </ScrollView>
