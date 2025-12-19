@@ -32,7 +32,8 @@ export default function Home() {
       role: tempUserType as UserType,
     });
     setUserType(tempUserType as UserType);
-    router.replace("/(logged)/(home)/user-approval-check");
+    // router.replace("/(logged)/(home)/user-approval-check");
+    router.replace("/(logged)/(home)/home");
   }
 
   useEffect(() => {
@@ -42,12 +43,14 @@ export default function Home() {
         const user = await getUserByClerkUserId(userId ?? "");
         if (user && user.role) {
           setUserType(user.role as UserType);
-          router.replace("/(logged)/(home)/user-approval-check");
+          // router.replace("/(logged)/(home)/user-approval-check");
+          router.replace("/(logged)/(home)/home");
         } else {
           setIsUserTypeLoaded(true);
         }
       } else {
-        router.replace("/(logged)/(home)/user-approval-check");
+        // router.replace("/(logged)/(home)/user-approval-check");
+        router.replace("/(logged)/(home)/home");
       }
     };
     fetchUserType();
@@ -94,8 +97,8 @@ export default function Home() {
                 size="lg"
                 variant="elevated"
                 className={`flex flex-row items-center gap-4 border-[1px] ${tempUserType === user_type.value
-                    ? "border-violet-800"
-                    : "border-neutral-900"
+                  ? "border-violet-800"
+                  : "border-neutral-900"
                   }`}
               >
                 <Box className="bg-violet-800 p-2 rounded-full">

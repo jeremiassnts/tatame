@@ -14,12 +14,10 @@ export default function Layout() {
   const { getRole } = useRoles()
   const { data: role } = getRole
 
-  const drawerDisplay = !isLoadingStudentsApprovalStatus && studentsApprovalStatus ? "flex" : "none"
-  const headerShown = pathname !== "userapprovalcheck"
+  const isApproved = role === "MANAGER" || studentsApprovalStatus
 
   return (
     <Drawer screenOptions={{
-      headerShown: headerShown,
       headerStyle: {
         backgroundColor: COLORS.background,
         height: 100,
@@ -29,7 +27,7 @@ export default function Layout() {
       drawerType: "slide",
       drawerStyle: {
         backgroundColor: COLORS.black,
-        display: drawerDisplay
+        // display: drawerDisplay
       },
       headerTintColor: COLORS.active,
       headerTitleAlign: 'center',
@@ -69,6 +67,9 @@ export default function Layout() {
       <Drawer.Screen name="(schedule)" options={{
         drawerLabel: "Agenda",
         title: "Agenda",
+        drawerItemStyle: {
+          display: role === "MANAGER" ? "flex" : "none"
+        },
         drawerIcon: () => (
           <Icon
             as={CalendarDaysIcon}
@@ -93,6 +94,9 @@ export default function Layout() {
       }} />
       <Drawer.Screen name="(gym)" options={{
         drawerLabel: "Academia",
+        drawerItemStyle: {
+          display: isApproved ? "flex" : "none"
+        },
         title: "Academia",
         drawerIcon: () => (
           <Icon

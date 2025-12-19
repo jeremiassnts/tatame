@@ -1,10 +1,5 @@
-import { useAttachments } from "@/src/api/use-attachments";
 import { useGyms } from "@/src/api/use-gyms";
-import { useUsers } from "@/src/api/use-users";
-import DateTimePicker from "@/src/components/date-time-picker";
-import ImageViewer from "@/src/components/image-picker";
 import { SelectInput } from "@/src/components/select-input";
-import { TextInput } from "@/src/components/text-input";
 import {
   Button,
   ButtonIcon,
@@ -12,17 +7,16 @@ import {
   ButtonText,
 } from "@/src/components/ui/button";
 import { Heading } from "@/src/components/ui/heading";
-import { AddIcon, ArrowLeftIcon } from "@/src/components/ui/icon";
+import { HStack } from "@/src/components/ui/hstack";
+import { AddIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
-import { useToast } from "@/src/hooks/use-toast";
 import { queryClient } from "@/src/lib/react-query";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
 
@@ -58,7 +52,7 @@ export default function SelectGym() {
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
         queryClient.invalidateQueries({ queryKey: ["user-profile"] });
         reset();
-        router.replace("/(logged)/(home)/home");
+        router.replace("/(logged)/(home)/user-approval-check");
       })
       .catch((err) => {
         console.log(JSON.stringify(err, null, 2));
@@ -66,19 +60,10 @@ export default function SelectGym() {
   }
 
   return (
-    <SafeAreaView className="p-5">
-      <VStack className="items-start gap-6">
-        <Button
-          action="secondary"
-          onPress={() => router.back()}
-          className="bg-neutral-800"
-        >
-          <ButtonIcon as={ArrowLeftIcon} />
-        </Button>
-      </VStack>
+    <SafeAreaView className="pl-5 pr-5">
       <ScrollView>
         <VStack className="gap-2">
-          <VStack className="pt-8 pb-2">
+          <VStack className="pb-2">
             <Heading className="text-white" size="xl">
               Seleção de academia
             </Heading>
@@ -97,20 +82,29 @@ export default function SelectGym() {
               onValueChange={(value) => setValue("gymId", Number(value))}
             />
           )}
-          <Button
-            action="primary"
-            onPress={handleSubmit(handleSelectGym)}
-            className="mt-4 bg-violet-800"
-            disabled={isAssociatingGym}
-          >
-            {isAssociatingGym && <ButtonSpinner color="white" />}
-            {!isAssociatingGym && (
-              <ButtonText className="text-white">Selecionar</ButtonText>
-            )}
-            {!isAssociatingGym && (
-              <ButtonIcon as={AddIcon} size="md" color="white" />
-            )}
-          </Button>
+          <HStack className="gap-2 w-full pt-4 items-center justify-center">
+            <Button
+              action="secondary"
+              onPress={() => router.back()}
+              className="bg-neutral-800"
+            >
+              <ButtonText>Voltar</ButtonText>
+            </Button>
+            <Button
+              action="primary"
+              onPress={handleSubmit(handleSelectGym)}
+              className="bg-violet-800"
+              disabled={isAssociatingGym}
+            >
+              {isAssociatingGym && <ButtonSpinner color="white" />}
+              {!isAssociatingGym && (
+                <ButtonText className="text-white">Selecionar</ButtonText>
+              )}
+              {!isAssociatingGym && (
+                <ButtonIcon as={AddIcon} size="md" color="white" />
+              )}
+            </Button>
+          </HStack>
         </VStack>
       </ScrollView>
     </SafeAreaView>

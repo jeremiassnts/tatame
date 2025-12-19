@@ -11,10 +11,11 @@ import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
-  const { getUserProfile } = useUsers();
+  const { getUserProfile, getStudentsApprovalStatus } = useUsers();
   const { data: userProfile, isLoading } = getUserProfile;
   const { updateUserImage } = useAttachments();
   const { user } = useUser();
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus
 
   return (
     <SafeAreaView>
@@ -44,7 +45,7 @@ export default function Profile() {
             {userProfile.emailAddresses?.[0]?.emailAddress}
           </Text>
           <GraduationCard showBelt={true} />
-          <ProfileGymCard gym={userProfile.gym?.data} />
+          {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym?.data} />}
           <SignOutButton className="mt-14" />
         </VStack>
       )}

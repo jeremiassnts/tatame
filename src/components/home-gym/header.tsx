@@ -1,4 +1,5 @@
 import useGraduation from "@/src/api/use-graduation";
+import { useUsers } from "@/src/api/use-users";
 import { BELT_COLORS } from "@/src/constants/belts";
 import { Database } from "@/src/types/database.types";
 import { useUser } from "@clerk/clerk-expo";
@@ -16,7 +17,9 @@ interface HomeGymHeaderProps {
 export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
   const { user } = useUser();
   const { getGraduation } = useGraduation();
-  const { data: graduation, isLoading: isLoadingGraduation } = getGraduation;
+  const { data: graduation } = getGraduation;
+  const { getStudentsApprovalStatus } = useUsers();
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus
 
   const shift = useMemo(() => {
     const now = new Date();
@@ -32,7 +35,7 @@ export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
   return (
     <HStack className="gap-3 items-center">
       <HStack className="flex-row-reverse">
-        {gym && (
+        {gym && studentsApprovalStatus && (
           <AvatarWithDialog
             fullName={gym.name}
             imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`}
