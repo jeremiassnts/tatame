@@ -32,7 +32,7 @@ export default function Home() {
       role: tempUserType as UserType,
     });
     setUserType(tempUserType as UserType);
-    router.replace("/(logged)/(home)/home");
+    router.replace("/(logged)/(home)/user-approval-check");
   }
 
   useEffect(() => {
@@ -42,12 +42,12 @@ export default function Home() {
         const user = await getUserByClerkUserId(userId ?? "");
         if (user && user.role) {
           setUserType(user.role as UserType);
-          router.replace("/(logged)/(home)/home");
+          router.replace("/(logged)/(home)/user-approval-check");
         } else {
           setIsUserTypeLoaded(true);
         }
       } else {
-        router.replace("/(logged)/(home)/home");
+        router.replace("/(logged)/(home)/user-approval-check");
       }
     };
     fetchUserType();
@@ -93,11 +93,10 @@ export default function Home() {
               <Card
                 size="lg"
                 variant="elevated"
-                className={`flex flex-row items-center gap-4 border-[1px] ${
-                  tempUserType === user_type.value
+                className={`flex flex-row items-center gap-4 border-[1px] ${tempUserType === user_type.value
                     ? "border-violet-800"
                     : "border-neutral-900"
-                }`}
+                  }`}
               >
                 <Box className="bg-violet-800 p-2 rounded-full">
                   <Icon color="white" as={UserIcon} size="xl" />

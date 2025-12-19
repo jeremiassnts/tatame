@@ -4,16 +4,30 @@ import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import axiosClient from "../lib/axios";
+import { useRoles } from "./use-roles";
 
 export interface CreateUserProps {
   clerkUserId: string;
   role: UserType;
 }
 
+export interface Student {
+  approved_at: string | null;
+  denied_at: string | null;
+  id: number;
+  clerk_user_id: string;
+  gym_id: number;
+  name: string;
+  imageUrl: string;
+  belt: string;
+  degree: number;
+}
+
 export function useUsers() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
+  const { getRoleByUserId } = useRoles();
 
   const createUser = useMutation({
     mutationFn: async ({ clerkUserId, role }: CreateUserProps) => {
@@ -112,6 +126,84 @@ export function useUsers() {
     },
   });
 
+  const getStudentsByGymId = (gymId: number) => {
+    return useQuery({
+      queryKey: ["students-by-gym-id", gymId],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("users")
+          .select("*, graduations(belt, degree)")
+          .eq("gym_id", gymId);
+        if (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao buscar os alunos");
+          throw error;
+        }
+        const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
+        return data.map((user) => {
+          const clerkUser = clerkUsers?.find(
+            (u) => u.id === user.clerk_user_id
+          );
+          return {
+            ...user,
+            name: `${clerkUser?.first_name} ${clerkUser?.last_name}`,
+            imageUrl: clerkUser?.image_url,
+            belt: user.graduations?.[0]?.belt,
+            degree: user.graduations?.[0]?.degree,
+            approved_at: user.approved_at,
+            denied_at: user.denied_at,
+          } as Student;
+        });
+      },
+    });
+  }
+
+  const approveStudent = useMutation({
+    mutationFn: async (userId: number) => {
+      const { error } = await supabase
+        .from("users")
+        .update({ approved_at: new Date().toISOString() })
+        .eq("id", userId);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao aprovar o aluno");
+        throw error;
+      }
+    },
+  });
+
+  const denyStudent = useMutation({
+    mutationFn: async (userId: number) => {
+      const { error } = await supabase
+        .from("users")
+        .update({ denied_at: new Date().toISOString() })
+        .eq("id", userId);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao negar o aluno");
+        throw error;
+      }
+    },
+  });
+
+  const getStudentsApprovalStatus = useQuery({
+    queryKey: ["students-approval-status", user?.id],
+    queryFn: async () => {
+      const role = await getRoleByUserId();
+      if (role === "MANAGER") {
+        return true;
+      }
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("clerk_user_id", user?.id!);
+
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao buscar o status de aprovação dos alunos");
+        throw error;
+      }
+
+      return data[0].approved_at && !data[0].denied_at;
+    },
+  });
+
   return {
     createUser,
     getUserByClerkUserId,
@@ -119,5 +211,9 @@ export function useUsers() {
     getClerkUserById,
     getClerkUsers,
     getUserProfile,
+    getStudentsByGymId,
+    approveStudent,
+    denyStudent,
+    getStudentsApprovalStatus,
   };
 }

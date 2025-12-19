@@ -8,23 +8,26 @@ export function useRoles() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
 
+  const getRoleByUserId = async () => {
+    if (!user?.id) return null;
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("clerk_user_id", user?.id);
+    if (error) {
+      showErrorToast("Erro", "Ocorreu um erro ao buscar o cargo");
+      throw error;
+    }
+    return data[0].role;
+  }
+
   const getRole = useQuery({
     queryKey: ["role-by-user", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("clerk_user_id", user?.id);
-      if (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao buscar o cargo");
-        throw error;
-      }
-      return data[0].role;
-    },
+    queryFn: getRoleByUserId
   });
 
   return {
     getRole,
+    getRoleByUserId,
   };
 }

@@ -10,6 +10,7 @@ export default function Layout() {
       }}
     >
       <Stack.Screen name="user-type-selection" />
+      <Stack.Screen name="user-approval-check" />
       <Stack.Screen name="home" />
       <Stack.Screen name="create-gym" />
       <Stack.Screen name="select-gym" />
