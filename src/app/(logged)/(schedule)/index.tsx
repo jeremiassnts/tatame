@@ -1,7 +1,6 @@
 import { useClass } from "@/src/api/use-class";
 import { useRoles } from "@/src/api/use-roles";
 import { ClassCard } from "@/src/components/class-card";
-import { Badge, BadgeText } from "@/src/components/ui/badge";
 import { Box } from "@/src/components/ui/box";
 import { Button, ButtonIcon } from "@/src/components/ui/button";
 import { AddIcon } from "@/src/components/ui/icon";
@@ -80,7 +79,7 @@ export default function Schedule() {
   )?.value;
 
   return (
-    <SafeAreaView className="pt-10 pl-5 pr-5 flex-1 flex flex-col items-start">
+    <SafeAreaView className="pl-5 pr-5 flex-1 flex flex-col items-start">
       {role === "MANAGER" && (
         <Button
           size="md"
@@ -91,14 +90,6 @@ export default function Schedule() {
           <ButtonIcon as={AddIcon} color="white" />
         </Button>
       )}
-      <Badge
-        size="lg"
-        variant="solid"
-        action="muted"
-        className="rounded-sm self-start mb-4"
-      >
-        <BadgeText>Agenda</BadgeText>
-      </Badge>
       <Box className="w-full max-h-[100px]">
         <WeekDays
           weekDays={weekDays}

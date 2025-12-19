@@ -1,9 +1,9 @@
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
-import { Box } from "@/src/components/ui/box";
 import { CalendarDaysIcon, HomeIcon, Icon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
 import { COLORS } from "@/src/constants/colors";
-import { Tabs, useSegments } from "expo-router";
+import { useSegments } from "expo-router";
+import { Drawer } from 'expo-router/drawer';
 
 export default function Layout() {
   const segments = useSegments();
@@ -14,71 +14,94 @@ export default function Layout() {
   const { getRole } = useRoles()
   const { data: role } = getRole
 
+  const drawerDisplay = !isLoadingStudentsApprovalStatus && studentsApprovalStatus ? "flex" : "none"
+  const headerShown = pathname !== "userapprovalcheck"
+
   return (
-    <Tabs
-      screenOptions={{
-        tabBarBackground: () => <Box className="bg-neutral-900" />,
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          paddingTop: 5,
-          display: !isLoadingStudentsApprovalStatus && studentsApprovalStatus ? "flex" : "none",
+    <Drawer screenOptions={{
+      headerShown: headerShown,
+      headerStyle: {
+        backgroundColor: COLORS.background,
+        height: 100,
+        elevation: 0,
+        shadowOpacity: 0,
+      },
+      drawerType: "slide",
+      drawerStyle: {
+        backgroundColor: COLORS.black,
+        display: drawerDisplay
+      },
+      headerTintColor: COLORS.active,
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        color: COLORS.active,
+        fontSize: 13,
+        backgroundColor: '#404040',
+        textTransform: 'uppercase',
+        paddingLeft: 8,
+        paddingRight: 8,
+        paddingTop: 2,
+        paddingBottom: 2,
+        fontWeight: 'normal',
+      },
+      drawerActiveBackgroundColor: '#262626',
+      drawerInactiveBackgroundColor: 'transparent',
+      drawerItemStyle: {
+        borderRadius: 4,
+      },
+      drawerContentContainerStyle: {
+        gap: 5,
+      },
+      drawerActiveTintColor: COLORS.active,
+      drawerInactiveTintColor: COLORS.inactive,
+    }}>
+      <Drawer.Screen name="(home)" options={{
+        drawerLabel: "Home",
+        title: "Home",
+        drawerIcon: () => (
+          <Icon
+            as={HomeIcon}
+            size="md"
+            color={pathname === "home" ? COLORS.active : COLORS.inactive}
+          />
+        ),
+      }} />
+      <Drawer.Screen name="(schedule)" options={{
+        drawerLabel: "Agenda",
+        title: "Agenda",
+        drawerIcon: () => (
+          <Icon
+            as={CalendarDaysIcon}
+            size="md"
+            color={pathname === "schedule" ? COLORS.active : COLORS.inactive}
+          />
+        ),
+      }} />
+      <Drawer.Screen name="(users)" options={{
+        drawerItemStyle: {
+          display: role === "MANAGER" ? "flex" : "none"
         },
-      }}
-    >
-      <Tabs.Screen
-        name="(home)"
-        options={{
-          title: "Home",
-          tabBarIcon: () => (
-            <Icon
-              as={HomeIcon}
-              size="md"
-              color={pathname === "home" ? COLORS.active : COLORS.inactive}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="(schedule)"
-        options={{
-          title: "Agenda",
-          tabBarIcon: () => (
-            <Icon
-              as={CalendarDaysIcon}
-              size="md"
-              color={pathname === "schedule" ? COLORS.active : COLORS.inactive}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="(users)"
-        options={{
-          href: role === "MANAGER" ? "/(logged)/(users)" : null,
-          title: "Alunos",
-          tabBarIcon: () => (
-            <Icon
-              as={UsersIcon}
-              size="md"
-              color={pathname === "users" ? COLORS.active : COLORS.inactive}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="(profile)"
-        options={{
-          title: "Perfil",
-          tabBarIcon: () => (
-            <Icon
-              as={UserIcon}
-              size="md"
-              color={pathname === "profile" ? COLORS.active : COLORS.inactive}
-            />
-          ),
-        }}
-      />
-    </Tabs >
+        drawerLabel: "Alunos",
+        title: "Alunos",
+        drawerIcon: () => (
+          <Icon
+            as={UsersIcon}
+            size="md"
+            color={pathname === "users" ? COLORS.active : COLORS.inactive}
+          />
+        ),
+      }} />
+      <Drawer.Screen name="(profile)" options={{
+        drawerLabel: "Perfil",
+        title: "Perfil",
+        drawerIcon: () => (
+          <Icon
+            as={UserIcon}
+            size="md"
+            color={pathname === "profile" ? COLORS.active : COLORS.inactive}
+          />
+        ),
+      }} />
+    </Drawer>
   );
 }

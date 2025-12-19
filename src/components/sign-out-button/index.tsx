@@ -2,11 +2,13 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useUserTypeCache } from "@/src/hooks/use-user-type-cache";
 import { useClerk } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import { Text, TouchableOpacity } from "react-native";
-import { Button, ButtonIcon, ButtonText } from "../ui/button";
-import { ExternalLinkIcon } from "../ui/icon";
+import { Button, ButtonText } from "../ui/button";
 
-export const SignOutButton = () => {
+interface SignOutButtonProps {
+  className?: string;
+}
+
+export const SignOutButton = ({ className }: SignOutButtonProps) => {
   // Use `useClerk()` to access the `signOut()` function
   const { signOut } = useClerk();
   const router = useRouter();
@@ -30,10 +32,11 @@ export const SignOutButton = () => {
 
   return (
     <Button
-      variant="link"
+      variant="outline"
       size="md"
       action="negative"
       onPress={handleSignOut}
+      className={className}
     >
       <ButtonText className="text-error-500">Encerrar sessão</ButtonText>
     </Button>

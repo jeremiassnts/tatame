@@ -4,8 +4,6 @@ import { GraduationCard } from "@/src/components/graduation-card";
 import { ProfileGymCard } from "@/src/components/profile-gym-card";
 import { SignOutButton } from "@/src/components/sign-out-button";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
-import { Badge, BadgeText } from "@/src/components/ui/badge";
-import { HStack } from "@/src/components/ui/hstack";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
@@ -20,12 +18,6 @@ export default function Profile() {
 
   return (
     <SafeAreaView>
-      <HStack className="justify-between items-center p-5">
-        <Badge size="lg" variant="solid" action="muted" className="rounded-sm">
-          <BadgeText>Perfil</BadgeText>
-        </Badge>
-        <SignOutButton />
-      </HStack>
       {isLoading && (
         <VStack className="gap-4 items-start justify-start p-5">
           <Skeleton className="w-[80px] h-[80px] rounded-full bg-neutral-800" />
@@ -37,7 +29,7 @@ export default function Profile() {
         </VStack>
       )}
       {!isLoading && userProfile && (
-        <VStack className="items-center justify-center pt-8 pl-5 pr-5">
+        <VStack className="items-center justify-center pl-5 pr-5">
           <AvatarWithDialog fullName={userProfile.fullName}
             imageUrl={user?.imageUrl ?? ""}
             size="xl"
@@ -53,6 +45,7 @@ export default function Profile() {
           </Text>
           <GraduationCard showBelt={true} />
           <ProfileGymCard gym={userProfile.gym?.data} />
+          <SignOutButton className="mt-14" />
         </VStack>
       )}
     </SafeAreaView>
