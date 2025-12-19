@@ -19,14 +19,16 @@ import { Grid, GridItem } from "@/src/components/ui/grid";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
 import {
-  ArrowLeftIcon,
   CheckIcon,
-  EditIcon,
+  EditIcon
 } from "@/src/components/ui/icon";
+import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { Days } from "@/src/constants/date";
 import { Modalities } from "@/src/constants/modalities";
+import { queryClient } from "@/src/lib/react-query";
+import { ClassRow } from "@/src/types/extendend-database.types";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parse } from "date-fns";
@@ -36,9 +38,6 @@ import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
-import { ClassRow } from "@/src/types/extendend-database.types";
-import { Skeleton } from "@/src/components/ui/skeleton";
-import { queryClient } from "@/src/lib/react-query";
 
 const createClassFormSchema = z.object({
   description: z.string().min(1, "A descrição da aula é obrigatória"),
@@ -95,7 +94,7 @@ export default function EditClass() {
       reset();
       queryClient.invalidateQueries({ queryKey: ["classes"] });
       router.replace("/(logged)/(schedule)");
-    } catch {}
+    } catch { }
   }
 
   useEffect(() => {
@@ -127,16 +126,7 @@ export default function EditClass() {
   const days = watch("days");
 
   return (
-    <SafeAreaView className="p-5">
-      <VStack className="items-start gap-6">
-        <Button
-          action="secondary"
-          onPress={() => router.back()}
-          className="bg-neutral-800"
-        >
-          <ButtonIcon as={ArrowLeftIcon} />
-        </Button>
-      </VStack>
+    <SafeAreaView className="pl-5 pr-5">
       {isLoading && (
         <VStack className="gap-4 pt-10">
           <Skeleton className="w-full h-[50px] rounded-md bg-neutral-800" />
@@ -148,7 +138,7 @@ export default function EditClass() {
       )}
       {!isLoading && (
         <ScrollView>
-          <VStack className="pt-10 gap-2">
+          <VStack className="gap-2">
             <VStack className="pb-2">
               <Heading className="text-white" size="xl">
                 Edição de aula
@@ -238,20 +228,29 @@ export default function EditClass() {
                 {errors?.days?.message}
               </Text>
             )}
-            <Button
-              action="primary"
-              onPress={handleSubmit(handleEditClass)}
-              className="mt-4 bg-violet-800"
-              disabled={isEditingClass}
-            >
-              {isEditingClass && <ButtonSpinner color="white" />}
-              {!isEditingClass && (
-                <ButtonText className="text-white">Salvar</ButtonText>
-              )}
-              {!isEditingClass && (
-                <ButtonIcon as={EditIcon} size="md" color="white" />
-              )}
-            </Button>
+            <HStack className="gap-2 w-full items-center justify-center mt-4">
+              <Button
+                action="secondary"
+                onPress={() => router.back()}
+                className="bg-neutral-800"
+              >
+                <ButtonText>Voltar</ButtonText>
+              </Button>
+              <Button
+                action="primary"
+                onPress={handleSubmit(handleEditClass)}
+                className="bg-violet-800"
+                disabled={isEditingClass}
+              >
+                {isEditingClass && <ButtonSpinner color="white" />}
+                {!isEditingClass && (
+                  <ButtonText className="text-white">Salvar</ButtonText>
+                )}
+                {!isEditingClass && (
+                  <ButtonIcon as={EditIcon} size="md" color="white" />
+                )}
+              </Button>
+            </HStack>
           </VStack>
         </ScrollView>
       )}

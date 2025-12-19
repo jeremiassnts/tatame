@@ -11,7 +11,7 @@ import {
   ButtonText,
 } from "@/src/components/ui/button";
 import { Heading } from "@/src/components/ui/heading";
-import { AddIcon, ArrowLeftIcon } from "@/src/components/ui/icon";
+import { AddIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useToast } from "@/src/hooks/use-toast";
@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
 
@@ -125,16 +125,7 @@ export default function CreateGym() {
   const address = watch("address");
 
   return (
-    <SafeAreaView className="p-5">
-      <VStack className="items-start gap-6">
-        <Button
-          action="secondary"
-          onPress={() => router.back()}
-          className="bg-neutral-800"
-        >
-          <ButtonIcon as={ArrowLeftIcon} />
-        </Button>
-      </VStack>
+    <SafeAreaView className="pl-5 pr-5">
       <ScrollView>
         <VStack className="pt-10 gap-2">
           <ImageViewer
@@ -188,19 +179,19 @@ export default function CreateGym() {
               returnKeyType="next"
               keyboardType="numeric"
             />
-              <TextInput
-                value={address.street}
-                onChangeText={(text) => {
-                  setValue("address.street", text);
-                }}
-                placeholder="Digite a rua"
-                error={errors.address?.street?.message}
-                {...register("address.street")}
-                onSubmitEditing={() =>
-                  setFocus("address.number", { shouldSelect: true })
-                }
-                returnKeyType="next"
-              />
+            <TextInput
+              value={address.street}
+              onChangeText={(text) => {
+                setValue("address.street", text);
+              }}
+              placeholder="Digite a rua"
+              error={errors.address?.street?.message}
+              {...register("address.street")}
+              onSubmitEditing={() =>
+                setFocus("address.number", { shouldSelect: true })
+              }
+              returnKeyType="next"
+            />
             <TextInput
               value={address.number}
               onChangeText={(text) => {

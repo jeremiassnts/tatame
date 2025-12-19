@@ -1,8 +1,6 @@
 import { useClass } from "@/src/api/use-class";
-import { useGyms } from "@/src/api/use-gyms";
 import { useUsers } from "@/src/api/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
-import { SelectInput } from "@/src/components/select-input";
 import { TextInput } from "@/src/components/text-input";
 import {
   Button,
@@ -20,11 +18,10 @@ import {
 import { Grid, GridItem } from "@/src/components/ui/grid";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
-import { AddIcon, ArrowLeftIcon, CheckIcon } from "@/src/components/ui/icon";
+import { AddIcon, CheckIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { Days } from "@/src/constants/date";
-import { Modalities } from "@/src/constants/modalities";
 import { queryClient } from "@/src/lib/react-query";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -107,18 +104,9 @@ export default function CreateClass() {
   const days = watch("days");
 
   return (
-    <SafeAreaView className="p-5">
-      <VStack className="items-start gap-6">
-        <Button
-          action="secondary"
-          onPress={() => router.back()}
-          className="bg-neutral-800"
-        >
-          <ButtonIcon as={ArrowLeftIcon} />
-        </Button>
-      </VStack>
+    <SafeAreaView className="pl-5 pr-5">
       <ScrollView>
-        <VStack className="pt-10 gap-2">
+        <VStack className="gap-2">
           <VStack className="pb-2">
             <Heading className="text-white" size="xl">
               Cadastro de aula
@@ -198,20 +186,29 @@ export default function CreateClass() {
               {errors?.days?.message}
             </Text>
           )}
-          <Button
-            action="primary"
-            onPress={handleSubmit(handleCreateClass)}
-            className="mt-4 bg-violet-800"
-            disabled={isCreatingClass}
-          >
-            {isCreatingClass && <ButtonSpinner color="white" />}
-            {!isCreatingClass && (
-              <ButtonText className="text-white">Cadastrar</ButtonText>
-            )}
-            {!isCreatingClass && (
-              <ButtonIcon as={AddIcon} size="md" color="white" />
-            )}
-          </Button>
+          <HStack className="gap-2 w-full items-center justify-center mt-4">
+            <Button
+              action="secondary"
+              onPress={() => router.back()}
+              className="bg-neutral-800"
+            >
+              <ButtonText>Voltar</ButtonText>
+            </Button>
+            <Button
+              action="primary"
+              onPress={handleSubmit(handleCreateClass)}
+              className="bg-violet-800"
+              disabled={isCreatingClass}
+            >
+              {isCreatingClass && <ButtonSpinner color="white" />}
+              {!isCreatingClass && (
+                <ButtonText className="text-white">Cadastrar</ButtonText>
+              )}
+              {!isCreatingClass && (
+                <ButtonIcon as={AddIcon} size="md" color="white" />
+              )}
+            </Button>
+          </HStack>
         </VStack>
       </ScrollView>
     </SafeAreaView>

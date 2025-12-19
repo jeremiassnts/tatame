@@ -84,7 +84,7 @@ export default function Schedule() {
         <Button
           size="md"
           variant="solid"
-          className="bg-violet-800 rounded-full w-[50px] h-[50px] absolute bottom-5 right-5 z-10"
+          className="bg-violet-800 rounded-full w-[50px] h-[50px] absolute bottom-20 right-5 z-10"
           onPress={() => router.push("/(logged)/(schedule)/create-class")}
         >
           <ButtonIcon as={AddIcon} color="white" />
