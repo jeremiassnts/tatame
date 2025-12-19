@@ -21,6 +21,14 @@ export const BELTS = [
   },
 ];
 
+export const BELT_ORDER = {
+  white: 5,
+  blue: 4,
+  purple: 3,
+  brown: 2,
+  black: 1,
+};
+
 export const BELT_COLORS = {
   white: "#FFFFFF",
   blue: "#0068FD",

@@ -1,5 +1,6 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { BELT_ORDER } from "../constants/belts";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
@@ -35,6 +36,7 @@ export function useUsers() {
       const { data, error } = await supabase.from("users").insert({
         clerk_user_id: clerkUserId,
         role: role,
+        approved_at: role === "MANAGER" ? new Date().toISOString() : null,
       });
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar o usuário");
@@ -95,6 +97,8 @@ export function useUsers() {
         `/clerk-get-users`,
         {
           user_id: userIds,
+          limit: userIds.length,
+          offset: 0,
         },
         {
           headers: {
@@ -144,6 +148,9 @@ export function useUsers() {
           const clerkUser = clerkUsers?.find(
             (u) => u.id === user.clerk_user_id
           );
+          if (!clerkUser) {
+            console.log("Clerk user not found");
+          }
           return {
             ...user,
             name: `${clerkUser?.first_name} ${clerkUser?.last_name}`,
@@ -154,6 +161,15 @@ export function useUsers() {
             denied_at: user.denied_at,
             email: clerkUser?.email_addresses?.[0]?.email_address,
           } as Student;
+        }).sort((a, b) => {
+          if (a.belt === b.belt) {
+            if (a.degree === b.degree) {
+              return a.name.localeCompare(b.name);
+            }
+            return b.degree! - a.degree!;
+          }
+          //@ts-ignore
+          return BELT_ORDER[a.belt] - BELT_ORDER[b.belt];
         });
       },
     });

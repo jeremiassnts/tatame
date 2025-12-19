@@ -1,3 +1,4 @@
+import { useRoles } from "@/src/api/use-roles";
 import { Student, useUsers } from "@/src/api/use-users";
 import { BELT_COLORS, BELTS } from "@/src/constants/belts";
 import { DEGREES } from "@/src/constants/degrees";
@@ -20,6 +21,8 @@ interface StudentRowProps {
 
 export function StudentRow({ student }: StudentRowProps) {
     const { approveStudent, denyStudent } = useUsers()
+    const { getRole } = useRoles()
+    const { data: role } = getRole
     const router = useRouter()
 
     function handleApproveStudent() {
@@ -72,7 +75,7 @@ export function StudentRow({ student }: StudentRowProps) {
                         <Heading size="sm">{student.name}</Heading>
                         <Text size="sm" className="text-neutral-400">Faixa {beltLabel}, {beltDegree}</Text>
                     </VStack>
-                    {isWaitingApproval && <HStack className="gap-2 ml-auto">
+                    {role === "MANAGER" && isWaitingApproval && <HStack className="gap-2 ml-auto">
                         <Button className="rounded-md border-neutral-600" variant="outline" onPress={handleApproveStudent}>
                             <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
                         </Button>
@@ -80,8 +83,8 @@ export function StudentRow({ student }: StudentRowProps) {
                             <ButtonIcon as={CloseIcon} size="sm" className="text-red-500" />
                         </Button>
                     </HStack>}
-                    {isApproved && <Icon as={CheckCircleIcon} size="md" className="text-green-500 ml-auto" />}
-                    {isDenied && <Button className="rounded-md border-neutral-600 ml-auto" variant="outline" onPress={handleApproveStudent}>
+                    {role === "MANAGER" && isApproved && <Icon as={CheckCircleIcon} size="md" className="text-green-500 ml-auto" />}
+                    {role === "MANAGER" && isDenied && <Button className="rounded-md border-neutral-600 ml-auto" variant="outline" onPress={handleApproveStudent}>
                         <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
                         <ButtonText>Reativar</ButtonText>
                     </Button>}

@@ -1,9 +1,9 @@
 import { useUser } from "@clerk/clerk-expo";
-import { Database } from "../types/database.types";
-import { useToast } from "../hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useUsers } from "./use-users";
+import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
+import { Database } from "../types/database.types";
+import { useUsers } from "./use-users";
 
 export function useGyms() {
   const supabase = useSupabase();
@@ -41,7 +41,7 @@ export function useGyms() {
           showErrorToast("Erro", "Ocorreu um erro ao buscar a academia");
           throw error;
         }
-        return data[0];
+        return data[0] as Database["public"]["Tables"]["gyms"]["Row"];
       }
       return null;
     },

@@ -1,6 +1,6 @@
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
-import { CalendarDaysIcon, HomeIcon, Icon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
+import { CalendarDaysIcon, GlobeIcon, HomeIcon, Icon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
 import { COLORS } from "@/src/constants/colors";
 import { useSegments } from "expo-router";
 import { Drawer } from 'expo-router/drawer';
@@ -88,6 +88,17 @@ export default function Layout() {
             as={UsersIcon}
             size="md"
             color={pathname === "users" ? COLORS.active : COLORS.inactive}
+          />
+        ),
+      }} />
+      <Drawer.Screen name="(gym)" options={{
+        drawerLabel: "Academia",
+        title: "Academia",
+        drawerIcon: () => (
+          <Icon
+            as={GlobeIcon}
+            size="md"
+            color={pathname === "gym" ? COLORS.active : COLORS.inactive}
           />
         ),
       }} />

@@ -1,14 +1,15 @@
+import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { StudentBelt } from "@/src/components/student-belt";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Box } from "@/src/components/ui/box";
 import { Button, ButtonIcon, ButtonText } from "@/src/components/ui/button";
 import { HStack } from "@/src/components/ui/hstack";
-import { ArrowLeftIcon, CheckCircleIcon, CheckIcon, CloseCircleIcon, CloseIcon, Icon } from "@/src/components/ui/icon";
+import { CheckCircleIcon, CheckIcon, CloseCircleIcon, CloseIcon, Icon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { queryClient } from "@/src/lib/react-query";
-import { useLocalSearchParams, useRouter } from "expo-router/build/hooks";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 import { useState } from "react";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -31,7 +32,8 @@ export default function User() {
     const [approvedAt, setApprovedAt] = useState<string | null>(approved_at);
     const [deniedAt, setDeniedAt] = useState<string | null>(denied_at);
     const { approveStudent, denyStudent } = useUsers()
-    const router = useRouter()
+    const { getRole } = useRoles()
+    const { data: role } = getRole
 
     function handleApproveStudent() {
         approveStudent.mutateAsync(Number(userId))
@@ -56,16 +58,7 @@ export default function User() {
     const isDenied = deniedAt && !approvedAt;
 
     return (
-        <SafeAreaView className="flex-1 pt-14 pl-5 pr-5">
-            <VStack className="items-start gap-6 mb-6">
-                <Button
-                    action="secondary"
-                    onPress={() => router.back()}
-                    className="bg-neutral-800"
-                >
-                    <ButtonIcon as={ArrowLeftIcon} />
-                </Button>
-            </VStack>
+        <SafeAreaView className="flex-1 pl-5 pr-5">
             <ScrollView>
                 <VStack className="justify-center items-center">
                     <Box>
@@ -80,7 +73,7 @@ export default function User() {
                         {email}
                     </Text>
                     <StudentBelt belt={belt} degree={Number(degree)} />
-                    {isWaitingApproval && <HStack className="gap-2 mt-6">
+                    {role === "MANAGER" && isWaitingApproval && <HStack className="gap-2 mt-6">
                         <Button className="rounded-md border-neutral-600" variant="outline" onPress={handleApproveStudent}>
                             <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
                             <ButtonText>Aprovar</ButtonText>
@@ -90,7 +83,7 @@ export default function User() {
                             <ButtonText>Reprovar</ButtonText>
                         </Button>
                     </HStack>}
-                    {isDenied && <Button className="rounded-md border-neutral-600 mt-6" variant="outline" onPress={handleApproveStudent}>
+                    {role === "MANAGER" && isDenied && <Button className="rounded-md border-neutral-600 mt-6" variant="outline" onPress={handleApproveStudent}>
                         <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
                         <ButtonText>Reativar</ButtonText>
                     </Button>}
