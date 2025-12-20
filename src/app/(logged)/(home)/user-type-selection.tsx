@@ -1,4 +1,5 @@
 import { useUsers } from "@/src/api/use-users";
+import { SplashScreen } from "@/src/components/splash-screen";
 import { Box } from "@/src/components/ui/box";
 import { Button, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
@@ -58,10 +59,7 @@ export default function Home() {
 
   if (!isUserTypeLoaded) {
     return (
-      <ImageBackground
-        source={require("@/assets/images/splash.png")}
-        className="flex-1"
-      />
+      <SplashScreen />
     );
   }
 

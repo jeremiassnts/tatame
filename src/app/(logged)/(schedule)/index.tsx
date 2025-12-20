@@ -10,7 +10,7 @@ import { VStack } from "@/src/components/ui/vstack";
 import WeekDays from "@/src/components/weekDays";
 import { Days } from "@/src/constants/date";
 import { WeekDay } from "@/src/types/date";
-import { addDays, format, isAfter, isBefore, parse, subDays } from "date-fns";
+import { addDays, endOfWeek, format, isAfter, isBefore, parse, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -29,11 +29,12 @@ export default function Schedule() {
 
   useEffect(() => {
     async function defineWeekDays() {
-      const today = new Date();
+      const weekStart = startOfWeek(new Date());
+      const weekEnd = endOfWeek(new Date());
       const tempWeekDays: WeekDay[] = [];
       for (
-        let current = subDays(today, 3);
-        isBefore(current, addDays(today, 4));
+        let current = weekStart;
+        isBefore(current, weekEnd);
         current = addDays(current, 1)
       ) {
         tempWeekDays.push({
@@ -50,7 +51,7 @@ export default function Schedule() {
       }
       setWeekDays(tempWeekDays);
       setSelectedDay(
-        tempWeekDays.find((w) => w.date.getDate() === today.getDate()) || null
+        tempWeekDays.find((w) => w.date.getDate() === new Date().getDate()) || null
       );
       setIsLoading(false);
     }
