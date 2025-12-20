@@ -36,6 +36,35 @@ export function useAttachments() {
     },
   });
 
+  const uploadVideo = useMutation({
+    mutationFn: async (video: string) => {
+      if (!video) return;
+      const formData = new FormData();
+
+      const filename = video.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename ?? "");
+      const ext = match?.[1];
+      const mimeType = ext ? `video/${ext}` : `video`;
+
+      formData.append("file", {
+        uri: video,
+        name: filename,
+        type: mimeType,
+      } as any);
+      const response = await axiosClient.post<{ url: string }>(
+        "/attachment-video",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+          },
+        }
+      );
+      return response.data.url;
+    },
+  });
+
   const updateUserImage = useMutation({
     mutationFn: async (props: { image: string; userId: number }) => {
       const { image, userId } = props;
@@ -86,6 +115,7 @@ export function useAttachments() {
 
   return {
     uploadImage,
+    uploadVideo,
     updateUserImage,
     updateGymLogo,
   };

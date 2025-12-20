@@ -63,7 +63,7 @@ export default function Class() {
         router.replace("/(logged)/(schedule)");
     }
 
-    const assets = data && data.assets ? data.assets.filter(a => isAfter(new Date(a.valid_until ?? ''), new Date())) : [];
+    const instructions = data && data.assets ? data.assets.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), new Date())) : [];
 
     return (
         <SafeAreaView className="flex-1">
@@ -115,9 +115,9 @@ export default function Class() {
                                 {!data.assets || data.assets.length === 0 && (<Text className="text-neutral-400">
                                     Seu professor ainda não adicionou conteúdo para a aula
                                 </Text>)}
-                                {assets.length > 0 && (
+                                {instructions.length > 0 && (
                                     <VStack className="gap-2 pt-2">
-                                        {assets.filter(a => a.type === 'text').map(a => (
+                                        {instructions.map(a => (
                                             <VStack key={a.id} className="bg-neutral-800 rounded-md p-4 gap-2">
                                                 <HStack className="justify-between items-center">
                                                     <Text className="text-neutral-200 max-w-[80%]" key={a.id}>{a.content}</Text>

@@ -1,4 +1,6 @@
 import { useAssets } from "@/src/api/use-assets";
+import { useAttachments } from "@/src/api/use-attachments";
+import { useToast } from "@/src/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, format } from "date-fns";
 import { useState } from "react";
@@ -13,6 +15,7 @@ import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalH
 import { Text } from "../ui/text";
 import { Textarea, TextareaInput } from "../ui/textarea";
 import { VStack } from "../ui/vstack";
+import VideoPicker from "../video-picker";
 
 interface AddContentProps {
     classId: number;
@@ -20,10 +23,10 @@ interface AddContentProps {
 }
 
 const CONTENT_TYPES = [
-    // {
-    //     value: "video",
-    //     label: "Vídeo",
-    // },
+    {
+        value: "video",
+        label: "Vídeo",
+    },
     {
         value: "text",
         label: "Texto",
@@ -46,18 +49,44 @@ export function AddContent({ classId, refetch }: AddContentProps) {
         },
     })
     const { createAsset } = useAssets();
-    const { mutateAsync: createAssetFn, isPending } = createAsset;
+    const { mutateAsync: createAssetFn } = createAsset;
+    const [isPending, setIsPending] = useState(false);
+    const { uploadVideo } = useAttachments();
+    const { mutateAsync: uploadVideoFn } = uploadVideo;
+    const { showErrorToast } = useToast();
 
     async function handleAddContent(data: AddContentFormType) {
-        await createAssetFn({
-            class_id: classId,
-            content: data.content,
-            type: data.type,
-            valid_until: addDays(new Date(), 7).toISOString(),
-        });
-        setIsOpen(false);
-        reset();
-        refetch();
+        setIsPending(true);
+        try {
+            let videoUrl = null
+            if (data.type === 'video') {
+                for (let i = 0; i < 4; i++) {
+                    try {
+                        videoUrl = await uploadVideoFn(data.content);
+                        if (!videoUrl) continue;
+                        break;
+                    } catch (error) {
+                        continue;
+                    }
+                }
+                if (!videoUrl) {
+                    showErrorToast("Erro", "Erro ao enviar o vídeo, tentando novamente...");
+                    return;
+                }
+            }
+            await createAssetFn({
+                class_id: classId,
+                content: data.type === 'video' ? videoUrl : data.content,
+                type: data.type,
+                valid_until: addDays(new Date(), 7).toISOString(),
+            });
+            setIsOpen(false);
+            reset();
+            refetch();
+        } catch (error) {
+            console.error(JSON.stringify(error, null, 2));
+        }
+        setIsPending(false);
     }
 
     const type = watch("type");
@@ -92,22 +121,25 @@ export function AddContent({ classId, refetch }: AddContentProps) {
                                 error={errors.type?.message}
                                 placeholder="Selecione o tipo de conteúdo"
                             />
-                            <Textarea className="bg-neutral-800 rounded-md border-0 px-2 text-white">
+                            {type === "text" && <Textarea className="bg-neutral-800 rounded-md border-0 px-2 text-white">
                                 <TextareaInput placeholder="Digite o conteúdo" value={content} onChangeText={(text) => {
                                     setValue("content", text);
                                 }} />
-                            </Textarea>
+                            </Textarea>}
+                            {type === 'video' && <VideoPicker setRemoteVideo={(video: string) => {
+                                setValue("content", video);
+                            }} placeholder="Selecione o vídeo" />}
                             {errors.content?.message && <Text className="text-red-500 text-sm">{errors.content?.message}</Text>}
                             <Alert action="muted" variant="outline">
                                 <AlertIcon as={InfoIcon} />
-                                <AlertText>Este conteúdo será disponibilizado até {untilDate}</AlertText>
+                                <AlertText className="max-w-[90%]">Este conteúdo será disponibilizado nessa aula até {untilDate}</AlertText>
                             </Alert>
                             <Button onPress={handleSubmit(handleAddContent)} isDisabled={isPending}>
                                 {isPending && <ButtonSpinner color="white" />}
                                 {!isPending && <ButtonIcon as={AddIcon} />}
                                 {!isPending && <ButtonText>Adicionar</ButtonText>}
                             </Button>
-                            <Button action="secondary" onPress={reset}>
+                            <Button action="secondary" onPress={reset} isDisabled={isPending}>
                                 <ButtonText>Limpar</ButtonText>
                             </Button>
                         </VStack>
