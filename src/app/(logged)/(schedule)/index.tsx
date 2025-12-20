@@ -26,6 +26,7 @@ export default function Schedule() {
   const router = useRouter();
   const { getRole } = useRoles();
   const { data: role } = getRole;
+  const [initialScrollIndex, setInitialScrollIndex] = useState(0);
 
   useEffect(() => {
     async function defineWeekDays() {
@@ -50,9 +51,9 @@ export default function Schedule() {
         });
       }
       setWeekDays(tempWeekDays);
-      setSelectedDay(
-        tempWeekDays.find((w) => w.date.getDate() === new Date().getDate()) || null
-      );
+      const tempInitialScrollIndex = tempWeekDays.findIndex((w) => w.date.getDate() === new Date().getDate());
+      setSelectedDay(tempWeekDays[tempInitialScrollIndex]);
+      setInitialScrollIndex(tempInitialScrollIndex);
       setIsLoading(false);
     }
 
@@ -97,6 +98,7 @@ export default function Schedule() {
           selectedDay={selectedDay ?? ({} as WeekDay)}
           handleSelectDay={handleSelectDay}
           isLoading={isLoading}
+          initialScrollIndex={initialScrollIndex}
         />
       </Box>
       <ScrollView className="w-full pt-6 z-0"
