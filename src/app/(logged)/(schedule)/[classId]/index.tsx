@@ -153,7 +153,7 @@ export default function Class() {
                                                     <ButtonIcon as={TrashIcon} />
                                                 </Button>}
                                                 <VideoPlayer key={a.id} video={`${process.env.EXPO_PUBLIC_R2_URL}${a.content}`} />
-                                                <Text className="text-neutral-500 text-sm ml-auto" >Publicado às {format(new Date(a.created_at), 'dd/MM/yyyy HH:mm')}</Text>
+                                                <Text className="text-neutral-500 text-sm ml-auto mt-2" >Publicado às {format(new Date(a.created_at), 'dd/MM/yyyy HH:mm')}</Text>
                                             </Box>
                                         ))}
                                     </VStack>
