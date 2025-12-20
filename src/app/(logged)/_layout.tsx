@@ -68,7 +68,7 @@ export default function Layout() {
         drawerLabel: "Agenda",
         title: "Agenda",
         drawerItemStyle: {
-          display: role === "MANAGER" ? "flex" : "none"
+          display: isApproved ? "flex" : "none"
         },
         drawerIcon: () => (
           <Icon

@@ -2,6 +2,7 @@ import { useClass } from "@/src/api/use-class";
 import { useUsers } from "@/src/api/use-users";
 import { Database } from "@/src/types/database.types";
 import { useRouter } from "expo-router";
+import { Pressable } from "react-native";
 import { ClassCard } from "../class-card";
 import { Box } from "../ui/box";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
@@ -60,11 +61,13 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
         )}
       {gym && !isLoadingNextClass && !isLoadingGym && nextClass && (
         <Box>
-          <ClassCard
-            data={nextClass}
-            topBadgeText="Próxima aula"
-            currentClass={false}
-          />
+          <Pressable onPress={() => router.push(`/(logged)/(schedule)`)}>
+            <ClassCard
+              data={nextClass}
+              topBadgeText="Próxima aula"
+              currentClass={false}
+            />
+          </Pressable>
         </Box>
       )}
       {!gym &&

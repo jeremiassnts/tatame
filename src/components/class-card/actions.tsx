@@ -1,19 +1,19 @@
+import { useClass } from "@/src/api/use-class";
+import { queryClient } from "@/src/lib/react-query";
+import { ClassRow } from "@/src/types/extendend-database.types";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Actionsheet,
-  ActionsheetItemText,
   ActionsheetBackdrop,
   ActionsheetContent,
   ActionsheetDragIndicator,
   ActionsheetDragIndicatorWrapper,
   ActionsheetItem,
+  ActionsheetItemText,
 } from "../ui/actionsheet";
 import { Button, ButtonIcon } from "../ui/button";
 import { ChevronDownIcon } from "../ui/icon";
-import { useState } from "react";
-import { useClass } from "@/src/api/use-class";
-import { queryClient } from "@/src/lib/react-query";
-import { ClassRow } from "@/src/types/extendend-database.types";
 
 interface ActionsProps {
   topBadgeText?: string;
@@ -45,6 +45,12 @@ export function Actions({ topBadgeText, role, data }: ActionsProps) {
     await deleteClassFn(data.id);
     queryClient.invalidateQueries({ queryKey: ["classes"] });
     queryClient.invalidateQueries({ queryKey: ["next-class"] });
+    queryClient.invalidateQueries({ queryKey: ["class", data.id] });
+    handleClose();
+  }
+
+  function handleDetailsClass() {
+    router.push(`/(logged)/(schedule)/${data.id}`);
     handleClose();
   }
 
@@ -61,6 +67,11 @@ export function Actions({ topBadgeText, role, data }: ActionsProps) {
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
+          <ActionsheetItem onPress={handleDetailsClass}>
+            <ActionsheetItemText className="text-white text-md">
+              Detalhes
+            </ActionsheetItemText>
+          </ActionsheetItem>
           <ActionsheetItem onPress={handleEditClass}>
             <ActionsheetItemText className="text-white text-md">
               Editar aula

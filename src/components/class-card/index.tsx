@@ -1,6 +1,7 @@
 import { useRoles } from "@/src/api/use-roles";
-import { Days } from "@/src/constants/date";
 import { ClassRow } from "@/src/types/extendend-database.types";
+import { formatDay, formatTime } from "@/src/utils/class";
+import { useRouter } from "expo-router";
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
@@ -23,18 +24,9 @@ export function ClassCard({
   topBadgeText,
   currentClass,
 }: ClassCardProps) {
+  const router = useRouter();
   const { getRole } = useRoles();
   const { data: role } = getRole;
-
-  function formatTime(time: string | null) {
-    if (!time) return "";
-    return time.split(":")[0] + ":" + time.split(":")[1];
-  }
-
-  function formatDay(day: string | null) {
-    if (!day) return "";
-    return Days.find(d => d.value === day)?.label;
-  }
 
   return (
     <Card

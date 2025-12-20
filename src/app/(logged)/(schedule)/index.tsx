@@ -14,7 +14,7 @@ import { addDays, format, isAfter, isBefore, parse, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { RefreshControl, ScrollView } from "react-native";
+import { Pressable, RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Schedule() {
@@ -122,11 +122,12 @@ export default function Schedule() {
                   isAfter(new Date(), parseTimeToDate(item.start)) &&
                   isBefore(new Date(), parseTimeToDate(item.end));
                 return (
-                  <ClassCard
-                    key={item.id}
-                    data={item}
-                    currentClass={currentClass}
-                  />
+                  <Pressable key={item.id} onPress={() => router.push(`/(logged)/(schedule)/${item.id}`)}>
+                    <ClassCard
+                      data={item}
+                      currentClass={currentClass}
+                    />
+                  </Pressable>
                 );
               })}
           {!isLoading &&

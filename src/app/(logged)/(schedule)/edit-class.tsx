@@ -93,6 +93,8 @@ export default function EditClass() {
       });
       reset();
       queryClient.invalidateQueries({ queryKey: ["classes"] });
+      queryClient.invalidateQueries({ queryKey: ["class", classData?.id] });
+      queryClient.invalidateQueries({ queryKey: ["next-class"] });
       router.replace("/(logged)/(schedule)");
     } catch { }
   }

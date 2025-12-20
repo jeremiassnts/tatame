@@ -12,6 +12,7 @@ export default function Layout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="create-class" />
       <Stack.Screen name="edit-class" />
+      <Stack.Screen name="[classId]" />
     </Stack>
   );
 }

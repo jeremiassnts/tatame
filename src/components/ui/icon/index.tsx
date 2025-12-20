@@ -1678,3 +1678,16 @@ const UsersIcon = createIcon({
 });
 UsersIcon.displayName = "UsersIcon";
 export { UsersIcon };
+
+const LocationIcon = createIcon({
+  Root: Svg,
+  viewBox: "0 0 24 24",
+  path: (
+    <>
+      <Path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <Circle cx="12" cy="10" r="3" />
+    </>
+  ),
+});
+LocationIcon.displayName = "LocationIcon";
+export { LocationIcon };

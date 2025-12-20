@@ -30,6 +30,7 @@ export function useClass() {
                   `
             )
             .filter("gym_id", "eq", sp_user.gym_id)
+            .filter("deleted_at", "is", null)
             .order("start", { ascending: true });
 
           if (error) {
@@ -97,6 +98,7 @@ export function useClass() {
         `
         )
         .filter("gym_id", "eq", sp_user.gym_id)
+        .filter("deleted_at", "is", null)
         .order("start", { ascending: true });
 
       if (error) {
@@ -142,7 +144,9 @@ export function useClass() {
       .select(
         `
         *,
-        instructor:users!instructor_id(clerk_user_id)
+        instructor:users!instructor_id(clerk_user_id),
+        gym:gyms!gym_id(name, address),
+        assets:assets!class_id(id, content, type, valid_until)
         `
       )
       .filter("id", "eq", classId);
@@ -186,7 +190,10 @@ export function useClass() {
 
   const deleteClass = useMutation({
     mutationFn: async (classId: number) => {
-      const { error } = await supabase.from("class").delete().eq("id", classId);
+      const { error } = await supabase.from("class").update({
+        deleted_at: new Date().toISOString(),
+      }).eq("id", classId);
+
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao deletar a aula");
         throw error;
