@@ -9,16 +9,19 @@ import { Button, ButtonIcon, ButtonText } from "@/src/components/ui/button";
 import { Divider } from "@/src/components/ui/divider";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
-import { CalendarDaysIcon, CloseIcon, EditIcon, Icon, InfoIcon, LocationIcon, UserIcon } from "@/src/components/ui/icon";
+import { CalendarDaysIcon, CloseIcon, EditIcon, Icon, InfoIcon, LocationIcon, TrashIcon, UserIcon } from "@/src/components/ui/icon";
 import { Image } from "@/src/components/ui/image";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { VideoPlayer } from "@/src/components/video-player";
 import { queryClient } from "@/src/lib/react-query";
 import { formatDay, formatTime } from "@/src/utils/class";
 import { useQuery } from "@tanstack/react-query";
 import { format, isAfter } from "date-fns";
+import { useEvent } from "expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useVideoPlayer } from 'expo-video';
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -63,7 +66,16 @@ export default function Class() {
         router.replace("/(logged)/(schedule)");
     }
 
+    function handlePlayVideo(video: string) {
+        const player = useVideoPlayer(video, player => {
+            player.loop = true;
+            player.play();
+        });
+        const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+    }
+
     const instructions = data && data.assets ? data.assets.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), new Date())) : [];
+    const videos = data && data.assets ? data.assets.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), new Date())) : [];
 
     return (
         <SafeAreaView className="flex-1">
@@ -75,7 +87,7 @@ export default function Class() {
             {(!isLoading && !isFetching) && data && (
                 <ScrollView>
                     <VStack>
-                        <Image source={{ uri: require("@/assets/images/class-bg.jpeg") }} className="w-full h-[200px] rounded-md opacity-60" resizeMode="cover" />
+                        <Image alt="background" source={{ uri: require("@/assets/images/class-bg.jpeg") }} className="w-full h-[200px] rounded-md opacity-60" resizeMode="cover" />
                         <VStack className="p-5">
                             <HStack className="justify-between items-center w-full">
                                 <Heading className="w-[150px]" size="xl">{data.description}</Heading>
@@ -110,7 +122,7 @@ export default function Class() {
                                 </HStack>
                             </VStack>
                             <Divider className="my-4" />
-                            <Box className="w-full">
+                            <VStack className="w-full gap-2">
                                 <Heading size="md">Conteúdo</Heading>
                                 {!data.assets || data.assets.length === 0 && (<Text className="text-neutral-400">
                                     Seu professor ainda não adicionou conteúdo para a aula
@@ -123,7 +135,7 @@ export default function Class() {
                                                     <Text className="text-neutral-200 max-w-[80%]" key={a.id}>{a.content}</Text>
                                                     {role === "MANAGER" && <Button className="rounded-full w-6 h-6" variant="outline" size="xs"
                                                         onPress={() => handleDeleteAsset(a.id)}>
-                                                        <ButtonIcon as={CloseIcon} />
+                                                        <ButtonIcon as={TrashIcon} />
                                                     </Button>}
                                                 </HStack>
                                                 <Text className="text-neutral-500 text-sm ml-auto" >Publicado às {format(new Date(a.created_at), 'dd/MM/yyyy HH:mm')}</Text>
@@ -131,7 +143,22 @@ export default function Class() {
                                         ))}
                                     </VStack>
                                 )}
-                            </Box>
+
+                                {videos.length > 0 && (
+                                    <VStack className="gap-2">
+                                        {videos.map(a => (
+                                            <Box key={a.id} className="bg-neutral-800 rounded-md p-4">
+                                                {role === "MANAGER" && <Button className="rounded-full w-6 h-6 ml-auto" variant="outline" size="xs"
+                                                    onPress={() => handleDeleteAsset(a.id)}>
+                                                    <ButtonIcon as={TrashIcon} />
+                                                </Button>}
+                                                <VideoPlayer key={a.id} video={`${process.env.EXPO_PUBLIC_R2_URL}${a.content}`} />
+                                                <Text className="text-neutral-500 text-sm ml-auto" >Publicado às {format(new Date(a.created_at), 'dd/MM/yyyy HH:mm')}</Text>
+                                            </Box>
+                                        ))}
+                                    </VStack>
+                                )}
+                            </VStack>
                             {role === "MANAGER" && <HStack className="gap-2 items-center justify-center mt-6 flex-wrap">
                                 <AddContent classId={data.id} refetch={refetch} />
                                 <Button onPress={handleEditClass}>

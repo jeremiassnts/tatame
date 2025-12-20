@@ -21,6 +21,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -40,7 +47,8 @@
         }
       ],
       "expo-web-browser",
-      "expo-maps"
+      "expo-maps",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
