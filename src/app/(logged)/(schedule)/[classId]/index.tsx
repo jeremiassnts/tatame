@@ -17,7 +17,7 @@ import { VStack } from "@/src/components/ui/vstack";
 import { queryClient } from "@/src/lib/react-query";
 import { formatDay, formatTime } from "@/src/utils/class";
 import { useQuery } from "@tanstack/react-query";
-import { isAfter } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -36,9 +36,12 @@ export default function Class() {
     const router = useRouter();
     const { mutateAsync: deleteClassFn } = deleteClass;
     const { deleteAsset } = useAssets()
-    const { mutateAsync: deleteAssetFn } = deleteAsset;
+    const { mutateAsync: deleteAssetFn, isPending: isDeletingAsset } = deleteAsset;
 
     async function handleDeleteAsset(assetId: number) {
+        if (isDeletingAsset) {
+            return;
+        }
         await deleteAssetFn(assetId);
         refetch();
     }
@@ -72,7 +75,7 @@ export default function Class() {
             {(!isLoading && !isFetching) && data && (
                 <ScrollView>
                     <VStack>
-                        <Image source={{ uri: require("@/assets/images/home-bg.png") }} className="w-full h-[200px] rounded-md" resizeMode="cover" />
+                        <Image source={{ uri: require("@/assets/images/class-bg.jpeg") }} className="w-full h-[200px] rounded-md opacity-60" resizeMode="cover" />
                         <VStack className="p-5">
                             <HStack className="justify-between items-center w-full">
                                 <Heading className="w-[150px]" size="xl">{data.description}</Heading>
@@ -112,23 +115,19 @@ export default function Class() {
                                 {!data.assets || data.assets.length === 0 && (<Text className="text-neutral-400">
                                     Seu professor ainda não adicionou conteúdo para a aula
                                 </Text>)}
-                                {role === "STUDENT" && assets.length > 0 && (
-                                    <VStack className="gap-2">
-                                        {assets.filter(a => a.type === 'text').map(a => (
-                                            <Text className="text-neutral-200" key={a.id}>{a.content}</Text>
-                                        ))}
-                                    </VStack>
-                                )}
-                                {role === "MANAGER" && assets.length > 0 && (
+                                {assets.length > 0 && (
                                     <VStack className="gap-2 pt-2">
                                         {assets.filter(a => a.type === 'text').map(a => (
-                                            <HStack className="gap-2 items-center justify-between bg-neutral-800 rounded-md p-2" key={a.id}>
-                                                <Text className="text-neutral-200" key={a.id}>{a.content}</Text>
-                                                <Button className="rounded-full w-6 h-6" variant="outline" size="xs"
-                                                    onPress={() => handleDeleteAsset(a.id)}>
-                                                    <ButtonIcon as={CloseIcon} />
-                                                </Button>
-                                            </HStack>
+                                            <VStack key={a.id} className="bg-neutral-800 rounded-md p-4 gap-2">
+                                                <HStack className="justify-between items-center">
+                                                    <Text className="text-neutral-200 max-w-[80%]" key={a.id}>{a.content}</Text>
+                                                    {role === "MANAGER" && <Button className="rounded-full w-6 h-6" variant="outline" size="xs"
+                                                        onPress={() => handleDeleteAsset(a.id)}>
+                                                        <ButtonIcon as={CloseIcon} />
+                                                    </Button>}
+                                                </HStack>
+                                                <Text className="text-neutral-500 text-sm ml-auto" >Publicado às {format(new Date(a.created_at), 'dd/MM/yyyy HH:mm')}</Text>
+                                            </VStack>
                                         ))}
                                     </VStack>
                                 )}
