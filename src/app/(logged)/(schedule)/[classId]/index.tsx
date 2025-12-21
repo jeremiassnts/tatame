@@ -148,10 +148,13 @@ export default function Class() {
                                     <VStack className="gap-2">
                                         {videos.map(a => (
                                             <Box key={a.id} className="bg-neutral-800 rounded-md p-4">
-                                                {role === "MANAGER" && <Button className="rounded-full w-6 h-6 ml-auto" variant="outline" size="xs"
-                                                    onPress={() => handleDeleteAsset(a.id)}>
-                                                    <ButtonIcon as={TrashIcon} />
-                                                </Button>}
+                                                <HStack className="justify-between items-center mb-4">
+                                                    <Heading size="md" className="text-neutral-200 max-w-[80%]">{a.title}</Heading>
+                                                    {role === "MANAGER" && <Button className="rounded-full w-6 h-6 ml-auto" variant="outline" size="xs"
+                                                        onPress={() => handleDeleteAsset(a.id)}>
+                                                        <ButtonIcon as={TrashIcon} />
+                                                    </Button>}
+                                                </HStack>
                                                 <VideoPlayer key={a.id} video={`${process.env.EXPO_PUBLIC_R2_URL}${a.content}`} />
                                                 <Text className="text-neutral-500 text-sm ml-auto mt-2" >Publicado às {format(new Date(a.created_at), 'dd/MM/yyyy HH:mm')}</Text>
                                             </Box>

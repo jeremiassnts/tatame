@@ -146,7 +146,7 @@ export function useClass() {
         *,
         instructor:users!instructor_id(clerk_user_id),
         gym:gyms!gym_id(name, address),
-        assets:assets!class_id(id, content, type, valid_until, created_at)
+        assets:assets!class_id(id, content, type, valid_until, created_at, title)
         `
       )
       .filter("id", "eq", classId);

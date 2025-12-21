@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { SelectInput } from "../select-input";
+import { TextInput } from "../text-input";
 import { Alert, AlertIcon, AlertText } from "../ui/alert";
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "../ui/button";
 import { Heading } from "../ui/heading";
@@ -35,16 +36,18 @@ const CONTENT_TYPES = [
 
 const addContentFormSchema = z.object({
     type: z.string().min(1, "O tipo de conteúdo é obrigatório"),
+    title: z.string().optional(),
     content: z.string().min(1, "O conteúdo é obrigatório"),
 });
 type AddContentFormType = z.infer<typeof addContentFormSchema>;
 
 export function AddContent({ classId, refetch }: AddContentProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const { watch, setValue, formState: { errors }, handleSubmit, reset } = useForm<AddContentFormType>({
+    const { watch, setValue, formState: { errors }, handleSubmit, reset, setError } = useForm<AddContentFormType>({
         resolver: zodResolver(addContentFormSchema),
         defaultValues: {
             type: "",
+            title: "",
             content: "",
         },
     })
@@ -56,6 +59,12 @@ export function AddContent({ classId, refetch }: AddContentProps) {
     const { showErrorToast } = useToast();
 
     async function handleAddContent(data: AddContentFormType) {
+        if (data.type === 'video' && !data.title) {
+            setError("title", { message: "O título é obrigatório" });
+            return;
+        } else {
+            setError("title", { message: "" });
+        }
         setIsPending(true);
         try {
             let videoUrl = null
@@ -78,6 +87,7 @@ export function AddContent({ classId, refetch }: AddContentProps) {
                 class_id: classId,
                 content: data.type === 'video' ? videoUrl : data.content,
                 type: data.type,
+                title: data.type === 'video' ? data.title : null,
                 valid_until: addDays(new Date(), 7).toISOString(),
             });
             setIsOpen(false);
@@ -91,6 +101,7 @@ export function AddContent({ classId, refetch }: AddContentProps) {
 
     const type = watch("type");
     const content = watch("content");
+    const title = watch("title");
     const untilDate = format(addDays(new Date(), 7), "dd/MM/yyyy");
 
     return (
@@ -126,6 +137,10 @@ export function AddContent({ classId, refetch }: AddContentProps) {
                                     setValue("content", text);
                                 }} />
                             </Textarea>}
+                            {type === 'video' && <TextInput placeholder="Digite o título do vídeo" value={title}
+                                onChangeText={(text) => {
+                                    setValue("title", text);
+                                }} error={errors.title?.message} />}
                             {type === 'video' && <VideoPicker setRemoteVideo={(video: string) => {
                                 setValue("content", video);
                             }} placeholder="Selecione o vídeo" />}
