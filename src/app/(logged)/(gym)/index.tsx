@@ -4,6 +4,7 @@ import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { StudentRow } from "@/src/components/student-row";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
+import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { queryClient } from "@/src/lib/react-query";
@@ -57,11 +58,18 @@ export default function Gym() {
                         {gym?.address}
                     </Text>
                 </VStack>
-                <ScrollView className="w-full pt-6">
+                {isLoadingStudents && <VStack className="w-full pt-6 gap-4">
+                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                </VStack>}
+                {studentsApproved && studentsApproved.length > 0 && <ScrollView className="w-full pt-6">
                     {studentsApproved?.map((student) => (
                         <StudentRow key={student.id} student={student} />
                     ))}
-                </ScrollView>
+                </ScrollView>}
                 {studentsApproved && studentsApproved.length === 0 && <Text className="text-neutral-400 text-md text-center">Nenhum aluno aprovado</Text>}
             </ScrollView>
         </SafeAreaView>
