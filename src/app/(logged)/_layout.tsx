@@ -109,6 +109,9 @@ export default function Layout() {
       <Drawer.Screen name="(library)" options={{
         drawerLabel: "Biblioteca",
         title: "Biblioteca",
+        drawerItemStyle: {
+          display: isApproved ? "flex" : "none"
+        },
         drawerIcon: () => (
           <Icon
             as={PlayIcon}
