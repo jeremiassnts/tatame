@@ -19,9 +19,10 @@ interface ActionsProps {
   topBadgeText?: string;
   role: string | null | undefined;
   data: ClassRow;
+  classDate?: string;
 }
 
-export function Actions({ topBadgeText, role, data }: ActionsProps) {
+export function Actions({ topBadgeText, role, data, classDate }: ActionsProps) {
   const router = useRouter();
   const [showOptions, setShowOptions] = useState(false);
   const { deleteClass } = useClass();
@@ -50,7 +51,15 @@ export function Actions({ topBadgeText, role, data }: ActionsProps) {
   }
 
   function handleDetailsClass() {
-    router.push(`/(logged)/(schedule)/${data.id}`);
+    if (!classDate) return;
+
+    router.push({
+      pathname: "/(logged)/(schedule)/[classId]",
+      params: {
+        classId: data.id,
+        classDate: classDate,
+      },
+    });
     handleClose();
   }
 
@@ -67,11 +76,11 @@ export function Actions({ topBadgeText, role, data }: ActionsProps) {
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
-          <ActionsheetItem onPress={handleDetailsClass}>
+          {classDate && <ActionsheetItem onPress={handleDetailsClass}>
             <ActionsheetItemText className="text-white text-md">
               Detalhes
             </ActionsheetItemText>
-          </ActionsheetItem>
+          </ActionsheetItem>}
           <ActionsheetItem onPress={handleEditClass}>
             <ActionsheetItemText className="text-white text-md">
               Editar aula

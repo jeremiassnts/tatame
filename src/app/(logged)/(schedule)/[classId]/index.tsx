@@ -18,17 +18,18 @@ import { VideoPlayer } from "@/src/components/video-player";
 import { queryClient } from "@/src/lib/react-query";
 import { formatDay, formatTime } from "@/src/utils/class";
 import { useQuery } from "@tanstack/react-query";
-import { format, isAfter } from "date-fns";
-import { useEvent } from "expo";
+import { format, isAfter, startOfWeek } from "date-fns";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useVideoPlayer } from 'expo-video';
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+type ClassProps = {
+    classId: string;
+    classDate: string;
+}
+
 export default function Class() {
-    const { classId } = useLocalSearchParams<{
-        classId: string;
-    }>();
+    const { classId, classDate } = useLocalSearchParams<ClassProps>();
     const { fetchClassById, deleteClass } = useClass();
     const { data, isLoading, refetch, isFetching } = useQuery({
         queryKey: ["class", classId],
@@ -40,6 +41,7 @@ export default function Class() {
     const { mutateAsync: deleteClassFn } = deleteClass;
     const { deleteAsset } = useAssets()
     const { mutateAsync: deleteAssetFn, isPending: isDeletingAsset } = deleteAsset;
+    const startOfWeekDate = startOfWeek(new Date(classDate));
 
     async function handleDeleteAsset(assetId: number) {
         if (isDeletingAsset) {
@@ -66,16 +68,8 @@ export default function Class() {
         router.replace("/(logged)/(schedule)");
     }
 
-    function handlePlayVideo(video: string) {
-        const player = useVideoPlayer(video, player => {
-            player.loop = true;
-            player.play();
-        });
-        const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
-    }
-
-    const instructions = data && data.assets ? data.assets.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), new Date())) : [];
-    const videos = data && data.assets ? data.assets.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), new Date())) : [];
+    const instructions = data && data.assets ? data.assets.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate)) : [];
+    const videos = data && data.assets ? data.assets.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate)) : [];
 
     return (
         <SafeAreaView className="flex-1">
@@ -163,7 +157,7 @@ export default function Class() {
                                 )}
                             </VStack>
                             {role === "MANAGER" && <HStack className="gap-2 items-center justify-center mt-6 flex-wrap">
-                                <AddContent classId={data.id} refetch={refetch} />
+                                <AddContent classId={data.id} refetch={refetch} classDate={classDate} />
                                 <Button onPress={handleEditClass}>
                                     <ButtonIcon as={EditIcon} />
                                     <ButtonText>Editar</ButtonText>

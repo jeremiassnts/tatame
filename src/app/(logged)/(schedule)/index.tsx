@@ -74,6 +74,18 @@ export default function Schedule() {
     return date ?? new Date();
   }
 
+  function handleClassDetails(classId: number) {
+    if (!selectedDay) return;
+
+    router.push({
+      pathname: "/(logged)/(schedule)/[classId]",
+      params: {
+        classId,
+        classDate: selectedDay.date.toISOString(),
+      },
+    });
+  }
+
   const today = Days.find(
     (w) =>
       w.label.toLowerCase() ===
@@ -125,10 +137,11 @@ export default function Schedule() {
                   isAfter(new Date(), parseTimeToDate(item.start)) &&
                   isBefore(new Date(), parseTimeToDate(item.end));
                 return (
-                  <Pressable key={item.id} onPress={() => router.push(`/(logged)/(schedule)/${item.id}`)}>
+                  <Pressable key={item.id} onPress={() => handleClassDetails(item.id)}>
                     <ClassCard
                       data={item}
                       currentClass={currentClass}
+                      classDate={selectedDay?.date.toISOString()}
                     />
                   </Pressable>
                 );

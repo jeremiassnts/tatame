@@ -1,6 +1,7 @@
 import { useRoles } from "@/src/api/use-roles";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { formatDay, formatTime } from "@/src/utils/class";
+import { isAfter, startOfWeek } from "date-fns";
 import { Text as TextIcon } from 'lucide-react-native';
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
@@ -17,15 +18,20 @@ interface ClassCardProps {
   data: ClassRow;
   topBadgeText?: string;
   currentClass: boolean;
+  classDate?: string;
 }
 
 export function ClassCard({
   data,
   topBadgeText,
   currentClass,
+  classDate,
 }: ClassCardProps) {
   const { getRole } = useRoles();
   const { data: role } = getRole;
+  const startOfWeekDate = classDate ? startOfWeek(new Date(classDate)) : undefined;
+  const videos = startOfWeekDate ? data.assets?.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate))?.length : 0;
+  const instructions = startOfWeekDate ? data.assets?.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate))?.length : 0;
 
   return (
     <Card
@@ -49,20 +55,20 @@ export function ClassCard({
             {formatDay(data.day)} / {formatTime(data.start)} - {formatTime(data.end)}
           </Text>
         </VStack>
-        <Actions topBadgeText={topBadgeText} role={role} data={data} />
+        <Actions topBadgeText={topBadgeText} role={role} data={data} classDate={classDate} />
         <CheckIn role={role} class={data} />
       </HStack>
       <CheckIns classId={data.id} />
-      <HStack className="gap-2 items-center justify-start">
+      {classDate && <HStack className="gap-2 items-center justify-start">
         <Badge className="gap-1">
           <BadgeIcon as={PlayIcon} />
-          <BadgeText>{data.assets?.filter(a => a.type === 'video')?.length}</BadgeText>
+          <BadgeText>{videos}</BadgeText>
         </Badge>
         <Badge className="gap-1">
           <BadgeIcon as={TextIcon} />
-          <BadgeText>{data.assets?.filter(a => a.type === 'text')?.length}</BadgeText>
+          <BadgeText>{instructions}</BadgeText>
         </Badge>
-      </HStack>
+      </HStack>}
       <HStack className="justify-between pt-4">
         <Badge className="gap-1">
           <BadgeIcon as={UserIcon} />

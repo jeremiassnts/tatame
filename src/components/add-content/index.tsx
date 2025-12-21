@@ -2,7 +2,7 @@ import { useAssets } from "@/src/api/use-assets";
 import { useAttachments } from "@/src/api/use-attachments";
 import { useToast } from "@/src/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDays, format } from "date-fns";
+import { endOfWeek, format } from "date-fns";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -21,6 +21,7 @@ import VideoPicker from "../video-picker";
 interface AddContentProps {
     classId: number;
     refetch: () => void;
+    classDate: string;
 }
 
 const CONTENT_TYPES = [
@@ -41,7 +42,7 @@ const addContentFormSchema = z.object({
 });
 type AddContentFormType = z.infer<typeof addContentFormSchema>;
 
-export function AddContent({ classId, refetch }: AddContentProps) {
+export function AddContent({ classId, refetch, classDate }: AddContentProps) {
     const [isOpen, setIsOpen] = useState(false);
     const { watch, setValue, formState: { errors }, handleSubmit, reset, setError } = useForm<AddContentFormType>({
         resolver: zodResolver(addContentFormSchema),
@@ -57,6 +58,7 @@ export function AddContent({ classId, refetch }: AddContentProps) {
     const { uploadVideo } = useAttachments();
     const { mutateAsync: uploadVideoFn } = uploadVideo;
     const { showErrorToast } = useToast();
+    const validUntil = endOfWeek(new Date(classDate))
 
     async function handleAddContent(data: AddContentFormType) {
         if (data.type === 'video' && !data.title) {
@@ -83,12 +85,13 @@ export function AddContent({ classId, refetch }: AddContentProps) {
                     return;
                 }
             }
+
             await createAssetFn({
                 class_id: classId,
                 content: data.type === 'video' ? videoUrl : data.content,
                 type: data.type,
                 title: data.type === 'video' ? data.title : null,
-                valid_until: addDays(new Date(), 7).toISOString(),
+                valid_until: format(validUntil, "yyyy-MM-dd"),
             });
             setIsOpen(false);
             reset();
@@ -102,8 +105,7 @@ export function AddContent({ classId, refetch }: AddContentProps) {
     const type = watch("type");
     const content = watch("content");
     const title = watch("title");
-    const untilDate = format(addDays(new Date(), 7), "dd/MM/yyyy");
-
+    const untilDate = format(validUntil, "dd/MM/yyyy");
     return (
         <VStack>
             <Button onPress={() => setIsOpen(true)}>
