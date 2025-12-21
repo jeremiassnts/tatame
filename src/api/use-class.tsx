@@ -26,7 +26,8 @@ export function useClass() {
               `
                   *,
                   gym:gyms!gym_id(name),
-                  instructor:users!instructor_id(clerk_user_id)
+                  instructor:users!instructor_id(clerk_user_id),
+                  assets:assets!class_id(id, content, type, valid_until, created_at, title)
                   `
             )
             .filter("gym_id", "eq", sp_user.gym_id)
@@ -94,7 +95,8 @@ export function useClass() {
           `
         *,
         gym:gyms!gym_id(name),
-        instructor:users!instructor_id(clerk_user_id)
+        instructor:users!instructor_id(clerk_user_id),
+        assets:assets!class_id(id, content, type, valid_until, created_at, title)
         `
         )
         .filter("gym_id", "eq", sp_user.gym_id)

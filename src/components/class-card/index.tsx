@@ -1,12 +1,12 @@
 import { useRoles } from "@/src/api/use-roles";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { formatDay, formatTime } from "@/src/utils/class";
-import { useRouter } from "expo-router";
+import { Text as TextIcon } from 'lucide-react-native';
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
-import { ArrowRightIcon, UserIcon } from "../ui/icon";
+import { ArrowRightIcon, PlayIcon, UserIcon } from "../ui/icon";
 import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 import { Actions } from "./actions";
@@ -24,7 +24,6 @@ export function ClassCard({
   topBadgeText,
   currentClass,
 }: ClassCardProps) {
-  const router = useRouter();
   const { getRole } = useRoles();
   const { data: role } = getRole;
 
@@ -54,6 +53,16 @@ export function ClassCard({
         <CheckIn role={role} class={data} />
       </HStack>
       <CheckIns classId={data.id} />
+      <HStack className="gap-2 items-center justify-start">
+        <Badge className="gap-1">
+          <BadgeIcon as={PlayIcon} />
+          <BadgeText>{data.assets?.filter(a => a.type === 'video')?.length}</BadgeText>
+        </Badge>
+        <Badge className="gap-1">
+          <BadgeIcon as={TextIcon} />
+          <BadgeText>{data.assets?.filter(a => a.type === 'text')?.length}</BadgeText>
+        </Badge>
+      </HStack>
       <HStack className="justify-between pt-4">
         <Badge className="gap-1">
           <BadgeIcon as={UserIcon} />
