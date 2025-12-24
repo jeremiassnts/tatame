@@ -4,6 +4,7 @@ import { CalendarDaysIcon, GlobeIcon, HomeIcon, Icon, PlayIcon, UserIcon, UsersI
 import { COLORS } from "@/src/constants/colors";
 import { useSegments } from "expo-router";
 import { Drawer } from 'expo-router/drawer';
+import { BellIcon } from "lucide-react-native";
 
 export default function Layout() {
   const segments = useSegments();
@@ -117,6 +118,20 @@ export default function Layout() {
             as={PlayIcon}
             size="md"
             color={pathname === "library" ? COLORS.active : COLORS.inactive}
+          />
+        ),
+      }} />
+      <Drawer.Screen name="(notifications)" options={{
+        drawerLabel: "Notificações",
+        title: "Notificações",
+        drawerItemStyle: {
+          display: isApproved ? "flex" : "none"
+        },
+        drawerIcon: () => (
+          <Icon
+            as={BellIcon}
+            size="md"
+            color={pathname === "notifications" ? COLORS.active : COLORS.inactive}
           />
         ),
       }} />

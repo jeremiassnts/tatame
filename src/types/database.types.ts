@@ -228,6 +228,53 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          channel: string | null
+          content: string | null
+          created_at: string
+          id: number
+          recipients: string[] | null
+          sent_at: string | null
+          sent_by: number | null
+          status: string | null
+          title: string | null
+          viewed_by: string[] | null
+        }
+        Insert: {
+          channel?: string | null
+          content?: string | null
+          created_at?: string
+          id?: number
+          recipients?: string[] | null
+          sent_at?: string | null
+          sent_by?: number | null
+          status?: string | null
+          title?: string | null
+          viewed_by?: string[] | null
+        }
+        Update: {
+          channel?: string | null
+          content?: string | null
+          created_at?: string
+          id?: number
+          recipients?: string[] | null
+          sent_at?: string | null
+          sent_by?: number | null
+          status?: string | null
+          title?: string | null
+          viewed_by?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_sent_by_fkey"
+            columns: ["sent_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       roles: {
         Row: {
           created_at: string
