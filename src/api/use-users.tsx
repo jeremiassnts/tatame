@@ -148,9 +148,6 @@ export function useUsers() {
           const clerkUser = clerkUsers?.find(
             (u) => u.id === user.clerk_user_id
           );
-          if (!clerkUser) {
-            console.log("Clerk user not found");
-          }
           return {
             ...user,
             name: `${clerkUser?.first_name} ${clerkUser?.last_name}`,
