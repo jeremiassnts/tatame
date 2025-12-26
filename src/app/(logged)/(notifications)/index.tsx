@@ -8,10 +8,11 @@ import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Notifications() {
-    const { list } = useNotifications();
+    const { list, resend } = useNotifications();
     const { getRole } = useRoles();
     const { data: role } = getRole;
     const { data, isLoading, isFetching, refetch } = list;
+    const { mutateAsync: resendNotification, isPending: isResendingNotification } = resend;
 
     return (
         <SafeAreaView className="flex-1 pl-5 pr-5">
@@ -21,9 +22,9 @@ export default function Notifications() {
             <ScrollView refreshControl={<RefreshControl refreshing={isLoading || isFetching} onRefresh={refetch} />}>
                 {data && data.length == 0 && !isLoading && !isFetching &&
                     <Text className="text-white text-center text-md">Nenhuma notificação encontrada</Text>}
-                {!isLoading && !isFetching && data && data.length > 0 && <VStack>
+                {!isLoading && !isFetching && data && data.length > 0 && <VStack className="gap-4">
                     {data.map((notification) => (
-                        <NotificationRow key={notification.id} notification={notification} />
+                        <NotificationRow key={notification.id} notification={notification} role={role} onResend={resendNotification} isPendingResending={isResendingNotification} />
                     ))}
                 </VStack>}
             </ScrollView>

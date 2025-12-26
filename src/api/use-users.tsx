@@ -5,6 +5,7 @@ import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import axiosClient from "../lib/axios";
+import { Database } from "../types/database.types";
 import { useRoles } from "./use-roles";
 
 export interface CreateUserProps {
@@ -146,7 +147,7 @@ export function useUsers() {
         const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
         return data.map((user) => {
           const clerkUser = clerkUsers?.find(
-            (u) => u.id === user.clerk_user_id
+            (u: any) => u.id === user.clerk_user_id
           );
           return {
             ...user,
@@ -219,6 +220,31 @@ export function useUsers() {
     },
   });
 
+  const update = useMutation({
+    mutationFn: async (data: Database["public"]["Tables"]["users"]["Update"]) => {
+      const { error } = await supabase
+        .from("users")
+        .update(data)
+        .eq("id", data.id);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao atualizar o usuário");
+        throw error;
+      }
+    },
+  })
+
+  const getExpoPushToken = async (userIds: number[]) => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("expo_push_token")
+      .in("id", userIds);
+    if (error) {
+      showErrorToast("Erro", "Ocorreu um erro ao buscar o token de push");
+      throw error;
+    }
+    return data.map((user) => user.expo_push_token);
+  }
+
   return {
     createUser,
     getUserByClerkUserId,
@@ -230,5 +256,7 @@ export function useUsers() {
     approveStudent,
     denyStudent,
     getStudentsApprovalStatus,
+    update,
+    getExpoPushToken,
   };
 }

@@ -1,7 +1,6 @@
 import { useGyms } from "@/src/api/use-gyms";
 import { useNotifications } from "@/src/api/use-notifications";
 import { useUsers } from "@/src/api/use-users";
-import { queryClient } from "@/src/lib/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -44,7 +43,7 @@ export default function CreateNotificationDialog() {
         defaultValues: {
             title: "",
             content: "",
-            recipients: students?.map((student) => student.id) ?? [],
+            recipients: [],
         },
     });
 
@@ -80,7 +79,6 @@ export default function CreateNotificationDialog() {
             status: "pending",
             viewed_by: [],
         });
-        queryClient.invalidateQueries({ queryKey: ["notifications"] });
         reset();
         setIsOpen(false);
     }
@@ -151,7 +149,7 @@ export default function CreateNotificationDialog() {
                                     ))}
                                 </VStack>
                             }
-                            <Button variant="solid" className="bg-violet-800 rounded-md" onPress={handleSubmit(handleCreateNotification)}>
+                            <Button disabled={isCreatingNotification} variant="solid" className="bg-violet-800 rounded-md" onPress={handleSubmit(handleCreateNotification)}>
                                 <ButtonText className="text-white">Enviar</ButtonText>
                             </Button>
                         </VStack>

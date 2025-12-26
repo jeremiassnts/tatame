@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "63399682516",
+    "project_id": "tatame-e3477",
+    "storage_bucket": "tatame-e3477.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63399682516:android:757050e7acae2a47dcf641",
+        "android_client_info": {
+          "package_name": "com.anonymous.tatame"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmboBDAozh3E0LkmDVfHnoBdef9BO63hs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

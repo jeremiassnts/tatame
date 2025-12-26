@@ -296,6 +296,7 @@ export type Database = {
           clerk_user_id: string
           created_at: string
           denied_at: string | null
+          expo_push_token: string | null
           gym_id: number | null
           id: number
           role: string | null
@@ -305,6 +306,7 @@ export type Database = {
           clerk_user_id: string
           created_at?: string
           denied_at?: string | null
+          expo_push_token?: string | null
           gym_id?: number | null
           id?: number
           role?: string | null
@@ -314,6 +316,7 @@ export type Database = {
           clerk_user_id?: string
           created_at?: string
           denied_at?: string | null
+          expo_push_token?: string | null
           gym_id?: number | null
           id?: number
           role?: string | null
