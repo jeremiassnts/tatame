@@ -77,7 +77,7 @@ export default function CreateNotificationDialog() {
             channel: "push",
             sent_by: userProfile?.id,
             status: "pending",
-            viewed_by: [],
+            viewed_by: [userProfile?.id?.toString() ?? ""],
         });
         reset();
         setIsOpen(false);

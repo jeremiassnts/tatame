@@ -93,7 +93,7 @@ export function useClass() {
         channel: "push",
         sent_by: classData.created_by,
         status: "pending",
-        viewed_by: [],
+        viewed_by: [classData.created_by?.toString() ?? ""],
       })
 
       return data;

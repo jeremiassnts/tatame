@@ -88,7 +88,7 @@ export function useGyms() {
           recipients: [manager?.id.toString()],
           channel: "push",
           status: "pending",
-          viewed_by: [],
+          viewed_by: [data.id.toString()],
           sent_by: data.id,
         })
       }
