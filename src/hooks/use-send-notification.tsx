@@ -2,10 +2,10 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { useUsers } from "../api/use-users";
 import { queryClient } from '../lib/react-query';
 import { Database } from "../types/database.types";
 import { useToast } from "./use-toast";
+import { useSupabase } from './useSupabase';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -31,7 +31,7 @@ export type Notification = Database["public"]["Tables"]["notifications"]["Row"] 
 
 export function useSendNotification() {
     const { showErrorToast } = useToast();
-    const { update, getExpoPushToken } = useUsers();
+    const supabase = useSupabase();
 
     async function sendNotification(notification: SendNotificationProps) {
         try {
@@ -49,7 +49,14 @@ export function useSendNotification() {
     }
 
     async function sendPushNotification(notification: SendNotificationProps) {
-        const expoPushTokens = await getExpoPushToken(notification.recipients.map(recipient => parseInt(recipient)));
+        const { data, error } = await supabase
+            .from("users")
+            .select("expo_push_token")
+            .in("id", notification.recipients.map(recipient => parseInt(recipient)));
+        if (error) {
+            throw error;
+        }
+        const expoPushTokens = data.map(user => user.expo_push_token);
         const messages = expoPushTokens.filter(token => !!token).map(token => ({
             to: token,
             sound: 'default',
@@ -59,7 +66,6 @@ export function useSendNotification() {
                 notification_id: notification.id,
             },
         }));
-
         await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',
             headers: {
@@ -120,11 +126,11 @@ export function useSendNotification() {
 
     async function initializePushNotifications(userId: number) {
         registerForPushNotificationsAsync()
-            .then(token => {
-                update.mutate({
+            .then(async (token) => {
+                await supabase.from("users").update({
                     id: userId,
                     expo_push_token: token ?? '',
-                });
+                }).eq("id", userId);
                 queryClient.invalidateQueries({ queryKey: ["user-profile"] });
             })
             .catch((error: any) => {

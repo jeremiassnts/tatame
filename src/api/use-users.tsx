@@ -6,6 +6,7 @@ import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import axiosClient from "../lib/axios";
 import { Database } from "../types/database.types";
+import { useCreateNotification } from "./use-create-notification";
 import { useRoles } from "./use-roles";
 
 export interface CreateUserProps {
@@ -31,6 +32,8 @@ export function useUsers() {
   const { showErrorToast } = useToast();
   const { user } = useUser();
   const { getRoleByUserId } = useRoles();
+  const { create } = useCreateNotification();
+  const { mutateAsync: createNotification } = create;
 
   const createUser = useMutation({
     mutationFn: async ({ clerkUserId, role }: CreateUserProps) => {
@@ -183,6 +186,15 @@ export function useUsers() {
         showErrorToast("Erro", "Ocorreu um erro ao aprovar o aluno");
         throw error;
       }
+
+      await createNotification({
+        title: "Parabéns! Seu cadastro foi aprovado",
+        content: `Aproveite, agora você pode acessar todos os recursos da plataforma!`,
+        recipients: [userId.toString()],
+        channel: "push",
+        status: "pending",
+        viewed_by: [],
+      })
     },
   });
 
@@ -196,6 +208,15 @@ export function useUsers() {
         showErrorToast("Erro", "Ocorreu um erro ao negar o aluno");
         throw error;
       }
+
+      await createNotification({
+        title: "Que pena! Seu cadastro foi negado",
+        content: `Por favor, contate o suporte para mais informações`,
+        recipients: [userId.toString()],
+        channel: "push",
+        status: "pending",
+        viewed_by: [],
+      })
     },
   });
 
@@ -233,18 +254,6 @@ export function useUsers() {
     },
   })
 
-  const getExpoPushToken = async (userIds: number[]) => {
-    const { data, error } = await supabase
-      .from("users")
-      .select("expo_push_token")
-      .in("id", userIds);
-    if (error) {
-      showErrorToast("Erro", "Ocorreu um erro ao buscar o token de push");
-      throw error;
-    }
-    return data.map((user) => user.expo_push_token);
-  }
-
   return {
     createUser,
     getUserByClerkUserId,
@@ -257,6 +266,5 @@ export function useUsers() {
     denyStudent,
     getStudentsApprovalStatus,
     update,
-    getExpoPushToken,
   };
 }

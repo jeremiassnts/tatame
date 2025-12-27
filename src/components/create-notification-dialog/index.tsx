@@ -1,5 +1,5 @@
+import { useCreateNotification } from "@/src/api/use-create-notification";
 import { useGyms } from "@/src/api/use-gyms";
-import { useNotifications } from "@/src/api/use-notifications";
 import { useUsers } from "@/src/api/use-users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -32,7 +32,7 @@ export default function CreateNotificationDialog() {
     const [isOpen, setIsOpen] = useState(false);
     const { getStudentsByGymId, getUserProfile } = useUsers()
     const { fetchByUser } = useGyms()
-    const { create } = useNotifications()
+    const { create } = useCreateNotification()
     const { data: gym } = fetchByUser
     const { mutateAsync: createNotification, isPending: isCreatingNotification } = create;
     const { data: userProfile } = getUserProfile;

@@ -22,7 +22,7 @@ interface NotificationRowProps {
 }
 
 export default function NotificationRow({ notification, role, onResend, isPendingResending }: NotificationRowProps) {
-    const { id, title, content, sent_by_name, sent_by_image_url, sent_at, created_at, status } = notification;
+    const { id, title, content, sent_by_name, sent_by_image_url, sent_at, created_at, status, sent_by } = notification;
     const [isOpen, setIsOpen] = useState(false);
 
     function getSentTime(date: string | null) {
@@ -64,22 +64,24 @@ export default function NotificationRow({ notification, role, onResend, isPendin
         <VStack>
             <Pressable onPress={() => setIsOpen(true)}>
                 <Card key={id} className="bg-neutral-800 p-4 rounded-md">
-                    <HStack className="gap-2 items-center justify-start max-h-[50px]">
-                        <Avatar size="sm">
-                            <AvatarFallbackText>{sent_by_name}</AvatarFallbackText>
-                            <AvatarImage source={{ uri: sent_by_image_url }} />
-                        </Avatar>
-                        <VStack className="max-w-[55%]">
-                            <Heading size="md">{title}</Heading>
-                            <Text>{content?.slice(0, 50)}...</Text>
-                        </VStack>
-                        <VStack className="ml-auto items-end justify-between h-full">
+                    <VStack className="gap-2">
+                        <HStack className="gap-2 items-center justify-start">
+                            {sent_by && <Avatar size="sm">
+                                <AvatarFallbackText>{sent_by_name}</AvatarFallbackText>
+                                <AvatarImage source={{ uri: sent_by_image_url }} />
+                            </Avatar>}
+                            <VStack className="max-w-[90%]">
+                                <Heading size="md">{title}</Heading>
+                                <Text className="flex-wrap">{content?.slice(0, 50)}...</Text>
+                            </VStack>
+                        </HStack>
+                        <HStack className="items-center justify-between">
                             <Text className="text-neutral-400 text-sm">{getSentTime(sent_at ?? created_at)}</Text>
                             {role === "MANAGER" && <Badge size="sm" action={getStatusColor(status)}>
                                 <BadgeText>{getStatus(status)}</BadgeText>
                             </Badge>}
-                        </VStack>
-                    </HStack>
+                        </HStack>
+                    </VStack>
                 </Card>
             </Pressable>
             <Modal

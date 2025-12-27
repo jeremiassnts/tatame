@@ -100,7 +100,7 @@ export function useCheckins() {
 
         return data.map((checkin) => {
           const clerkUser = clerkUsers?.find(
-            (user) => user.id === checkin.users?.clerk_user_id
+            (user: any) => user.id === checkin.users?.clerk_user_id
           );
           return {
             ...checkin,

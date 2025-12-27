@@ -46,43 +46,6 @@ export function useNotifications() {
         }
     })
 
-    const create = useMutation({
-        mutationFn: async (notification: Database["public"]["Tables"]["notifications"]["Insert"]) => {
-            const { data, error } = await supabase.from("notifications").insert(notification)
-                .select().single();
-            const { mutateAsync: updateNotification } = update
-
-            if (error) {
-                throw error;
-            }
-            sendNotification({
-                id: data.id,
-                channel: "push",
-                title: data.title ?? "",
-                content: data.content ?? "",
-                recipients: data.recipients ?? [],
-            }).then(() => {
-                updateNotification({
-                    id: data.id,
-                    status: "sent",
-                    sent_at: new Date().toISOString(),
-                }).finally(() => {
-                    queryClient.invalidateQueries({ queryKey: ["notifications"] });
-                })
-            }).catch((error) => {
-                console.error(error);
-                showErrorToast("Erro", "Ocorreu um erro ao enviar a notificação");
-                updateNotification({
-                    id: data.id,
-                    status: "failed",
-                }).finally(() => {
-                    queryClient.invalidateQueries({ queryKey: ["notifications"] });
-                })
-            });
-            return data;
-        }
-    })
-
     const update = useMutation({
         mutationFn: async (notification: Database["public"]["Tables"]["notifications"]["Update"]) => {
             const { data, error } = await supabase.from("notifications").update(notification).eq("id", notification.id);
@@ -130,7 +93,6 @@ export function useNotifications() {
 
     return {
         list,
-        create,
         update,
         resend,
     }

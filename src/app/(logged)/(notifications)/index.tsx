@@ -15,11 +15,11 @@ export default function Notifications() {
     const { mutateAsync: resendNotification, isPending: isResendingNotification } = resend;
 
     return (
-        <SafeAreaView className="flex-1 pl-5 pr-5">
+        <SafeAreaView className="flex-1 pl-5 pr-5 pb-10">
             {role === "MANAGER" && (
                 <CreateNotificationDialog />
             )}
-            <ScrollView refreshControl={<RefreshControl refreshing={isLoading || isFetching} onRefresh={refetch} />}>
+            <ScrollView className="flex-1" refreshControl={<RefreshControl refreshing={isLoading || isFetching} onRefresh={refetch} />}>
                 {data && data.length == 0 && !isLoading && !isFetching &&
                     <Text className="text-white text-center text-md">Nenhuma notificação encontrada</Text>}
                 {!isLoading && !isFetching && data && data.length > 0 && <VStack className="gap-4">

@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import { Database } from "../types/database.types";
+import { useCreateNotification } from "./use-create-notification";
 import { useUsers } from "./use-users";
 
 export function useGyms() {
@@ -10,6 +11,8 @@ export function useGyms() {
   const { showErrorToast } = useToast();
   const { user } = useUser();
   const { getUserByClerkUserId } = useUsers();
+  const { create } = useCreateNotification();
+  const { mutateAsync: createNotification } = create;
 
   const createGym = useMutation({
     mutationFn: async (gym: Database["public"]["Tables"]["gyms"]["Insert"]) => {
@@ -65,10 +68,29 @@ export function useGyms() {
         showErrorToast("Erro", "Usuário não encontrado");
         throw new Error("Usuário não encontrado");
       }
-      const { data, error } = await supabase.from("users").update({ gym_id: gymId }).eq("clerk_user_id", user.id);
+      const { data, error } = await supabase.from("users").update({ gym_id: gymId }).eq("clerk_user_id", user.id).select().single();
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao associar a academia");
         throw error;
+      }
+
+      console.log("data", data);
+      if (data.role !== "MANAGER") {
+        const { data: manager } = await supabase.from("users")
+          .select("*")
+          .eq("gym_id", gymId)
+          .eq("role", "MANAGER")
+          .single();
+
+        await createNotification({
+          title: "Novo aluno associado a academia",
+          content: `Verifique na lista de alunos para aprovar ou negar a associação`,
+          recipients: [manager?.id.toString()],
+          channel: "push",
+          status: "pending",
+          viewed_by: [],
+          sent_by: data.id,
+        })
       }
     },
   });
