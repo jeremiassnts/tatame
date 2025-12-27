@@ -267,7 +267,7 @@ export function useUsers() {
     } else if (!data) {
       return null;
     }
-    return data;
+    return data as Database["public"]["Tables"]["users"]["Row"];
   }
   return {
     createUser,

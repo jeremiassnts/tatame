@@ -4,6 +4,7 @@ import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import { queryClient } from "../lib/react-query";
 import { Database } from "../types/database.types";
+import { useRoles } from "./use-roles";
 import { useUsers } from "./use-users";
 
 export type Notification = Database["public"]["Tables"]["notifications"]["Row"] & {
@@ -16,6 +17,8 @@ export function useNotifications() {
     const { data: userProfile } = getUserProfile
     const { sendNotification } = useSendNotification();
     const { showErrorToast } = useToast();
+    const { getRole } = useRoles()
+    const { data: role } = getRole
 
     const list = useQuery({
         queryKey: ["notifications"],
@@ -51,6 +54,9 @@ export function useNotifications() {
         queryFn: async () => {
             const currentUser = await getCurrentUser();
             const userId = currentUser?.id.toString() ?? "";
+            if (role !== "MANAGER" && !currentUser?.approved_at) {
+                return [];
+            }
 
             const { data } = await supabase
                 .from("notifications")
