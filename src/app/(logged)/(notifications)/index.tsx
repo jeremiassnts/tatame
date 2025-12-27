@@ -39,7 +39,7 @@ export default function Notifications() {
                 </VStack>}
                 {!isLoading && !isFetching && data && data.length > 0 && <VStack className="gap-4">
                     {data.map((notification) => (
-                        <NotificationRow onView={viewNotification} currentUserId={user?.id} key={notification.id} notification={notification} role={role} onResend={resendNotification} isPendingResending={isResendingNotification} />
+                        <NotificationRow onView={viewNotification} currentUserId={user?.id ?? 0} key={notification.id} notification={notification} role={role} onResend={resendNotification} isPendingResending={isResendingNotification} />
                     ))}
                 </VStack>}
             </ScrollView>
