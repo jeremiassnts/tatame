@@ -12,7 +12,7 @@ export type Notification = Database["public"]["Tables"]["notifications"]["Row"] 
 }
 export function useNotifications() {
     const supabase = useSupabase();
-    const { getUserProfile, getClerkUsers } = useUsers()
+    const { getUserProfile, getClerkUsers, getCurrentUser } = useUsers()
     const { data: userProfile } = getUserProfile
     const { sendNotification } = useSendNotification();
     const { showErrorToast } = useToast();
@@ -43,6 +43,23 @@ export function useNotifications() {
                     sent_by_image_url: clerkUser?.image_url,
                 } as Notification;
             })
+        }
+    })
+
+    const listUnread = useQuery({
+        queryKey: ["notifications-unread"],
+        queryFn: async () => {
+            const currentUser = await getCurrentUser();
+            const userId = currentUser?.id.toString() ?? "";
+
+            const { data } = await supabase
+                .from("notifications")
+                .select("*")
+                .contains("recipients", [userId])
+                .or(`sent_by.neq.${userId},sent_by.is.null`)
+                .order("created_at", { ascending: false });
+            const filteredData = data?.filter(e => !e.viewed_by?.includes(userId));
+            return filteredData;
         }
     })
 
@@ -91,9 +108,25 @@ export function useNotifications() {
         }
     })
 
+    const view = useMutation({
+        mutationFn: async ({ id, userId }: { id: number, userId: string }) => {
+            const { data: notification } = await supabase.from("notifications").select("*").eq("id", id).single();
+            const { error } = await supabase.from("notifications")
+                .update({ viewed_by: [...notification.viewed_by, userId] })
+                .eq("id", id);
+
+            if (error) {
+                showErrorToast("Erro", "Ocorreu um erro ao visualizar a notificação");
+                throw error;
+            }
+        }
+    })
+
     return {
         list,
         update,
         resend,
+        listUnread,
+        view,
     }
 }

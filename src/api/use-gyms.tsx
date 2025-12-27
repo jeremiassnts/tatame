@@ -74,7 +74,6 @@ export function useGyms() {
         throw error;
       }
 
-      console.log("data", data);
       if (data.role !== "MANAGER") {
         const { data: manager } = await supabase.from("users")
           .select("*")

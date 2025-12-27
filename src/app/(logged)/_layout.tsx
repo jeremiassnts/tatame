@@ -1,6 +1,7 @@
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
-import { CalendarDaysIcon, GlobeIcon, HomeIcon, Icon, PlayIcon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
+import { IconNotification } from "@/src/components/icon-notification";
+import { CalendarDaysIcon, GlobeIcon, HomeIcon, Icon, MenuIcon, PlayIcon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
 import { COLORS } from "@/src/constants/colors";
 import { useSendNotification } from "@/src/hooks/use-send-notification";
 import { useSegments } from "expo-router";
@@ -28,6 +29,7 @@ export default function Layout() {
 
   return (
     <Drawer screenOptions={{
+      headerLeft: () => <IconNotification showAmount icon={MenuIcon} size="xl" color="white" style={{ marginLeft: 15 }} />,
       headerStyle: {
         backgroundColor: COLORS.background,
         height: 100,
@@ -136,11 +138,7 @@ export default function Layout() {
           display: isApproved ? "flex" : "none"
         },
         drawerIcon: () => (
-          <Icon
-            as={BellIcon}
-            size="md"
-            color={pathname === "notifications" ? COLORS.active : COLORS.inactive}
-          />
+          <IconNotification icon={BellIcon} size="md" color={pathname === "notifications" ? COLORS.active : COLORS.inactive} showAmount />
         ),
       }} />
       <Drawer.Screen name="(profile)" options={{

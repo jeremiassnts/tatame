@@ -254,6 +254,21 @@ export function useUsers() {
     },
   })
 
+  const getCurrentUser = async () => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("clerk_user_id", user?.id!)
+      .single();
+
+    if (error) {
+      showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário atual");
+      throw error;
+    } else if (!data) {
+      return null;
+    }
+    return data;
+  }
   return {
     createUser,
     getUserByClerkUserId,
@@ -266,5 +281,6 @@ export function useUsers() {
     denyStudent,
     getStudentsApprovalStatus,
     update,
+    getCurrentUser,
   };
 }

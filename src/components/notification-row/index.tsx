@@ -1,4 +1,5 @@
 import { Notification } from "@/src/api/use-notifications";
+import { queryClient } from "@/src/lib/react-query";
 import { formatInTimeZone } from 'date-fns-tz';
 import { SendIcon } from "lucide-react-native";
 import { useState } from "react";
@@ -19,10 +20,13 @@ interface NotificationRowProps {
     role: string;
     onResend: (id: number) => void;
     isPendingResending: boolean;
+    currentUserId: number;
+    onView: (props: { id: number, userId: string }) => Promise<void>;
 }
 
-export default function NotificationRow({ notification, role, onResend, isPendingResending }: NotificationRowProps) {
+export default function NotificationRow({ notification, role, onResend, isPendingResending, currentUserId, onView }: NotificationRowProps) {
     const { id, title, content, sent_by_name, sent_by_image_url, sent_at, created_at, status, sent_by } = notification;
+    const [viewed, setViewed] = useState(notification.viewed_by?.includes(currentUserId.toString()) || notification.sent_by === currentUserId);
     const [isOpen, setIsOpen] = useState(false);
 
     function getSentTime(date: string | null) {
@@ -60,10 +64,19 @@ export default function NotificationRow({ notification, role, onResend, isPendin
         onResend(id)
     }
 
+    async function handleViewNotification() {
+        setIsOpen(true)
+        if (!viewed) {
+            await onView({ id, userId: currentUserId.toString() })
+            queryClient.invalidateQueries({ queryKey: ["notifications-unread"] })
+            setViewed(true)
+        }
+    }
+
     return (
         <VStack>
-            <Pressable onPress={() => setIsOpen(true)}>
-                <Card key={id} className="bg-neutral-800 p-4 rounded-md">
+            <Pressable onPress={handleViewNotification}>
+                <Card key={id} className={`bg-neutral-800 p-4 rounded-md border-[1px] ${viewed ? 'border-neutral-800 opacity-60' : 'border-neutral-600'}`}>
                     <VStack className="gap-2">
                         <HStack className="gap-2 items-center justify-start">
                             {sent_by && <Avatar size="sm">
@@ -110,11 +123,12 @@ export default function NotificationRow({ notification, role, onResend, isPendin
                             </Button>}
                             <HStack className="items-center justify-between w-full">
                                 <HStack className="max-w-[60%] gap-2 items-baseline justify-start mr-auto">
-                                    <Avatar size="xs">
+                                    {notification.sent_by && <Avatar size="xs">
                                         <AvatarFallbackText>{sent_by_name}</AvatarFallbackText>
                                         <AvatarImage source={{ uri: sent_by_image_url }} />
-                                    </Avatar>
-                                    <Text>Enviado por {sent_by_name} às {formatInTimeZone(new Date(sent_at ?? created_at), "America/Sao_Paulo", "dd/MM/yyyy HH:mm")}</Text>
+                                    </Avatar>}
+                                    {notification.sent_by && <Text>Enviado por {sent_by_name} às {formatInTimeZone(new Date(sent_at ?? created_at), "America/Sao_Paulo", "dd/MM/yyyy HH:mm")}</Text>}
+                                    {!notification.sent_by && <Text>Enviado às {formatInTimeZone(new Date(sent_at ?? created_at), "America/Sao_Paulo", "dd/MM/yyyy HH:mm")}</Text>}
                                 </HStack>
                                 {role === "MANAGER" && <Badge size="sm" action={getStatusColor(status)}>
                                     <BadgeText>{getStatus(status)}</BadgeText>
