@@ -46,3 +46,4 @@ app-example
 **/*.aab
 **/signing_key.json
 
+google-services.json
