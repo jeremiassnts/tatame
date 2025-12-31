@@ -13,35 +13,35 @@ export function useCreateNotification() {
     const create = useMutation({
         mutationFn: async (notification: Database["public"]["Tables"]["notifications"]["Insert"]) => {
             const { data, error } = await supabase.from("notifications").insert(notification)
-                .select().single();
+                .select()
 
             if (error) {
                 throw error;
             }
             try {
                 await sendNotification({
-                    id: data.id,
+                    id: data[0].id,
                     channel: "push",
-                    title: data.title ?? "",
-                    content: data.content ?? "",
-                    recipients: data.recipients ?? [],
+                    title: data[0].title ?? "",
+                    content: data[0].content ?? "",
+                    recipients: data[0].recipients ?? [],
                 })
                 await supabase.from("notifications").update({
-                    id: data.id,
+                    id: data[0].id,
                     status: "sent",
                     sent_at: new Date().toISOString(),
-                }).eq("id", data.id)
+                }).eq("id", data[0].id)
             } catch (error) {
                 console.error(error);
                 showErrorToast("Erro", "Ocorreu um erro ao enviar a notificação");
                 supabase.from("notifications").update({
-                    id: data.id,
+                    id: data[0].id,
                     status: "failed",
-                }).eq("id", data.id)
+                }).eq("id", data[0].id)
             } finally {
                 queryClient.invalidateQueries({ queryKey: ["notifications"] });
             }
-            return data;
+            return data[0];
         }
     })
 

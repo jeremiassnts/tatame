@@ -16,12 +16,19 @@ export function useCheckins() {
     mutationFn: async (
       checkin: Database["public"]["Tables"]["checkins"]["Insert"]
     ) => {
-      const { data, error } = await supabase.from("checkins").insert(checkin);
+      //verify if the user has already checked in for this class
+      const { data: checkinData } = await supabase.from("checkins")
+        .select("*")
+        .eq("classId", checkin.classId)
+        .eq("userId", checkin.userId)
+      if (checkinData && checkinData.length > 0) {
+        return;
+      }
+      const { error } = await supabase.from("checkins").insert(checkin);
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar o checkin");
         throw error;
       }
-      return data;
     },
   });
 

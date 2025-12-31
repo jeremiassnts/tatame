@@ -74,7 +74,7 @@ export function useClass() {
     mutationFn: async (
       classData: Database["public"]["Tables"]["class"]["Insert"]
     ) => {
-      const { data, error } = await supabase.from("class").insert(classData).select().single();
+      const { data, error } = await supabase.from("class").insert(classData).select()
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar a aula");
         throw error;
@@ -96,7 +96,7 @@ export function useClass() {
         viewed_by: [classData.created_by?.toString() ?? ""],
       })
 
-      return data;
+      return data[0];
     },
   });
 
@@ -222,6 +222,22 @@ export function useClass() {
     },
   });
 
+  const findClassToCheckIn = async (gymId: number, time: string, day: string) => {
+    const { data, error } = await supabase.from("class")
+      .select("*")
+      .eq("gym_id", gymId)
+      .eq("day", day)
+      .lte("start", time)
+      .gte("end", time)
+
+    if (error) {
+      console.error(error);
+      return null;
+    }
+
+    return data[0] as ClassRow;
+  }
+
   return {
     fetchNextClass,
     createClass,
@@ -229,5 +245,6 @@ export function useClass() {
     fetchClassById,
     editClass,
     deleteClass,
+    findClassToCheckIn,
   };
 }

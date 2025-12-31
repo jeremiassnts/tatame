@@ -81,21 +81,21 @@ export function useNotifications() {
 
     const resend = useMutation({
         mutationFn: async (notificationId: number) => {
-            const { data, error } = await supabase.from("notifications").select("*").eq("id", notificationId).single();
+            const { data, error } = await supabase.from("notifications").select("*").eq("id", notificationId)
             if (error) {
                 throw error;
             }
             const { mutateAsync: updateNotification } = update
 
             sendNotification({
-                id: data.id,
+                id: data[0].id,
                 channel: "push",
-                title: data.title ?? "",
-                content: data.content ?? "",
-                recipients: data.recipients ?? [],
+                title: data[0].title ?? "",
+                content: data[0].content ?? "",
+                recipients: data[0].recipients ?? [],
             }).then(() => {
                 updateNotification({
-                    id: data.id,
+                    id: data[0].id,
                     status: "sent",
                     sent_at: new Date().toISOString(),
                 }).finally(() => {
@@ -105,7 +105,7 @@ export function useNotifications() {
                 console.error(error);
                 showErrorToast("Erro", "Ocorreu um erro ao enviar a notificação");
                 updateNotification({
-                    id: data.id,
+                    id: data[0].id,
                     status: "failed",
                 }).finally(() => {
                     queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -116,7 +116,8 @@ export function useNotifications() {
 
     const view = useMutation({
         mutationFn: async ({ id, userId }: { id: number, userId: string }) => {
-            const { data: notification } = await supabase.from("notifications").select("*").eq("id", id).single();
+            const { data } = await supabase.from("notifications").select("*").eq("id", id);
+            const notification = data?.[0];
             const { error } = await supabase.from("notifications")
                 .update({ viewed_by: [...notification.viewed_by, userId] })
                 .eq("id", id);

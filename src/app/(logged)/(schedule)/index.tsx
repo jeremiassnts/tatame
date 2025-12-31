@@ -1,32 +1,55 @@
+import { useCheckins } from "@/src/api/use-checkins";
 import { useClass } from "@/src/api/use-class";
 import { useRoles } from "@/src/api/use-roles";
+import { useUsers } from "@/src/api/use-users";
 import { ClassCard } from "@/src/components/class-card";
 import { Box } from "@/src/components/ui/box";
-import { Button, ButtonIcon } from "@/src/components/ui/button";
+import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
 import { AddIcon } from "@/src/components/ui/icon";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import WeekDays from "@/src/components/weekDays";
 import { Days } from "@/src/constants/date";
+import { useCrypto } from "@/src/hooks/use-crypto";
+import { useToast } from "@/src/hooks/use-toast";
+import { queryClient } from "@/src/lib/react-query";
 import { WeekDay } from "@/src/types/date";
+import { useUser } from "@clerk/clerk-expo";
 import { addDays, endOfWeek, format, isAfter, isBefore, parse, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Pressable, RefreshControl, ScrollView } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Modal, Pressable, RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+
+const qrCodeSchema = z.object({
+  gymId: z.number(),
+  date: z.string(),
+});
 
 export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<WeekDay | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { fetchClasses } = useClass();
+  const { fetchClasses, findClassToCheckIn } = useClass();
+  const { create } = useCheckins();
+  const { mutateAsync: createCheckinFn } = create;
   const { data: classes, isLoading: isLoadingClasses, refetch: refetchClasses, isFetching: isFetchingClasses } = fetchClasses;
   const router = useRouter();
   const { getRole } = useRoles();
   const { data: role } = getRole;
   const [initialScrollIndex, setInitialScrollIndex] = useState(0);
+  const [isOpenCheckInModal, setIsOpenCheckInModal] = useState(false);
+  const { showErrorToast, showSuccessToast } = useToast();
+  const [permission, requestPermission] = useCameraPermissions();
+  const { encrypt, decrypt } = useCrypto();
+  const qrCodeLock = useRef(false);
+  const [isLoadingCheckin, setIsLoadingCheckin] = useState(false);
+  const { getUserByClerkUserId } = useUsers();
+  const { user } = useUser();
 
   useEffect(() => {
     async function defineWeekDays() {
@@ -86,6 +109,61 @@ export default function Schedule() {
     });
   }
 
+  async function handleCheckIn() {
+    if (isLoadingCheckin) return;
+    const { granted } = await requestPermission();
+    if (!granted) {
+      showErrorToast("Erro", "Permissão de câmera negada");
+      return;
+    }
+    qrCodeLock.current = false;
+    setIsOpenCheckInModal(true)
+  }
+
+  async function handleBarcodeScanned(data: string) {
+    try {
+      const decryptedData = decrypt(data);
+      const result = qrCodeSchema.safeParse(decryptedData);
+
+      if (!result.success) {
+        console.error(result.error);
+        qrCodeLock.current = false;
+        return;
+      }
+      setIsOpenCheckInModal(false);
+      setIsLoadingCheckin(true);
+      const { gymId } = result.data;
+      const classToCheckIn = await findClassToCheckIn(gymId, format(new Date(), 'HH:mm:ss'), selectedDay?.dayOfWeek ?? '');
+      if (!classToCheckIn) {
+        showErrorToast("Ops!", "Não existe nenhuma aula para check-in nesse horário");
+        setIsLoadingCheckin(false);
+      } else {
+        const sp_userId = await getUserByClerkUserId(user?.id!);
+        if (!sp_userId) {
+          showErrorToast("Erro", "Não foi possível encontrar o usuário");
+          throw new Error()
+        }
+        await createCheckinFn({
+          classId: classToCheckIn.id,
+          date: new Date().toISOString(),
+          userId: sp_userId.id,
+        })
+        queryClient.invalidateQueries({ queryKey: ["classes"] });
+        queryClient.invalidateQueries({ queryKey: ["next-class"] });
+        queryClient.invalidateQueries({ queryKey: ["checkins"] });
+        queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classToCheckIn.id] });
+        queryClient.invalidateQueries({ queryKey: ["last-checkins"] });
+
+        setIsLoadingCheckin(false);
+        showSuccessToast("Sucesso", "Check-in realizado com sucesso");
+      }
+    } catch (error) {
+      setIsLoadingCheckin(false);
+      console.error(error);
+      qrCodeLock.current = false;
+    }
+  }
+
   const today = Days.find(
     (w) =>
       w.label.toLowerCase() ===
@@ -102,6 +180,18 @@ export default function Schedule() {
           onPress={() => router.push("/(logged)/(schedule)/create-class")}
         >
           <ButtonIcon as={AddIcon} color="white" />
+        </Button>
+      )}
+      {role === "STUDENT" && (
+        <Button
+          size="lg"
+          variant="solid"
+          className="bg-violet-800 rounded-md absolute bottom-[80px] right-0 left-0 mx-10 z-10 w-fit"
+          onPress={handleCheckIn}
+          disabled={isLoadingCheckin}
+        >
+          {isLoadingCheckin && <ButtonSpinner color="white" />}
+          <ButtonText className="text-white">CHECK-IN</ButtonText>
         </Button>
       )}
       <Box className="w-full max-h-[100px]">
@@ -156,6 +246,14 @@ export default function Schedule() {
               </Text>
             )}
         </VStack>
+        <Modal visible={isOpenCheckInModal} onRequestClose={() => setIsOpenCheckInModal(false)} className="flex-1">
+          <CameraView style={{ flex: 1 }} facing="back" onBarcodeScanned={({ data }) => {
+            if (data && !qrCodeLock.current) {
+              qrCodeLock.current = true;
+              handleBarcodeScanned(data);
+            }
+          }} />
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );

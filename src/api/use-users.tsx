@@ -121,12 +121,11 @@ export function useUsers() {
     queryKey: ["user-profile"],
     queryFn: async () => {
       const data = await getUserByClerkUserId(user?.id!);
-      const gym = await supabase
+      const { data: gyms } = await supabase
         .from("gyms")
         .select("*")
         .eq("id", data?.gym_id!)
-        .single();
-
+      const gym = gyms?.[0];
       return {
         ...user,
         ...data,
@@ -259,7 +258,6 @@ export function useUsers() {
       .from("users")
       .select("*")
       .eq("clerk_user_id", user?.id!)
-      .single();
 
     if (error) {
       showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário atual");
@@ -267,7 +265,7 @@ export function useUsers() {
     } else if (!data) {
       return null;
     }
-    return data as Database["public"]["Tables"]["users"]["Row"];
+    return data[0] as Database["public"]["Tables"]["users"]["Row"];
   }
   return {
     createUser,

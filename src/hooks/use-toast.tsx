@@ -26,7 +26,26 @@ export function useToast() {
     });
   }
 
+  function showSuccessToast(title: string, message: string) {
+    const newId = Math.random();
+    toast.show({
+      id: newId.toString(),
+      placement: "top",
+      duration: 5000,
+      render: ({ id }) => {
+        const uniqueToastId = "toast-" + id;
+        return (
+          <Toast nativeID={uniqueToastId} action="success" variant="outline">
+            <ToastTitle>{title}</ToastTitle>
+            <ToastDescription>{message}</ToastDescription>
+          </Toast>
+        );
+      },
+    });
+  }
+
   return {
     showErrorToast,
+    showSuccessToast,
   };
 }
