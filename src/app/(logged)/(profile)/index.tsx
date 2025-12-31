@@ -45,7 +45,7 @@ export default function Profile() {
             {userProfile.emailAddresses?.[0]?.emailAddress}
           </Text>
           <GraduationCard showBelt={true} />
-          {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym?.data} />}
+          {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />}
           <SignOutButton className="mt-14" />
         </VStack>
       )}
