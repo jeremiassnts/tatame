@@ -56,7 +56,7 @@ export default function Profile() {
               {userProfile.emailAddresses?.[0]?.emailAddress}
             </Text>
             <GraduationCard showBelt={true} />
-            <PersonalDataSection user={userProfile} />
+            <PersonalDataSection user={userProfile} firstName={userProfile.firstName} lastName={userProfile.lastName} />
             {lastMonthCheckins && studentsApprovalStatus && role == "STUDENT" && <StudentPresenceSection checkins={lastMonthCheckins} />}
             {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />}
             <SignOutButton className="mt-4" />

@@ -267,6 +267,21 @@ export function useUsers() {
     }
     return data[0] as Database["public"]["Tables"]["users"]["Row"];
   }
+
+  const edit = useMutation({
+    mutationFn: async (data: Database["public"]["Tables"]["users"]["Update"]) => {
+      const { error } = await supabase
+        .from("users")
+        .update(data)
+        .eq("id", data.id);
+      if (error) {
+        console.error(JSON.stringify(error, null, 2));
+        showErrorToast("Erro", "Ocorreu um erro ao atualizar o usuário");
+        throw error;
+      }
+    },
+  })
+
   return {
     createUser,
     getUserByClerkUserId,
@@ -280,5 +295,6 @@ export function useUsers() {
     getStudentsApprovalStatus,
     update,
     getCurrentUser,
+    edit,
   };
 }

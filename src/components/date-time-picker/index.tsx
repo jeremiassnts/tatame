@@ -1,8 +1,8 @@
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import { formatDate } from "date-fns";
+import React, { useState } from "react";
 import { Pressable } from "react-native";
 import { Text } from "../ui/text";
-import React, { useState } from "react";
-import { formatDate } from "date-fns";
 
 interface DateTimePickerProps {
   setNewDate: (date: Date | undefined) => void;
@@ -11,6 +11,7 @@ interface DateTimePickerProps {
   mode?: "date" | "time";
   className?: string;
   value?: Date;
+  label?: string;
 }
 
 export default function DateTimePicker({
@@ -20,12 +21,14 @@ export default function DateTimePicker({
   mode = "date",
   className,
   value,
+  label,
 }: DateTimePickerProps) {
   const [date, setDate] = useState<Date | null>(value || null);
   const [show, setShow] = useState(false);
 
   return (
     <Pressable onPress={() => setShow(true)} className={className}>
+      {label && <Text className="text-white font-bold mb-2 text-md">{label}</Text>}
       <Text
         className={`w-full bg-neutral-800 p-3 pl-4 pr-4 rounded-md text-md`}
       >
