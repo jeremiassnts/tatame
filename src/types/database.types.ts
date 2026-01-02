@@ -296,6 +296,7 @@ export type Database = {
           birth: string | null
           clerk_user_id: string
           created_at: string
+          deleted_at: string | null
           denied_at: string | null
           expo_push_token: string | null
           gender: string | null
@@ -310,6 +311,7 @@ export type Database = {
           birth?: string | null
           clerk_user_id: string
           created_at?: string
+          deleted_at?: string | null
           denied_at?: string | null
           expo_push_token?: string | null
           gender?: string | null
@@ -324,6 +326,7 @@ export type Database = {
           birth?: string | null
           clerk_user_id?: string
           created_at?: string
+          deleted_at?: string | null
           denied_at?: string | null
           expo_push_token?: string | null
           gender?: string | null

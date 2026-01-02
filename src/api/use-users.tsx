@@ -282,6 +282,22 @@ export function useUsers() {
     },
   })
 
+  const deleteUser = useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase
+        .from("users")
+        .update({
+          deleted_at: new Date().toISOString(),
+        })
+        .eq("clerk_user_id", userId);
+
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao deletar o usuário");
+        throw error;
+      }
+    },
+  })
+
   return {
     createUser,
     getUserByClerkUserId,
@@ -296,5 +312,6 @@ export function useUsers() {
     update,
     getCurrentUser,
     edit,
+    deleteUser,
   };
 }

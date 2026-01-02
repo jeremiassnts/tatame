@@ -2,10 +2,10 @@ import { useAttachments } from "@/src/api/use-attachments";
 import { useCheckins } from "@/src/api/use-checkins";
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
+import { AccountSection } from "@/src/components/account-section";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { PersonalDataSection } from "@/src/components/personal-data-section";
 import { ProfileGymCard } from "@/src/components/profile-gym-card";
-import { SignOutButton } from "@/src/components/sign-out-button";
 import { StudentPresenceSection } from "@/src/components/student-presence-section";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -59,7 +59,7 @@ export default function Profile() {
             <PersonalDataSection user={userProfile} firstName={userProfile.firstName} lastName={userProfile.lastName} />
             {lastMonthCheckins && studentsApprovalStatus && role == "STUDENT" && <StudentPresenceSection checkins={lastMonthCheckins} />}
             {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />}
-            <SignOutButton className="mt-4" />
+            <AccountSection />
           </VStack>
         </ScrollView>
       )}

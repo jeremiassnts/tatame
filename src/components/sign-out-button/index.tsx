@@ -9,7 +9,6 @@ interface SignOutButtonProps {
 }
 
 export const SignOutButton = ({ className }: SignOutButtonProps) => {
-  // Use `useClerk()` to access the `signOut()` function
   const { signOut } = useClerk();
   const router = useRouter();
   const { showErrorToast } = useToast();
