@@ -13,11 +13,11 @@ export default function Profile() {
   const { getUserProfile, getStudentsApprovalStatus } = useUsers();
   const { updateUserImage } = useAttachments();
   const { user } = useUser();
-  const { fetchLastWeekCheckins } = useCheckins();
+  const { fetchLastMonthCheckins } = useCheckins();
 
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
   const { data: userProfile, isLoading } = getUserProfile;
-  const { data: lastWeekCheckins } = fetchLastWeekCheckins;
+  const { data: lastMonthCheckins } = fetchLastMonthCheckins;
 
   return (
     <SafeAreaView>
@@ -46,7 +46,7 @@ export default function Profile() {
           <Text className="text-neutral-400 text-md">
             {userProfile.emailAddresses?.[0]?.emailAddress}
           </Text>
-          {lastWeekCheckins && studentsApprovalStatus && <StudentPresenceSection checkins={lastWeekCheckins} />}
+          {lastMonthCheckins && studentsApprovalStatus && <StudentPresenceSection checkins={lastMonthCheckins} />}
           {/* <Card className="w-full border-neutral-800 border-[1px] mt-4">
 
           </Card> */}

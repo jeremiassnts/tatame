@@ -3,6 +3,7 @@ import { differenceInMinutes, format, subDays } from "date-fns";
 import { Flame } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { BarChart } from "react-native-gifted-charts";
+import { Button, ButtonText } from "../ui/button";
 import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
@@ -23,6 +24,10 @@ export function StudentPresenceSection({ checkins }: StudentPresenceSectionProps
     const [totalTrainings, setTotalTrainings] = useState(0)
     const [data, setData] = useState<{ label: string; value: number }[]>([])
 
+    const handlePeriodDaysChange = (days: number) => {
+        setPeriodDays(days)
+    }
+
     useEffect(() => {
         const tempData = Array.from({ length: periodDays }, (_, index) => {
             const day = subDays(new Date(), periodDays - index - 1)
@@ -37,10 +42,10 @@ export function StudentPresenceSection({ checkins }: StudentPresenceSectionProps
                 : tempTotalDuration > 0 ? `${tempTotalDuration}m`
                     : ''
             return {
-                label: format(day, "dd"),
+                label: periodDays === 7 ? format(day, "dd") : '',
                 value: tempTotalDuration,
                 topLabelComponent: () => (
-                    <Text className="text-white text-[8px] mb-2">{formattedDuration}</Text>
+                    <Text className="text-white text-[8px] mb-2">{periodDays === 7 ? formattedDuration : ''}</Text>
                 )
             }
         })
@@ -57,10 +62,18 @@ export function StudentPresenceSection({ checkins }: StudentPresenceSectionProps
 
     return (
         <Card className="w-full border-2 border-neutral-800 mt-4 bg-neutral-900">
-            <HStack className="justify-between items-center">
-                <Heading size="xs" className="text-neutral-400 mb-6">Frequência da semana</Heading>
+            <HStack className="justify-between items-center mb-6">
+                <Heading size="xs" className="text-neutral-400">Frequência</Heading>
+                <HStack className="items-center">
+                    <Button variant="solid" size="xs" className={`rounded-r-none border-0 ${periodDays === 7 ? "bg-neutral-200" : "bg-neutral-800"}`} onPress={() => handlePeriodDaysChange(7)}>
+                        <ButtonText className={`${periodDays === 7 ? "text-neutral-800" : "text-neutral-400"}`}>Semana</ButtonText>
+                    </Button>
+                    <Button variant="solid" size="xs" className={`rounded-l-none border-0 ${periodDays === 30 ? "bg-neutral-200" : "bg-neutral-800"}`} onPress={() => handlePeriodDaysChange(30)}>
+                        <ButtonText className={`${periodDays === 30 ? "text-neutral-800" : "text-neutral-400"}`}>Mês</ButtonText>
+                    </Button>
+                </HStack>
             </HStack>
-            <BarChart data={data}
+            {periodDays === 7 && <BarChart data={data}
                 rulesType="dashed"
                 barWidth={35}
                 noOfSections={5}
@@ -77,8 +90,26 @@ export function StudentPresenceSection({ checkins }: StudentPresenceSectionProps
                 xAxisColor="#262626"
                 yAxisColor="#262626"
                 hideYAxisText
-            />
-            <HStack className="w-full justify-between gap-2 mt-4">
+            />}
+            {periodDays === 30 && <BarChart data={data}
+                rulesType="dashed"
+                barWidth={8}
+                noOfSections={5}
+                barBorderRadius={2}
+                initialSpacing={2}
+                spacing={2}
+                stepHeight={30}
+                rulesColor="#262626"
+                showGradient
+                gradientColor={'rgba(200, 100, 244,0.8)'}
+                frontColor={'rgba(219, 182, 249,0.2)'}
+                xAxisLabelTextStyle={{ color: 'white', fontSize: 10, opacity: 0.5 }}
+                yAxisTextStyle={{ color: 'white', fontSize: 10, opacity: 0.5 }}
+                xAxisColor="#262626"
+                yAxisColor="#262626"
+                hideYAxisText
+            />}
+            <HStack className={`w-full justify-between gap-2 ${periodDays === 30 ? "mt-0" : "mt-4"}`}>
                 <GoalCard label="Tempo total" value={totalDuration} icon={<Icon as={ClockIcon} size="sm" className="text-neutral-500" />} />
                 <GoalCard label="Calorias" value={totalCalories.toString()} icon={<Icon as={Flame} size="sm" className="text-neutral-500" />} />
                 <GoalCard label="Treinos" value={totalTrainings.toString()} icon={<Icon as={CheckIcon} size="sm" className="text-neutral-500" />} />

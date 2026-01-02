@@ -123,8 +123,8 @@ export function useCheckins() {
     });
   };
 
-  const fetchLastWeekCheckins = useQuery({
-    queryKey: ["last-week-checkins"],
+  const fetchLastMonthCheckins = useQuery({
+    queryKey: ["last-month-checkins"],
     queryFn: async () => {
       if (!user?.id) return [];
 
@@ -132,7 +132,7 @@ export function useCheckins() {
         .from("checkins")
         .select("*, users!inner(clerk_user_id), class!inner(id, start, end, day)")
         .eq("users.clerk_user_id", user?.id!)
-        .gte('date', subDays(new Date(), 7).toISOString())
+        .gte('date', subDays(new Date(), 30).toISOString())
         .lte('date', new Date().toISOString())
         .order('date', { ascending: false })
 
@@ -152,6 +152,6 @@ export function useCheckins() {
     remove,
     fetchByClassId,
     fetchLastCheckins,
-    fetchLastWeekCheckins,
+    fetchLastMonthCheckins,
   };
 }
