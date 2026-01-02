@@ -1,6 +1,7 @@
 import { useAttachments } from "@/src/api/use-attachments";
 import { useCheckins } from "@/src/api/use-checkins";
 import { useUsers } from "@/src/api/use-users";
+import { GraduationCard } from "@/src/components/graduation-card";
 import { StudentPresenceSection } from "@/src/components/student-presence-section";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -46,11 +47,11 @@ export default function Profile() {
           <Text className="text-neutral-400 text-md">
             {userProfile.emailAddresses?.[0]?.emailAddress}
           </Text>
+          <GraduationCard showBelt={true} />
           {lastMonthCheckins && studentsApprovalStatus && <StudentPresenceSection checkins={lastMonthCheckins} />}
           {/* <Card className="w-full border-neutral-800 border-[1px] mt-4">
 
           </Card> */}
-          {/* <GraduationCard showBelt={true} /> */}
           {/* {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />} */}
           {/* <SignOutButton className="mt-14" /> */}
         </VStack>
