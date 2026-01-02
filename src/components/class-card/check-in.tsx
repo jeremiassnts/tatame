@@ -42,6 +42,8 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
         queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classData.id] });
         queryClient.invalidateQueries({ queryKey: ["last-checkins"] });
+        queryClient.invalidateQueries({ queryKey: ["last-week-checkins"] });
+
         setIsLoading(false);
       })
       .catch(() => {
@@ -65,6 +67,8 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
         queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classData.id] });
         queryClient.invalidateQueries({ queryKey: ["last-checkins"] });
+        queryClient.invalidateQueries({ queryKey: ["last-week-checkins"] });
+
         setIsLoading(false);
       })
       .catch(() => {

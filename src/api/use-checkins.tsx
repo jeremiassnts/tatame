@@ -4,6 +4,7 @@ import { subDays } from "date-fns";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import { Database } from "../types/database.types";
+import { CheckinRow } from "../types/extendend-database.types";
 import { useUsers } from "./use-users";
 
 export function useCheckins() {
@@ -58,6 +59,7 @@ export function useCheckins() {
         .eq("date", new Date().toISOString());
 
       if (error) {
+        console.error(error);
         showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
         throw error;
       }
@@ -79,6 +81,7 @@ export function useCheckins() {
         .lte('date', new Date().toISOString())
 
       if (error) {
+        console.error(error);
         showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
         throw error;
       }
@@ -97,6 +100,7 @@ export function useCheckins() {
           .eq("classId", classId)
           .eq("date", new Date().toISOString());
         if (error) {
+          console.error(error);
           showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
           throw error;
         }
@@ -119,11 +123,35 @@ export function useCheckins() {
     });
   };
 
+  const fetchLastWeekCheckins = useQuery({
+    queryKey: ["last-week-checkins"],
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      const { data, error } = await supabase
+        .from("checkins")
+        .select("*, users!inner(clerk_user_id), class!inner(id, start, end, day)")
+        .eq("users.clerk_user_id", user?.id!)
+        .gte('date', subDays(new Date(), 7).toISOString())
+        .lte('date', new Date().toISOString())
+        .order('date', { ascending: false })
+
+      if (error) {
+        console.error(error);
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+        throw error;
+      }
+
+      return data as CheckinRow[];
+    },
+  });
+
   return {
     create,
     fetchAll,
     remove,
     fetchByClassId,
     fetchLastCheckins,
+    fetchLastWeekCheckins,
   };
 }

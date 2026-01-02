@@ -153,6 +153,7 @@ export default function Schedule() {
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
         queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classToCheckIn.id] });
         queryClient.invalidateQueries({ queryKey: ["last-checkins"] });
+        queryClient.invalidateQueries({ queryKey: ["last-week-checkins"] });
 
         setIsLoadingCheckin(false);
         showSuccessToast("Sucesso", "Check-in realizado com sucesso");

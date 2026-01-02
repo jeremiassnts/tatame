@@ -1,8 +1,7 @@
 import { useAttachments } from "@/src/api/use-attachments";
+import { useCheckins } from "@/src/api/use-checkins";
 import { useUsers } from "@/src/api/use-users";
-import { GraduationCard } from "@/src/components/graduation-card";
-import { ProfileGymCard } from "@/src/components/profile-gym-card";
-import { SignOutButton } from "@/src/components/sign-out-button";
+import { StudentPresenceSection } from "@/src/components/student-presence-section";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
@@ -12,10 +11,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
   const { getUserProfile, getStudentsApprovalStatus } = useUsers();
-  const { data: userProfile, isLoading } = getUserProfile;
   const { updateUserImage } = useAttachments();
   const { user } = useUser();
+  const { fetchLastWeekCheckins } = useCheckins();
+
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
+  const { data: userProfile, isLoading } = getUserProfile;
+  const { data: lastWeekCheckins } = fetchLastWeekCheckins;
 
   return (
     <SafeAreaView>
@@ -44,9 +46,13 @@ export default function Profile() {
           <Text className="text-neutral-400 text-md">
             {userProfile.emailAddresses?.[0]?.emailAddress}
           </Text>
-          <GraduationCard showBelt={true} />
-          {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />}
-          <SignOutButton className="mt-14" />
+          {lastWeekCheckins && studentsApprovalStatus && <StudentPresenceSection checkins={lastWeekCheckins} />}
+          {/* <Card className="w-full border-neutral-800 border-[1px] mt-4">
+
+          </Card> */}
+          {/* <GraduationCard showBelt={true} /> */}
+          {/* {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />} */}
+          {/* <SignOutButton className="mt-14" /> */}
         </VStack>
       )}
     </SafeAreaView>
