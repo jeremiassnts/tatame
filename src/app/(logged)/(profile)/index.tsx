@@ -3,6 +3,7 @@ import { useCheckins } from "@/src/api/use-checkins";
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { GraduationCard } from "@/src/components/graduation-card";
+import { PersonalDataSection } from "@/src/components/personal-data-section";
 import { ProfileGymCard } from "@/src/components/profile-gym-card";
 import { SignOutButton } from "@/src/components/sign-out-button";
 import { StudentPresenceSection } from "@/src/components/student-presence-section";
@@ -55,6 +56,7 @@ export default function Profile() {
               {userProfile.emailAddresses?.[0]?.emailAddress}
             </Text>
             <GraduationCard showBelt={true} />
+            <PersonalDataSection user={userProfile} />
             {lastMonthCheckins && studentsApprovalStatus && role == "STUDENT" && <StudentPresenceSection checkins={lastMonthCheckins} />}
             {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />}
             <SignOutButton className="mt-4" />

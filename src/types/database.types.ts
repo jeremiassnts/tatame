@@ -293,32 +293,44 @@ export type Database = {
       users: {
         Row: {
           approved_at: string | null
+          birth: string | null
           clerk_user_id: string
           created_at: string
           denied_at: string | null
           expo_push_token: string | null
+          gender: string | null
           gym_id: number | null
           id: number
+          instagram: string | null
+          phone: string | null
           role: string | null
         }
         Insert: {
           approved_at?: string | null
+          birth?: string | null
           clerk_user_id: string
           created_at?: string
           denied_at?: string | null
           expo_push_token?: string | null
+          gender?: string | null
           gym_id?: number | null
           id?: number
+          instagram?: string | null
+          phone?: string | null
           role?: string | null
         }
         Update: {
           approved_at?: string | null
+          birth?: string | null
           clerk_user_id?: string
           created_at?: string
           denied_at?: string | null
           expo_push_token?: string | null
+          gender?: string | null
           gym_id?: number | null
           id?: number
+          instagram?: string | null
+          phone?: string | null
           role?: string | null
         }
         Relationships: [
