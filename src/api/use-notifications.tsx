@@ -28,7 +28,7 @@ export function useNotifications() {
                 .or(
                     `recipients.cs.{${userProfile?.id.toString()}},sent_by.eq.${userProfile?.id.toString()}`
                 )
-                .order("created_at", { ascending: true });
+                .order("created_at", { ascending: false });
             if (error) {
                 throw error;
             }

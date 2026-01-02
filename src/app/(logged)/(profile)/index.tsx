@@ -1,5 +1,6 @@
 import { useAttachments } from "@/src/api/use-attachments";
 import { useCheckins } from "@/src/api/use-checkins";
+import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { ProfileGymCard } from "@/src/components/profile-gym-card";
@@ -18,10 +19,12 @@ export default function Profile() {
   const { updateUserImage } = useAttachments();
   const { user } = useUser();
   const { fetchLastMonthCheckins } = useCheckins();
+  const { getRole } = useRoles();
 
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
   const { data: userProfile, isLoading } = getUserProfile;
   const { data: lastMonthCheckins } = fetchLastMonthCheckins;
+  const { data: role } = getRole;
 
   return (
     <SafeAreaView>
@@ -52,7 +55,7 @@ export default function Profile() {
               {userProfile.emailAddresses?.[0]?.emailAddress}
             </Text>
             <GraduationCard showBelt={true} />
-            {lastMonthCheckins && studentsApprovalStatus && <StudentPresenceSection checkins={lastMonthCheckins} />}
+            {lastMonthCheckins && studentsApprovalStatus && role == "STUDENT" && <StudentPresenceSection checkins={lastMonthCheckins} />}
             {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />}
             <SignOutButton className="mt-4" />
           </VStack>

@@ -1,4 +1,6 @@
 import { useAssets } from "@/src/api/use-assets";
+import { useRoles } from "@/src/api/use-roles";
+import { AddVideoToLibrary } from "@/src/components/add-video-to-library";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
@@ -8,7 +10,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Library() {
     const { fetchVideos, deleteAsset } = useAssets();
+    const { getRole } = useRoles();
+
     const { data, isLoading, isFetching, refetch } = fetchVideos
+    const { data: role } = getRole;
 
     return (
         <SafeAreaView className="flex-1 pl-4 pr-4">
@@ -31,6 +36,7 @@ export default function Library() {
                     ))}
                 </VStack>}
             </ScrollView>
+            {role === "MANAGER" && <AddVideoToLibrary />}
         </SafeAreaView>
     );
 }

@@ -58,7 +58,7 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
       <HStack className="justify-between items-center">
         <Heading size="xs" className="text-neutral-400">Academia</Heading>
       </HStack>
-      <HStack className="w-full p-5 rounded-md gap-4 items-center justify-center">
+      <HStack className="w-full p-2 mt-4 rounded-md gap-4 items-center justify-center">
         <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={role == "MANAGER" ? updateGymImage : undefined} />
         <Pressable onPress={() => router.push(`/(logged)/(gym)`)}>
           <VStack className="justify-center items-start max-w-[80%]">
