@@ -15,6 +15,8 @@ export interface CreateUserProps {
 }
 
 export interface Student {
+  firstName: string;
+  lastName: string;
   email: string;
   approved_at: string | null;
   denied_at: string | null;
@@ -25,6 +27,10 @@ export interface Student {
   imageUrl: string;
   belt: string;
   degree: number;
+  instagram: string | null;
+  phone: string | null;
+  gender: string | null;
+  birth: string | null;
 }
 
 export function useUsers() {
@@ -160,6 +166,8 @@ export function useUsers() {
             approved_at: user.approved_at,
             denied_at: user.denied_at,
             email: clerkUser?.email_addresses?.[0]?.email_address,
+            firstName: clerkUser?.first_name,
+            lastName: clerkUser?.last_name,
           } as Student;
         }).sort((a, b) => {
           if (a.belt === b.belt) {
