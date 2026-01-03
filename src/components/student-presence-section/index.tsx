@@ -17,7 +17,7 @@ const CALORIES_PER_MINUTE = 8.6;
 interface StudentPresenceSectionProps {
     checkins: CheckinRow[];
 }
-interface StudentPresenceSectionData {
+export interface StudentPresenceSectionData {
     date: number
     weekDay: string
     isPresent: boolean
@@ -25,7 +25,6 @@ interface StudentPresenceSectionData {
 }
 
 export function StudentPresenceSection({ checkins }: StudentPresenceSectionProps) {
-    const [periodDays, setPeriodDays] = useState(7)
     const [totalDuration, setTotalDuration] = useState("")
     const [totalCalories, setTotalCalories] = useState(0)
     const [totalTrainings, setTotalTrainings] = useState(0)
@@ -63,20 +62,12 @@ export function StudentPresenceSection({ checkins }: StudentPresenceSectionProps
         setTotalDuration(formattedDuration)
         setTotalCalories(CALORIES_PER_MINUTE * aux)
         setTotalTrainings(tempWeekDays.filter(checkin => checkin.duration > 0).length)
-    }, [periodDays])
+    }, [])
 
     return (
         <Card className="w-full border-2 border-neutral-800 mt-4 bg-neutral-900">
             <HStack className="justify-between items-center mb-6">
                 <Heading size="xs" className="text-neutral-400">Frequência</Heading>
-                {/* <HStack className="items-center">
-                    <Button variant="solid" size="xs" className={`rounded-r-none border-0 ${periodDays === 7 ? "bg-neutral-200" : "bg-neutral-800"}`} onPress={() => handlePeriodDaysChange(7)}>
-                        <ButtonText className={`${periodDays === 7 ? "text-neutral-800" : "text-neutral-400"}`}>Semana</ButtonText>
-                    </Button>
-                    <Button variant="solid" size="xs" className={`rounded-l-none border-0 ${periodDays === 30 ? "bg-neutral-200" : "bg-neutral-800"}`} onPress={() => handlePeriodDaysChange(30)}>
-                        <ButtonText className={`${periodDays === 30 ? "text-neutral-800" : "text-neutral-400"}`}>Mês</ButtonText>
-                    </Button>
-                </HStack> */}
             </HStack>
             <HStack className="justify-between items-center">
                 {data.map(day => (
@@ -88,7 +79,7 @@ export function StudentPresenceSection({ checkins }: StudentPresenceSectionProps
                     </VStack>
                 ))}
             </HStack>
-            <HStack className={`w-full justify-between gap-2 ${periodDays === 30 ? "mt-0" : "mt-4"}`}>
+            <HStack className="w-full justify-between gap-2 mt-4">
                 <GoalCard label="Tempo total" value={totalDuration} icon={<Icon as={ClockIcon} size="sm" className="text-neutral-500" />} />
                 <GoalCard label="Calorias" value={totalCalories.toString()} icon={<Icon as={Flame} size="sm" className="text-neutral-500" />} />
                 <GoalCard label="Treinos" value={totalTrainings.toString()} icon={<Icon as={CheckIcon} size="sm" className="text-neutral-500" />} />
