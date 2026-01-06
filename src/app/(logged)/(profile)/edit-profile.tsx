@@ -63,6 +63,12 @@ export default function EditProfile() {
         },
     });
 
+    function formatBirthDay(birth: string | undefined) {
+        if (!birth) return null;
+        const [_, month, day] = birth.split("-");
+        return `${month}-${day}`;
+    }
+
     async function handleEditProfile(data: EditProfileFormType) {
         try {
             setIsEditingProfile(true);
@@ -70,12 +76,14 @@ export default function EditProfile() {
                 firstName: data.firstName,
                 lastName: data.lastName,
             })
+
             await editUser({
                 id: Number(id),
                 instagram: !!data.instagram ? data.instagram.replace("@", "") : null,
                 phone: !!data.phone ? data.phone : null,
                 gender: !!data.gender ? data.gender : null,
                 birth: !!data.birth ? data.birth : null,
+                birth_day: formatBirthDay(data.birth),
             })
             setIsEditingProfile(false);
             reset()

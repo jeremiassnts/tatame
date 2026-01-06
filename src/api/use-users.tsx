@@ -1,5 +1,6 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { BELT_ORDER } from "../constants/belts";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
@@ -306,6 +307,36 @@ export function useUsers() {
     },
   })
 
+  const getBirthdayUsers = useQuery({
+    queryKey: ["birthday-users", format(new Date(), "MM-dd")],
+    queryFn: async () => {
+      const formatted = format(new Date(), "MM-dd");
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("birth_day", formatted)
+
+      if (error) {
+        console.error(JSON.stringify(error, null, 2));
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os usuários de aniversário");
+        throw error;
+      }
+
+      const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
+      return data.map((user) => {
+        const clerkUser = clerkUsers?.find(
+          (u: any) => u.id === user.clerk_user_id
+        );
+        return {
+          ...user,
+          name: clerkUser?.first_name,
+        } as Student;
+      }).sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+    },
+  })
+
   return {
     createUser,
     getUserByClerkUserId,
@@ -321,5 +352,6 @@ export function useUsers() {
     getCurrentUser,
     edit,
     deleteUser,
+    getBirthdayUsers,
   };
 }

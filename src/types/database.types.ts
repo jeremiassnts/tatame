@@ -294,6 +294,7 @@ export type Database = {
         Row: {
           approved_at: string | null
           birth: string | null
+          birth_day: string | null
           clerk_user_id: string
           created_at: string
           deleted_at: string | null
@@ -309,6 +310,7 @@ export type Database = {
         Insert: {
           approved_at?: string | null
           birth?: string | null
+          birth_day?: string | null
           clerk_user_id: string
           created_at?: string
           deleted_at?: string | null
@@ -324,6 +326,7 @@ export type Database = {
         Update: {
           approved_at?: string | null
           birth?: string | null
+          birth_day?: string | null
           clerk_user_id?: string
           created_at?: string
           deleted_at?: string | null

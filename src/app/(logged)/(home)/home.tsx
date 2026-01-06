@@ -1,5 +1,6 @@
 import { useGyms } from "@/src/api/use-gyms";
 import { useRoles } from "@/src/api/use-roles";
+import { BirthdayAlert } from "@/src/components/birthday-alert";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { HomeGymHeader } from "@/src/components/home-gym/header";
 import { NextClass } from "@/src/components/next-class";
@@ -16,6 +17,7 @@ export default function Home() {
   return (
     <SafeAreaView className="pl-5 pr-5">
       <VStack className="items-start gap-4">
+        <BirthdayAlert />
         <HomeGymHeader gym={gym} />
         {role == "STUDENT" && <WeekPresence />}
         <GraduationCard showBelt={false} />
