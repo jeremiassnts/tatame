@@ -12,8 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Notifications() {
     const { list, resend, view } = useNotifications();
-    const { getRole } = useRoles();
-    const { data: role } = getRole;
+    const { isHigherRole } = useRoles();
     const { data, isLoading, isFetching, refetch } = list;
     const { mutateAsync: resendNotification, isPending: isResendingNotification } = resend;
     const { getCurrentUser } = useUsers()
@@ -25,7 +24,7 @@ export default function Notifications() {
 
     return (
         <SafeAreaView className="flex-1 pl-5 pr-5 pb-10">
-            {role === "MANAGER" && (
+            {isHigherRole() && (
                 <CreateNotificationDialog />
             )}
             <ScrollView className="flex-1" refreshControl={<RefreshControl refreshing={isLoading || isFetching} onRefresh={refetch} />}>
@@ -39,7 +38,7 @@ export default function Notifications() {
                 </VStack>}
                 {!isLoading && !isFetching && data && data.length > 0 && <VStack className="gap-4">
                     {data.map((notification) => (
-                        <NotificationRow onView={viewNotification} currentUserId={user?.id ?? 0} key={notification.id} notification={notification} role={role} onResend={resendNotification} isPendingResending={isResendingNotification} />
+                        <NotificationRow isHigherRole={isHigherRole()} onView={viewNotification} currentUserId={user?.id ?? 0} key={notification.id} notification={notification} onResend={resendNotification} isPendingResending={isResendingNotification} />
                     ))}
                 </VStack>}
             </ScrollView>

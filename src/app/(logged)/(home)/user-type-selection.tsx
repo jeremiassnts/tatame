@@ -71,7 +71,7 @@ export default function Home() {
         resizeMode="cover"
       >
         <Box className="flex-1 bg-neutral-900 absolute top-0 left-0 right-0 bottom-0 opacity-50" />
-        <VStack className="items-center justify-center mt-[40%] pl-5 pr-5">
+        <VStack className="items-center justify-center pl-5 pr-5">
           <Text className="font-medium text-neutral-400 text-lg">
             Bem vindo ao
           </Text>

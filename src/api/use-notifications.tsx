@@ -17,8 +17,7 @@ export function useNotifications() {
     const { data: userProfile } = getUserProfile
     const { sendNotification } = useSendNotification();
     const { showErrorToast } = useToast();
-    const { getRole } = useRoles()
-    const { data: role } = getRole
+    const { isHigherRole } = useRoles()
 
     const list = useQuery({
         queryKey: ["notifications"],
@@ -54,7 +53,7 @@ export function useNotifications() {
         queryFn: async () => {
             const currentUser = await getCurrentUser();
             const userId = currentUser?.id.toString() ?? "";
-            if (role !== "MANAGER" && !currentUser?.approved_at) {
+            if (!isHigherRole() && !currentUser?.approved_at) {
                 return [];
             }
 

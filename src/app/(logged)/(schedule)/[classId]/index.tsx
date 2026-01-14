@@ -35,8 +35,7 @@ export default function Class() {
         queryKey: ["class", classId],
         queryFn: () => fetchClassById(parseInt(classId)),
     });
-    const { getRole } = useRoles();
-    const { data: role } = getRole;
+    const { isHigherRole, isLowerRole } = useRoles();
     const router = useRouter();
     const { mutateAsync: deleteClassFn } = deleteClass;
     const { deleteAsset } = useAssets()
@@ -85,7 +84,7 @@ export default function Class() {
                         <VStack className="p-5">
                             <HStack className="justify-between items-center w-full">
                                 <Heading className="w-[150px]" size="xl">{data.description}</Heading>
-                                <CheckIn role={role} class={data} />
+                                <CheckIn isLowerRole={isLowerRole()} class={data} />
                             </HStack>
                             <CheckIns classId={data.id} />
                             <Divider className="my-4" />
@@ -127,7 +126,7 @@ export default function Class() {
                                             <VStack key={a.id} className="bg-neutral-800 rounded-md p-4 gap-2">
                                                 <HStack className="justify-between items-center">
                                                     <Text className="text-neutral-200 max-w-[80%]" key={a.id}>{a.content}</Text>
-                                                    {role === "MANAGER" && <Button className="rounded-full w-6 h-6" variant="outline" size="xs"
+                                                    {isHigherRole() && <Button className="rounded-full w-6 h-6" variant="outline" size="xs"
                                                         onPress={() => handleDeleteAsset(a.id)}>
                                                         <ButtonIcon as={TrashIcon} />
                                                     </Button>}
@@ -144,7 +143,7 @@ export default function Class() {
                                             <Box key={a.id} className="bg-neutral-800 rounded-md p-4">
                                                 <HStack className="justify-between items-center mb-4">
                                                     <Heading size="md" className="text-neutral-200 max-w-[80%]">{a.title}</Heading>
-                                                    {role === "MANAGER" && <Button className="rounded-full w-6 h-6 ml-auto" variant="outline" size="xs"
+                                                    {isHigherRole() && <Button className="rounded-full w-6 h-6 ml-auto" variant="outline" size="xs"
                                                         onPress={() => handleDeleteAsset(a.id)}>
                                                         <ButtonIcon as={TrashIcon} />
                                                     </Button>}
@@ -156,7 +155,7 @@ export default function Class() {
                                     </VStack>
                                 )}
                             </VStack>
-                            {role === "MANAGER" && <HStack className="gap-2 items-center justify-center mt-6 flex-wrap">
+                            {isHigherRole() && <HStack className="gap-2 items-center justify-center mt-6 flex-wrap">
                                 <AddContent classId={data.id} refetch={refetch} classDate={classDate} />
                                 <Button onPress={handleEditClass}>
                                     <ButtonIcon as={EditIcon} />

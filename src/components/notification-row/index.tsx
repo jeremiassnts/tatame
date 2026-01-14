@@ -17,14 +17,14 @@ import { VStack } from "../ui/vstack";
 
 interface NotificationRowProps {
     notification: Notification;
-    role: string;
     onResend: (id: number) => void;
     isPendingResending: boolean;
     currentUserId: number;
     onView: (props: { id: number, userId: string }) => Promise<void>;
+    isHigherRole: boolean;
 }
 
-export default function NotificationRow({ notification, role, onResend, isPendingResending, currentUserId, onView }: NotificationRowProps) {
+export default function NotificationRow({ notification, onResend, isPendingResending, currentUserId, onView, isHigherRole }: NotificationRowProps) {
     const { id, title, content, sent_by_name, sent_by_image_url, sent_at, created_at, status, sent_by } = notification;
     const [viewed, setViewed] = useState(notification.viewed_by?.includes(currentUserId.toString()) || notification.sent_by === currentUserId);
     const [isOpen, setIsOpen] = useState(false);
@@ -90,7 +90,7 @@ export default function NotificationRow({ notification, role, onResend, isPendin
                         </HStack>
                         <HStack className="items-center justify-between">
                             <Text className="text-neutral-400 text-sm">{getSentTime(sent_at ?? created_at)}</Text>
-                            {role === "MANAGER" && <Badge size="sm" action={getStatusColor(status)}>
+                            {isHigherRole && <Badge size="sm" action={getStatusColor(status)}>
                                 <BadgeText>{getStatus(status)}</BadgeText>
                             </Badge>}
                         </HStack>
@@ -117,7 +117,7 @@ export default function NotificationRow({ notification, role, onResend, isPendin
                     </ModalBody>
                     <ModalFooter>
                         <VStack>
-                            {role === "MANAGER" && <Button disabled={isPendingResending} className="bg-violet-800 mb-4" onPress={handleResendNotification}>
+                            {isHigherRole && <Button disabled={isPendingResending} className="bg-violet-800 mb-4" onPress={handleResendNotification}>
                                 <ButtonIcon as={SendIcon} size="sm" color="white" />
                                 <ButtonText className="text-white">Reenviar</ButtonText>
                             </Button>}
@@ -130,7 +130,7 @@ export default function NotificationRow({ notification, role, onResend, isPendin
                                     {notification.sent_by && <Text>Enviado por {sent_by_name} às {formatInTimeZone(new Date(sent_at ?? created_at), "America/Sao_Paulo", "dd/MM/yyyy HH:mm")}</Text>}
                                     {!notification.sent_by && <Text>Enviado às {formatInTimeZone(new Date(sent_at ?? created_at), "America/Sao_Paulo", "dd/MM/yyyy HH:mm")}</Text>}
                                 </HStack>
-                                {role === "MANAGER" && <Badge size="sm" action={getStatusColor(status)}>
+                                {isHigherRole && <Badge size="sm" action={getStatusColor(status)}>
                                     <BadgeText>{getStatus(status)}</BadgeText>
                                 </Badge>}
                             </HStack>

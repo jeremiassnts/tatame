@@ -15,11 +15,10 @@ export default function Layout() {
   const { getStudentsApprovalStatus, getUserProfile } = useUsers();
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
   const { initializePushNotifications } = useSendNotification();
-  const { getRole } = useRoles()
-  const { data: role } = getRole
+  const { isHigherRole } = useRoles()
   const { data: userProfile } = getUserProfile
 
-  const isApproved = role === "MANAGER" || studentsApprovalStatus
+  const isApproved = isHigherRole() || studentsApprovalStatus
 
   useEffect(() => {
     if (userProfile) {
@@ -91,7 +90,7 @@ export default function Layout() {
       }} />
       <Drawer.Screen name="(users)" options={{
         drawerItemStyle: {
-          display: role === "MANAGER" ? "flex" : "none"
+          display: isHigherRole() ? "flex" : "none"
         },
         drawerLabel: "Alunos",
         title: "Alunos",

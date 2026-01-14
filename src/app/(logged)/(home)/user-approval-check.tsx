@@ -1,3 +1,4 @@
+import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { SplashScreen } from "@/src/components/splash-screen";
 import { Button, ButtonText } from "@/src/components/ui/button";
@@ -15,6 +16,7 @@ export default function UserApprovalCheck() {
         isLoading: isLoadingStudentsApprovalStatus,
         refetch: refetchStudentsApprovalStatus
     } = getStudentsApprovalStatus
+    const { isLowerRole } = useRoles();
 
     if (isLoadingStudentsApprovalStatus) {
         return <SplashScreen />
@@ -35,7 +37,7 @@ export default function UserApprovalCheck() {
                 />
                 <Heading size="xl" className="text-center mt-6 mb-2">Falta pouco! Você selecionou sua academia com sucesso!</Heading>
                 <Text className="text-center text-neutral-200">
-                    Agora é só aguardar a aprovação do seu professor para usar todas as funcionalidades da plataforma.
+                    Agora é só aguardar a aprovação do seu {isLowerRole() ? 'professor' : 'gestor'} para usar todas as funcionalidades da plataforma.
                 </Text>
                 <Button
                     action="primary"

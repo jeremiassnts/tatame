@@ -20,12 +20,11 @@ export default function Profile() {
   const { updateUserImage } = useAttachments();
   const { user } = useUser();
   const { fetchLastMonthCheckins } = useCheckins();
-  const { getRole } = useRoles();
+  const { isLowerRole } = useRoles();
 
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
   const { data: userProfile, isLoading } = getUserProfile;
   const { data: lastMonthCheckins } = fetchLastMonthCheckins;
-  const { data: role } = getRole;
 
   return (
     <SafeAreaView>
@@ -57,7 +56,7 @@ export default function Profile() {
             </Text>
             <GraduationCard showBelt={true} />
             <PersonalDataSection user={userProfile} firstName={userProfile.firstName} lastName={userProfile.lastName} />
-            {lastMonthCheckins && studentsApprovalStatus && role == "STUDENT" && <StudentPresenceSection checkins={lastMonthCheckins} />}
+            {lastMonthCheckins && studentsApprovalStatus && isLowerRole() && <StudentPresenceSection checkins={lastMonthCheckins} />}
             {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />}
             <AccountSection />
           </VStack>

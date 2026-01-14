@@ -38,7 +38,7 @@ export function useUsers() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
-  const { getRoleByUserId } = useRoles();
+  const { isHigherRole } = useRoles();
   const { create } = useCreateNotification();
   const { mutateAsync: createNotification } = create;
 
@@ -47,7 +47,7 @@ export function useUsers() {
       const { data, error } = await supabase.from("users").insert({
         clerk_user_id: clerkUserId,
         role: role,
-        approved_at: role === "MANAGER" ? new Date().toISOString() : null,
+        approved_at: isHigherRole() ? new Date().toISOString() : null,
       });
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar o usuário");
@@ -231,8 +231,7 @@ export function useUsers() {
   const getStudentsApprovalStatus = useQuery({
     queryKey: ["students-approval-status", user?.id],
     queryFn: async () => {
-      const role = await getRoleByUserId();
-      if (role === "MANAGER") {
+      if (isHigherRole()) {
         return true;
       }
       const { data, error } = await supabase

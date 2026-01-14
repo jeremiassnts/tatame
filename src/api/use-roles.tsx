@@ -26,8 +26,24 @@ export function useRoles() {
     queryFn: getRoleByUserId
   });
 
+  const isHigherRole = () => {
+    const role = getRole.data;
+    return role === "MANAGER"
+  }
+
+  const isMediumRole = () => {
+    const role = getRole.data;
+    return role === "INSTRUCTOR" || role === "MANAGER"
+  }
+
+  const isLowerRole = () => {
+    const role = getRole.data;
+    return role === "STUDENT"
+  }
+
   return {
-    getRole,
-    getRoleByUserId,
+    isHigherRole,
+    isMediumRole,
+    isLowerRole,
   };
 }

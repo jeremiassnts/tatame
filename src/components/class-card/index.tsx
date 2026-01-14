@@ -27,8 +27,7 @@ export function ClassCard({
   currentClass,
   classDate,
 }: ClassCardProps) {
-  const { getRole } = useRoles();
-  const { data: role } = getRole;
+  const { isHigherRole, isLowerRole } = useRoles();
   const startOfWeekDate = classDate ? startOfWeek(new Date(classDate)) : undefined;
   const videos = startOfWeekDate ? data.assets?.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate))?.length : 0;
   const instructions = startOfWeekDate ? data.assets?.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate))?.length : 0;
@@ -55,8 +54,8 @@ export function ClassCard({
             {formatDay(data.day)} / {formatTime(data.start)} - {formatTime(data.end)}
           </Text>
         </VStack>
-        <Actions topBadgeText={topBadgeText} role={role} data={data} classDate={classDate} />
-        <CheckIn role={role} class={data} />
+        <Actions topBadgeText={topBadgeText} isHigherRole={isHigherRole()} data={data} classDate={classDate} />
+        <CheckIn isLowerRole={isLowerRole()} class={data} />
       </HStack>
       <CheckIns classId={data.id} />
       {classDate && <HStack className="gap-2 items-center justify-start">

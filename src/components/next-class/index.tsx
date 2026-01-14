@@ -1,4 +1,5 @@
 import { useClass } from "@/src/api/use-class";
+import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { Database } from "@/src/types/database.types";
 import { useRouter } from "expo-router";
@@ -25,13 +26,14 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
   const { getUserProfile, getStudentsApprovalStatus } = useUsers();
   const { data: userProfile, isLoading: isLoadingUserProfile } = getUserProfile;
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
+  const { isHigherRole, isMediumRole, isLowerRole } = useRoles();
 
   if (gym && !studentsApprovalStatus) {
     return (
       <Card className="bg-neutral-800 w-full">
         <HStack className="items-center gap-3 justify-center p-4">
           <Icon as={ClockIcon} />
-          <Text>Aguardando a aprovação do seu professor para ver as próximas aulas</Text>
+          <Text>Aguardando a aprovação do seu {isLowerRole() ? 'professor' : 'gestor'} para {isLowerRole() ? 'ver as próximas aulas' : 'gerenciar as aulas'}</Text>
         </HStack>
       </Card>
     )
@@ -49,7 +51,7 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
         !isLoadingGym &&
         !nextClass &&
         userProfile &&
-        userProfile.role !== "STUDENT" && (
+        isHigherRole() && (
           <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
             <Button
               onPress={() => router.push("/(logged)/(schedule)/create-class")}
@@ -73,7 +75,7 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
       {!gym &&
         !isLoadingNextClass &&
         userProfile &&
-        userProfile.role !== "STUDENT" && (
+        isHigherRole() && (
           <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
             <Button onPress={() => router.push("/(logged)/(home)/create-gym")}>
               <ButtonIcon as={AddIcon} />
@@ -81,7 +83,7 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
             </Button>
           </Box>
         )}
-      {!gym && !isLoadingNextClass && userProfile && userProfile.role === 'STUDENT' && (
+      {!gym && !isLoadingNextClass && userProfile && isMediumRole() && (
         <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
           <Button onPress={() => router.push("/(logged)/(home)/select-gym")}>
             <ButtonIcon as={AddIcon} />
