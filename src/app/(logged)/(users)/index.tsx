@@ -1,13 +1,16 @@
+import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { StudentRow } from "@/src/components/student-row";
 import { Heading } from "@/src/components/ui/heading";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Users() {
     const { getStudentsByGymId, getUserProfile } = useUsers()
+    const { isHigherRole } = useRoles()
     const { data: userProfile } = getUserProfile
     const { data, isLoading: isLoadingStudents, refetch: refetchStudents } = getStudentsByGymId(userProfile?.gym_id!)
 
@@ -28,17 +31,18 @@ export default function Users() {
             <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
             <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
         </VStack>)}
-        <ScrollView className="w-full" refreshControl={<RefreshControl refreshing={isLoadingStudents} onRefresh={refetchStudents} />}>
-            <Heading size="md" className="mb-2">Instrutores</Heading>
-            {instructorsWaitingApproval?.map((instructor) => (
+        {!isLoadingStudents && <ScrollView className="w-full" refreshControl={<RefreshControl refreshing={isLoadingStudents} onRefresh={refetchStudents} />}>
+            {isHigherRole() && <Heading size="md" className="mb-2">Instrutores</Heading>}
+            {isHigherRole() && instructorsWaitingApproval?.map((instructor) => (
                 <StudentRow key={instructor.id} student={instructor} />
             ))}
-            {instructorsApproved?.map((instructor) => (
+            {isHigherRole() && instructorsApproved?.map((instructor) => (
                 <StudentRow key={instructor.id} student={instructor} />
             ))}
-            {instructorsDenied?.map((instructor) => (
+            {isHigherRole() && instructorsDenied?.map((instructor) => (
                 <StudentRow key={instructor.id} student={instructor} />
             ))}
+            {isHigherRole() && instructors?.length == 0 && <Text className="text-neutral-400 mb-2">Nenhum instrutor encontrado</Text>}
             <Heading size="md" className="mb-2">Alunos</Heading>
             {studentsWaitingApproval?.map((student) => (
                 <StudentRow key={student.id} student={student} />
@@ -49,6 +53,7 @@ export default function Users() {
             {studentsDenied?.map((student) => (
                 <StudentRow key={student.id} student={student} />
             ))}
-        </ScrollView>
+            {students?.length == 0 && <Text className="text-neutral-400 mb-2">Nenhum aluno encontrado</Text>}
+        </ScrollView>}
     </SafeAreaView>
 }

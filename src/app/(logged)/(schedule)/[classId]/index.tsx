@@ -1,6 +1,7 @@
 import { useAssets } from "@/src/api/use-assets";
 import { useClass } from "@/src/api/use-class";
 import { useRoles } from "@/src/api/use-roles";
+import { useUsers } from "@/src/api/use-users";
 import { AddContent } from "@/src/components/add-content";
 import { CheckIn } from "@/src/components/class-card/check-in";
 import { CheckIns } from "@/src/components/class-card/check-ins";
@@ -30,12 +31,14 @@ type ClassProps = {
 
 export default function Class() {
     const { classId, classDate } = useLocalSearchParams<ClassProps>();
+    const { getUserProfile } = useUsers();
+    const { data: userProfile } = getUserProfile;
     const { fetchClassById, deleteClass } = useClass();
     const { data, isLoading, refetch, isFetching } = useQuery({
         queryKey: ["class", classId],
         queryFn: () => fetchClassById(parseInt(classId)),
     });
-    const { isHigherRole, isLowerRole } = useRoles();
+    const { isHigherRole, isLowerRole, isMediumRole } = useRoles();
     const router = useRouter();
     const { mutateAsync: deleteClassFn } = deleteClass;
     const { deleteAsset } = useAssets()
@@ -70,9 +73,11 @@ export default function Class() {
     const instructions = data && data.assets ? data.assets.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate)) : [];
     const videos = data && data.assets ? data.assets.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate)) : [];
 
+    const canManageClass = isHigherRole() || (isMediumRole() && data?.instructor_id === userProfile?.id);
+
     return (
         <SafeAreaView className="flex-1">
-            {(isLoading || isFetching) && <VStack className="gap-4">
+            {(isLoading || isFetching) && <VStack className="gap-4 pr-5 pl-5">
                 <Skeleton className="w-full h-[150px] bg-neutral-800 rounded-md" />
                 <Skeleton className="w-full h-10 bg-neutral-800 rounded-md" />
                 <Skeleton className="w-full h-[100px] bg-neutral-800 rounded-md" />
@@ -117,7 +122,7 @@ export default function Class() {
                             <Divider className="my-4" />
                             <VStack className="w-full gap-2">
                                 <Heading size="md">Conteúdo</Heading>
-                                {!data.assets || data.assets.length === 0 && (<Text className="text-neutral-400">
+                                {videos.length === 0 && instructions.length === 0 && (<Text className="text-neutral-400">
                                     Seu professor ainda não adicionou conteúdo para a aula
                                 </Text>)}
                                 {instructions.length > 0 && (
@@ -126,7 +131,7 @@ export default function Class() {
                                             <VStack key={a.id} className="bg-neutral-800 rounded-md p-4 gap-2">
                                                 <HStack className="justify-between items-center">
                                                     <Text className="text-neutral-200 max-w-[80%]" key={a.id}>{a.content}</Text>
-                                                    {isHigherRole() && <Button className="rounded-full w-6 h-6" variant="outline" size="xs"
+                                                    {canManageClass && <Button className="rounded-full w-6 h-6" variant="outline" size="xs"
                                                         onPress={() => handleDeleteAsset(a.id)}>
                                                         <ButtonIcon as={TrashIcon} />
                                                     </Button>}
@@ -143,7 +148,7 @@ export default function Class() {
                                             <Box key={a.id} className="bg-neutral-800 rounded-md p-4">
                                                 <HStack className="justify-between items-center mb-4">
                                                     <Heading size="md" className="text-neutral-200 max-w-[80%]">{a.title}</Heading>
-                                                    {isHigherRole() && <Button className="rounded-full w-6 h-6 ml-auto" variant="outline" size="xs"
+                                                    {canManageClass && <Button className="rounded-full w-6 h-6 ml-auto" variant="outline" size="xs"
                                                         onPress={() => handleDeleteAsset(a.id)}>
                                                         <ButtonIcon as={TrashIcon} />
                                                     </Button>}
@@ -155,7 +160,7 @@ export default function Class() {
                                     </VStack>
                                 )}
                             </VStack>
-                            {isHigherRole() && <HStack className="gap-2 items-center justify-center mt-6 flex-wrap">
+                            {canManageClass && <HStack className="gap-2 items-center justify-center mt-6 flex-wrap">
                                 <AddContent classId={data.id} refetch={refetch} classDate={classDate} />
                                 <Button onPress={handleEditClass}>
                                     <ButtonIcon as={EditIcon} />

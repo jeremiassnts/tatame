@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Library() {
     const { fetchVideos, deleteAsset } = useAssets();
-    const { isHigherRole } = useRoles();
+    const { isMediumRole } = useRoles();
 
     const { data, isLoading, isFetching, refetch } = fetchVideos
 
@@ -35,7 +35,7 @@ export default function Library() {
                     ))}
                 </VStack>}
             </ScrollView>
-            {isHigherRole() && <AddVideoToLibrary />}
+            {isMediumRole() && <AddVideoToLibrary />}
         </SafeAreaView>
     );
 }

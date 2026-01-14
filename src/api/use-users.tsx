@@ -338,6 +338,35 @@ export function useUsers() {
     },
   })
 
+  const getInstructorsByGymId = (gymId: number) => {
+    return useQuery({
+      queryKey: ["instructors-by-gym-id", gymId],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("gym_id", gymId)
+          .or('role.eq.MANAGER,and(role.eq.INSTRUCTOR,approved_at.not.is.null)')
+
+        if (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao buscar os instrutores");
+          throw error;
+        }
+
+        const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
+        return data.map((user) => {
+          const clerkUser = clerkUsers?.find(
+            (u: any) => u.id === user.clerk_user_id
+          );
+          return {
+            ...user,
+            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
+          } as Student;
+        })
+      },
+    });
+  }
+
   return {
     createUser,
     getUserByClerkUserId,
@@ -354,5 +383,6 @@ export function useUsers() {
     edit,
     deleteUser,
     getBirthdayUsers,
+    getInstructorsByGymId,
   };
 }

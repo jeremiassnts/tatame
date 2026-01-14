@@ -15,7 +15,7 @@ export default function Layout() {
   const { getStudentsApprovalStatus, getUserProfile } = useUsers();
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
   const { initializePushNotifications } = useSendNotification();
-  const { isHigherRole } = useRoles()
+  const { isHigherRole, isMediumRole } = useRoles()
   const { data: userProfile } = getUserProfile
 
   const isApproved = isHigherRole() || studentsApprovalStatus
@@ -90,10 +90,10 @@ export default function Layout() {
       }} />
       <Drawer.Screen name="(users)" options={{
         drawerItemStyle: {
-          display: isHigherRole() ? "flex" : "none"
+          display: isMediumRole() ? "flex" : "none"
         },
-        drawerLabel: "Alunos",
-        title: "Alunos",
+        drawerLabel: "Usuários",
+        title: "Usuários",
         drawerIcon: () => (
           <Icon
             as={UsersIcon}

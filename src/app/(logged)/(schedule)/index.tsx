@@ -39,7 +39,7 @@ export default function Schedule() {
   const { mutateAsync: createCheckinFn } = create;
   const { data: classes, isLoading: isLoadingClasses, refetch: refetchClasses, isFetching: isFetchingClasses } = fetchClasses;
   const router = useRouter();
-  const { isHigherRole, isLowerRole } = useRoles();
+  const { isLowerRole, isMediumRole } = useRoles();
   const [initialScrollIndex, setInitialScrollIndex] = useState(0);
   const [isOpenCheckInModal, setIsOpenCheckInModal] = useState(false);
   const { showErrorToast, showSuccessToast } = useToast();
@@ -172,7 +172,7 @@ export default function Schedule() {
 
   return (
     <SafeAreaView className="pl-5 pr-5 flex-1 flex flex-col items-start">
-      {isHigherRole() && (
+      {isMediumRole() && (
         <Button
           size="md"
           variant="solid"
