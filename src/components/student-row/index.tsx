@@ -52,7 +52,13 @@ export function StudentRow({ student }: StudentRowProps) {
                 approved_at: student.approved_at,
                 denied_at: student.denied_at,
                 gym_id: student.gym_id,
-                clerk_user_id: student.clerk_user_id
+                clerk_user_id: student.clerk_user_id,
+                firstName: student.firstName,
+                lastName: student.lastName,
+                instagram: student.instagram,
+                phone: student.phone,
+                gender: student.gender,
+                birth: student.birth,
             },
         })
     }

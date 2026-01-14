@@ -17,9 +17,9 @@ export function CheckIns({ classId }: CheckInsProps) {
   }
   return (
     <HStack className="items-baseline">
-      <HStack className="mt-2 flex-row-reverse justify-end items-center">
+      <HStack className="mt-2 mb-2 flex-row-reverse justify-end items-center">
         {checkins?.slice(0, 10).map((checkin) => (
-          <Avatar key={checkin.id} size="sm" className="mr-[-10px]">
+          <Avatar key={checkin.id} size="xs" className="mr-[-5px]">
             <AvatarFallbackText>{checkin.name}</AvatarFallbackText>
             <AvatarImage
               source={{

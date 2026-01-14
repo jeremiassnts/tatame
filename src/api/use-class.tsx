@@ -5,14 +5,16 @@ import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import { Database } from "../types/database.types";
 import { ClassRow } from "../types/extendend-database.types";
+import { useCreateNotification } from "./use-create-notification";
 import { useUsers } from "./use-users";
 
 export function useClass() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
-  const { getClerkUserById } = useUsers();
+  const { getClerkUserById, getUserByClerkUserId } = useUsers();
   const { user } = useUser();
-  const { getUserByClerkUserId } = useUsers();
+  const { create } = useCreateNotification()
+  const { mutateAsync: createNotification } = create;
 
   const fetchNextClass = useQuery({
     queryKey: ["next-class"],
@@ -72,12 +74,29 @@ export function useClass() {
     mutationFn: async (
       classData: Database["public"]["Tables"]["class"]["Insert"]
     ) => {
-      const { data, error } = await supabase.from("class").insert(classData);
+      const { data, error } = await supabase.from("class").insert(classData).select()
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar a aula");
         throw error;
       }
-      return data;
+
+      const { data: students } = await supabase.from("users")
+        .select("*")
+        .eq("gym_id", classData.gym_id)
+        .eq("role", "STUDENT")
+        .not("approved_at", "is", null);
+
+      await createNotification({
+        title: "Nova aula criada",
+        content: `Seu professor cadastrou uma nova aula, venha conferir!`,
+        recipients: students?.map((student) => student.id.toString()) ?? [],
+        channel: "push",
+        sent_by: classData.created_by,
+        status: "pending",
+        viewed_by: [classData.created_by?.toString() ?? ""],
+      })
+
+      return data[0];
     },
   });
 
@@ -203,6 +222,22 @@ export function useClass() {
     },
   });
 
+  const findClassToCheckIn = async (gymId: number, time: string, day: string) => {
+    const { data, error } = await supabase.from("class")
+      .select("*")
+      .eq("gym_id", gymId)
+      .eq("day", day)
+      .lte("start", time)
+      .gte("end", time)
+
+    if (error) {
+      console.error(error);
+      return null;
+    }
+
+    return data[0] as ClassRow;
+  }
+
   return {
     fetchNextClass,
     createClass,
@@ -210,5 +245,6 @@ export function useClass() {
     fetchClassById,
     editClass,
     deleteClass,
+    findClassToCheckIn,
   };
 }

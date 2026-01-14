@@ -6,8 +6,9 @@ import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { Pressable } from "react-native";
 import AvatarWithDialog from "../ui/avatar/avatar-with-dialog";
-import { Box } from "../ui/box";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
+import { Card } from "../ui/card";
+import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 import { AddIcon } from "../ui/icon";
 import { Text } from "../ui/text";
@@ -43,24 +44,29 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
 
   if (!gym) {
     return (
-      <Box className="w-full bg-neutral-800 rounded-md h-[80px] items-center justify-center mt-2">
+      <Card className="w-full bg-neutral-800 rounded-md h-[80px] items-center justify-center mt-2">
         <Button onPress={() => router.push("/(logged)/(home)/select-gym")}>
           <ButtonIcon as={AddIcon} />
           <ButtonText>Selecionar academia</ButtonText>
         </Button>
-      </Box>
+      </Card>
     );
   }
 
   return (
-    <HStack className="bg-neutral-800 w-full p-5 rounded-md gap-4 items-center justify-center mt-4">
-      <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={role == "MANAGER" ? updateGymImage : undefined} />
-      <Pressable onPress={() => router.push(`/(logged)/(gym)`)}>
-        <VStack className="justify-center items-start max-w-[80%]">
-          <Text className="text-white text-lg font-bold">{gym.name}</Text>
-          <Text className="text-neutral-400 text-md">{gym.address}</Text>
-        </VStack>
-      </Pressable>
-    </HStack>
+    <Card className="w-full border-2 border-neutral-800 mt-4 bg-neutral-900">
+      <HStack className="justify-between items-center">
+        <Heading size="xs" className="text-neutral-400">Academia</Heading>
+      </HStack>
+      <HStack className="w-full p-2 mt-4 rounded-md gap-4 items-center justify-center">
+        <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={role == "MANAGER" ? updateGymImage : undefined} />
+        <Pressable onPress={() => router.push(`/(logged)/(gym)`)}>
+          <VStack className="justify-center items-start max-w-[80%]">
+            <Text className="text-white text-lg font-bold">{gym.name}</Text>
+            <Text className="text-neutral-400 text-md">{gym.address}</Text>
+          </VStack>
+        </Pressable>
+      </HStack>
+    </Card>
   );
 }

@@ -228,6 +228,53 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          channel: string | null
+          content: string | null
+          created_at: string
+          id: number
+          recipients: string[] | null
+          sent_at: string | null
+          sent_by: number | null
+          status: string | null
+          title: string | null
+          viewed_by: string[] | null
+        }
+        Insert: {
+          channel?: string | null
+          content?: string | null
+          created_at?: string
+          id?: number
+          recipients?: string[] | null
+          sent_at?: string | null
+          sent_by?: number | null
+          status?: string | null
+          title?: string | null
+          viewed_by?: string[] | null
+        }
+        Update: {
+          channel?: string | null
+          content?: string | null
+          created_at?: string
+          id?: number
+          recipients?: string[] | null
+          sent_at?: string | null
+          sent_by?: number | null
+          status?: string | null
+          title?: string | null
+          viewed_by?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_sent_by_fkey"
+            columns: ["sent_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       roles: {
         Row: {
           created_at: string
@@ -246,29 +293,50 @@ export type Database = {
       users: {
         Row: {
           approved_at: string | null
+          birth: string | null
+          birth_day: string | null
           clerk_user_id: string
           created_at: string
+          deleted_at: string | null
           denied_at: string | null
+          expo_push_token: string | null
+          gender: string | null
           gym_id: number | null
           id: number
+          instagram: string | null
+          phone: string | null
           role: string | null
         }
         Insert: {
           approved_at?: string | null
+          birth?: string | null
+          birth_day?: string | null
           clerk_user_id: string
           created_at?: string
+          deleted_at?: string | null
           denied_at?: string | null
+          expo_push_token?: string | null
+          gender?: string | null
           gym_id?: number | null
           id?: number
+          instagram?: string | null
+          phone?: string | null
           role?: string | null
         }
         Update: {
           approved_at?: string | null
+          birth?: string | null
+          birth_day?: string | null
           clerk_user_id?: string
           created_at?: string
+          deleted_at?: string | null
           denied_at?: string | null
+          expo_push_token?: string | null
+          gender?: string | null
           gym_id?: number | null
           id?: number
+          instagram?: string | null
+          phone?: string | null
           role?: string | null
         }
         Relationships: [

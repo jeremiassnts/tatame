@@ -4,6 +4,7 @@ import { subDays } from "date-fns";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import { Database } from "../types/database.types";
+import { CheckinRow } from "../types/extendend-database.types";
 import { useUsers } from "./use-users";
 
 export function useCheckins() {
@@ -16,12 +17,19 @@ export function useCheckins() {
     mutationFn: async (
       checkin: Database["public"]["Tables"]["checkins"]["Insert"]
     ) => {
-      const { data, error } = await supabase.from("checkins").insert(checkin);
+      //verify if the user has already checked in for this class
+      const { data: checkinData } = await supabase.from("checkins")
+        .select("*")
+        .eq("classId", checkin.classId)
+        .eq("userId", checkin.userId)
+      if (checkinData && checkinData.length > 0) {
+        return;
+      }
+      const { error } = await supabase.from("checkins").insert(checkin);
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar o checkin");
         throw error;
       }
-      return data;
     },
   });
 
@@ -51,6 +59,7 @@ export function useCheckins() {
         .eq("date", new Date().toISOString());
 
       if (error) {
+        console.error(error);
         showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
         throw error;
       }
@@ -72,6 +81,7 @@ export function useCheckins() {
         .lte('date', new Date().toISOString())
 
       if (error) {
+        console.error(error);
         showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
         throw error;
       }
@@ -90,6 +100,7 @@ export function useCheckins() {
           .eq("classId", classId)
           .eq("date", new Date().toISOString());
         if (error) {
+          console.error(error);
           showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
           throw error;
         }
@@ -100,11 +111,11 @@ export function useCheckins() {
 
         return data.map((checkin) => {
           const clerkUser = clerkUsers?.find(
-            (user) => user.id === checkin.users?.clerk_user_id
+            (user: any) => user.id === checkin.users?.clerk_user_id
           );
           return {
             ...checkin,
-            name: `${clerkUser?.first_name} ${clerkUser?.last_name}`,
+            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
             imageUrl: clerkUser?.image_url,
           };
         });
@@ -112,11 +123,35 @@ export function useCheckins() {
     });
   };
 
+  const fetchLastMonthCheckins = useQuery({
+    queryKey: ["last-month-checkins"],
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      const { data, error } = await supabase
+        .from("checkins")
+        .select("*, users!inner(clerk_user_id), class!inner(id, start, end, day)")
+        .eq("users.clerk_user_id", user?.id!)
+        .gte('date', subDays(new Date(), 30).toISOString())
+        .lte('date', new Date().toISOString())
+        .order('date', { ascending: false })
+
+      if (error) {
+        console.error(error);
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+        throw error;
+      }
+
+      return data as CheckinRow[];
+    },
+  });
+
   return {
     create,
     fetchAll,
     remove,
     fetchByClassId,
     fetchLastCheckins,
+    fetchLastMonthCheckins,
   };
 }

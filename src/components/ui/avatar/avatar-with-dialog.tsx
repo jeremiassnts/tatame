@@ -5,6 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Pressable } from "react-native";
 import { Avatar, AvatarFallbackText, AvatarImage } from ".";
+import { Box } from "../box";
 import { Button, ButtonSpinner, ButtonText } from "../button";
 import { EditIcon, Icon } from "../icon";
 import { Image } from "../image";
@@ -60,7 +61,10 @@ export default function AvatarWithDialog({ fullName, imageUrl, children, size, c
                     <AvatarImage source={{ uri: imageUrl }} className={avatarImageClassName} />
                     {children}
                 </Avatar>
-                {updateImageFn && <Icon as={EditIcon} size="sm" className="absolute bottom-0 right-0" />}
+                {updateImageFn &&
+                    <Box className="bg-neutral-50 absolute bottom-1 right-1 rounded-full p-[5px]">
+                        <Icon as={EditIcon} size="xs" color="black" />
+                    </Box>}
             </Pressable>
             <Modal isOpen={isOpen}
                 onClose={() => {

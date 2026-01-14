@@ -5,8 +5,8 @@ import { ClassRow } from "@/src/types/extendend-database.types";
 import { useUser } from "@clerk/clerk-expo";
 import { format } from "date-fns";
 import { useState } from "react";
-import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "../ui/button";
-import { CheckCircleIcon, CircleIcon } from "../ui/icon";
+import { Button, ButtonIcon, ButtonSpinner } from "../ui/button";
+import { CheckCircleIcon } from "../ui/icon";
 import { Skeleton } from "../ui/skeleton";
 
 interface CheckInProps {
@@ -42,6 +42,8 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
         queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classData.id] });
         queryClient.invalidateQueries({ queryKey: ["last-checkins"] });
+        queryClient.invalidateQueries({ queryKey: ["last-week-checkins"] });
+
         setIsLoading(false);
       })
       .catch(() => {
@@ -65,6 +67,8 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         queryClient.invalidateQueries({ queryKey: ["checkins"] });
         queryClient.invalidateQueries({ queryKey: ["checkins-by-class-id", classData.id] });
         queryClient.invalidateQueries({ queryKey: ["last-checkins"] });
+        queryClient.invalidateQueries({ queryKey: ["last-week-checkins"] });
+
         setIsLoading(false);
       })
       .catch(() => {
@@ -93,21 +97,7 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
         {!isLoading && <ButtonIcon as={CheckCircleIcon} size="md" />}
       </Button>
     );
+  } else {
+    return null
   }
-
-  return (
-    <Button
-      className="rounded-xl"
-      variant="solid"
-      onPress={handleCreateCheckin}
-      disabled={isLoading}
-      action="primary"
-    >
-      {isLoading && <ButtonSpinner />}
-      {!isLoading && <ButtonIcon as={CircleIcon} size="md" />}
-      {!isLoading && (
-        <ButtonText className="text-neutral-900">Eu vou</ButtonText>
-      )}
-    </Button>
-  );
 }

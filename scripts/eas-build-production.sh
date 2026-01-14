@@ -88,7 +88,7 @@ echo ""
 PROFILE="production"
 PLATFORM=${1:-android}
 
-echo "Executing: eas build --platform $PLATFORM --profile $PROFILE --local"
+echo "Executing: eas build --platform $PLATFORM --profile $PROFILE --local
 echo ""
 
 eas build --platform "$PLATFORM" --profile "$PROFILE" --local

@@ -1,23 +1,35 @@
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
-import { CalendarDaysIcon, GlobeIcon, HomeIcon, Icon, PlayIcon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
+import { IconNotification } from "@/src/components/icon-notification";
+import { CalendarDaysIcon, GlobeIcon, HomeIcon, Icon, MenuIcon, PlayIcon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
 import { COLORS } from "@/src/constants/colors";
+import { useSendNotification } from "@/src/hooks/use-send-notification";
 import { useSegments } from "expo-router";
 import { Drawer } from 'expo-router/drawer';
+import { BellIcon } from "lucide-react-native";
+import { useEffect } from "react";
 
 export default function Layout() {
   const segments = useSegments();
   const pathname = segments[segments.length - 1].replace(/[^a-zA-Z]/g, "");
-  const { getStudentsApprovalStatus } = useUsers();
-  const { data: studentsApprovalStatus, isLoading: isLoadingStudentsApprovalStatus } = getStudentsApprovalStatus
-
+  const { getStudentsApprovalStatus, getUserProfile } = useUsers();
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus
+  const { initializePushNotifications } = useSendNotification();
   const { getRole } = useRoles()
   const { data: role } = getRole
+  const { data: userProfile } = getUserProfile
 
   const isApproved = role === "MANAGER" || studentsApprovalStatus
 
+  useEffect(() => {
+    if (userProfile) {
+      initializePushNotifications(userProfile?.id);
+    }
+  }, [userProfile]);
+
   return (
     <Drawer screenOptions={{
+      headerLeft: () => <IconNotification showAmount icon={MenuIcon} size="xl" color="white" style={{ marginLeft: 15 }} />,
       headerStyle: {
         backgroundColor: COLORS.background,
         height: 100,
@@ -27,7 +39,6 @@ export default function Layout() {
       drawerType: "slide",
       drawerStyle: {
         backgroundColor: COLORS.black,
-        // display: drawerDisplay
       },
       headerTintColor: COLORS.active,
       headerTitleAlign: 'center',
@@ -118,6 +129,16 @@ export default function Layout() {
             size="md"
             color={pathname === "library" ? COLORS.active : COLORS.inactive}
           />
+        ),
+      }} />
+      <Drawer.Screen name="(notifications)" options={{
+        drawerLabel: "Notificações",
+        title: "Notificações",
+        drawerItemStyle: {
+          display: isApproved ? "flex" : "none"
+        },
+        drawerIcon: () => (
+          <IconNotification icon={BellIcon} size="md" color={pathname === "notifications" ? COLORS.active : COLORS.inactive} showAmount />
         ),
       }} />
       <Drawer.Screen name="(profile)" options={{

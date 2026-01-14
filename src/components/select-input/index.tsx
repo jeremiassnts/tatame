@@ -21,6 +21,7 @@ type SelectInputProps = {
   onValueChange?: (value: string) => void;
   selectedValue?: string;
   disabled?: boolean;
+  label?: string;
 };
 
 export function SelectInput({
@@ -30,11 +31,13 @@ export function SelectInput({
   onValueChange,
   selectedValue,
   disabled,
+  label,
 }: SelectInputProps) {
   const selectedLabel = selectedValue ? options.find((option) => option.value === selectedValue)?.label : placeholder;
 
   return (
     <VStack>
+      {label && <Text className="text-white font-bold mb-2 text-md">{label}</Text>}
       <Select
         className="bg-neutral-800 rounded-md"
         onValueChange={onValueChange}

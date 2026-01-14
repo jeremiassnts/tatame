@@ -12,6 +12,7 @@ export default function Layout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="create-graduation" />
       <Stack.Screen name="update-graduation" />
+      <Stack.Screen name="edit-profile" />
     </Stack>
   );
 }

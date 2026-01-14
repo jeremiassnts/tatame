@@ -1,10 +1,13 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { BELT_ORDER } from "../constants/belts";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import axiosClient from "../lib/axios";
+import { Database } from "../types/database.types";
+import { useCreateNotification } from "./use-create-notification";
 import { useRoles } from "./use-roles";
 
 export interface CreateUserProps {
@@ -13,6 +16,8 @@ export interface CreateUserProps {
 }
 
 export interface Student {
+  firstName: string;
+  lastName: string;
   email: string;
   approved_at: string | null;
   denied_at: string | null;
@@ -23,6 +28,10 @@ export interface Student {
   imageUrl: string;
   belt: string;
   degree: number;
+  instagram: string | null;
+  phone: string | null;
+  gender: string | null;
+  birth: string | null;
 }
 
 export function useUsers() {
@@ -30,6 +39,8 @@ export function useUsers() {
   const { showErrorToast } = useToast();
   const { user } = useUser();
   const { getRoleByUserId } = useRoles();
+  const { create } = useCreateNotification();
+  const { mutateAsync: createNotification } = create;
 
   const createUser = useMutation({
     mutationFn: async ({ clerkUserId, role }: CreateUserProps) => {
@@ -117,12 +128,11 @@ export function useUsers() {
     queryKey: ["user-profile"],
     queryFn: async () => {
       const data = await getUserByClerkUserId(user?.id!);
-      const gym = await supabase
+      const { data: gyms } = await supabase
         .from("gyms")
         .select("*")
         .eq("id", data?.gym_id!)
-        .single();
-
+      const gym = gyms?.[0];
       return {
         ...user,
         ...data,
@@ -146,20 +156,19 @@ export function useUsers() {
         const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
         return data.map((user) => {
           const clerkUser = clerkUsers?.find(
-            (u) => u.id === user.clerk_user_id
+            (u: any) => u.id === user.clerk_user_id
           );
-          if (!clerkUser) {
-            console.log("Clerk user not found");
-          }
           return {
             ...user,
-            name: `${clerkUser?.first_name} ${clerkUser?.last_name}`,
+            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
             imageUrl: clerkUser?.image_url,
             belt: user.graduations?.[0]?.belt,
             degree: user.graduations?.[0]?.degree,
             approved_at: user.approved_at,
             denied_at: user.denied_at,
             email: clerkUser?.email_addresses?.[0]?.email_address,
+            firstName: clerkUser?.first_name,
+            lastName: clerkUser?.last_name,
           } as Student;
         }).sort((a, b) => {
           if (a.belt === b.belt) {
@@ -185,6 +194,15 @@ export function useUsers() {
         showErrorToast("Erro", "Ocorreu um erro ao aprovar o aluno");
         throw error;
       }
+
+      await createNotification({
+        title: "Parabéns! Seu cadastro foi aprovado",
+        content: `Aproveite, agora você pode acessar todos os recursos da plataforma!`,
+        recipients: [userId.toString()],
+        channel: "push",
+        status: "pending",
+        viewed_by: [],
+      })
     },
   });
 
@@ -198,6 +216,15 @@ export function useUsers() {
         showErrorToast("Erro", "Ocorreu um erro ao negar o aluno");
         throw error;
       }
+
+      await createNotification({
+        title: "Que pena! Seu cadastro foi negado",
+        content: `Por favor, contate o suporte para mais informações`,
+        recipients: [userId.toString()],
+        channel: "push",
+        status: "pending",
+        viewed_by: [],
+      })
     },
   });
 
@@ -222,6 +249,94 @@ export function useUsers() {
     },
   });
 
+  const update = useMutation({
+    mutationFn: async (data: Database["public"]["Tables"]["users"]["Update"]) => {
+      const { error } = await supabase
+        .from("users")
+        .update(data)
+        .eq("id", data.id);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao atualizar o usuário");
+        throw error;
+      }
+    },
+  })
+
+  const getCurrentUser = async () => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("clerk_user_id", user?.id!)
+
+    if (error) {
+      showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário atual");
+      throw error;
+    } else if (!data) {
+      return null;
+    }
+    return data[0] as Database["public"]["Tables"]["users"]["Row"];
+  }
+
+  const edit = useMutation({
+    mutationFn: async (data: Database["public"]["Tables"]["users"]["Update"]) => {
+      const { error } = await supabase
+        .from("users")
+        .update(data)
+        .eq("id", data.id);
+      if (error) {
+        console.error(JSON.stringify(error, null, 2));
+        showErrorToast("Erro", "Ocorreu um erro ao atualizar o usuário");
+        throw error;
+      }
+    },
+  })
+
+  const deleteUser = useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase
+        .from("users")
+        .update({
+          deleted_at: new Date().toISOString(),
+        })
+        .eq("clerk_user_id", userId);
+
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao deletar o usuário");
+        throw error;
+      }
+    },
+  })
+
+  const getBirthdayUsers = useQuery({
+    queryKey: ["birthday-users", format(new Date(), "MM-dd")],
+    queryFn: async () => {
+      const formatted = format(new Date(), "MM-dd");
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("birth_day", formatted)
+
+      if (error) {
+        console.error(JSON.stringify(error, null, 2));
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os usuários de aniversário");
+        throw error;
+      }
+
+      const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
+      return data.map((user) => {
+        const clerkUser = clerkUsers?.find(
+          (u: any) => u.id === user.clerk_user_id
+        );
+        return {
+          ...user,
+          name: clerkUser?.first_name,
+        } as Student;
+      }).sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+    },
+  })
+
   return {
     createUser,
     getUserByClerkUserId,
@@ -233,5 +348,10 @@ export function useUsers() {
     approveStudent,
     denyStudent,
     getStudentsApprovalStatus,
+    update,
+    getCurrentUser,
+    edit,
+    deleteUser,
+    getBirthdayUsers,
   };
 }

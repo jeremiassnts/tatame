@@ -9,3 +9,11 @@ export interface ClassRow extends BaseClassRow {
 }
 
 export type BaseGymRow = Database["public"]["Tables"]["gyms"]["Row"];
+
+export type BaseCheckinRow = Database["public"]["Tables"]["checkins"]["Row"];
+
+export type BaseUserRow = Database["public"]["Tables"]["users"]["Row"];
+export interface CheckinRow extends BaseCheckinRow {
+  class: BaseClassRow;
+  user: BaseUserRow;
+}

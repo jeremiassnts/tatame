@@ -62,9 +62,7 @@ export function useLogIn() {
 
   const signInWithSSO = async (strategy: "oauth_google" | "oauth_apple") => {
     try {
-      const redirectUrl = __DEV__
-        ? AuthSession.makeRedirectUri()
-        : `${AuthSession.makeRedirectUri()}sso-callback`;
+      const redirectUrl = __DEV__ ? AuthSession.makeRedirectUri() : `${AuthSession.makeRedirectUri()}sso-callback`;
       const { createdSessionId, setActive: setActiveSSO } = await startSSOFlow({
         strategy,
         redirectUrl,
