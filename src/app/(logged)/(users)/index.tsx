@@ -1,4 +1,3 @@
-import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { StudentRow } from "@/src/components/student-row";
 import { Heading } from "@/src/components/ui/heading";
@@ -10,7 +9,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Users() {
     const { getStudentsByGymId, getUserProfile } = useUsers()
-    const { isHigherRole } = useRoles()
     const { data: userProfile } = getUserProfile
     const { data, isLoading: isLoadingStudents, refetch: refetchStudents } = getStudentsByGymId(userProfile?.gym_id!)
 
@@ -32,17 +30,17 @@ export default function Users() {
             <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
         </VStack>)}
         {!isLoadingStudents && <ScrollView className="w-full" refreshControl={<RefreshControl refreshing={isLoadingStudents} onRefresh={refetchStudents} />}>
-            {isHigherRole() && <Heading size="md" className="mb-2">Instrutores</Heading>}
-            {isHigherRole() && instructorsWaitingApproval?.map((instructor) => (
+            <Heading size="md" className="mb-2">Instrutores</Heading>
+            {instructorsWaitingApproval?.map((instructor) => (
                 <StudentRow key={instructor.id} student={instructor} />
             ))}
-            {isHigherRole() && instructorsApproved?.map((instructor) => (
+            {instructorsApproved?.map((instructor) => (
                 <StudentRow key={instructor.id} student={instructor} />
             ))}
-            {isHigherRole() && instructorsDenied?.map((instructor) => (
+            {instructorsDenied?.map((instructor) => (
                 <StudentRow key={instructor.id} student={instructor} />
             ))}
-            {isHigherRole() && instructors?.length == 0 && <Text className="text-neutral-400 mb-2">Nenhum instrutor encontrado</Text>}
+            {instructors?.length == 0 && <Text className="text-neutral-400 mb-2">Nenhum instrutor encontrado</Text>}
             <Heading size="md" className="mb-2">Alunos</Heading>
             {studentsWaitingApproval?.map((student) => (
                 <StudentRow key={student.id} student={student} />
