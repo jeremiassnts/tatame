@@ -16,6 +16,7 @@ export interface CreateUserProps {
 }
 
 export interface Student {
+  role: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -148,7 +149,8 @@ export function useUsers() {
         const { data, error } = await supabase
           .from("users")
           .select("*, graduations(belt, degree)")
-          .eq("gym_id", gymId);
+          .eq("gym_id", gymId)
+
         if (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os alunos");
           throw error;

@@ -28,7 +28,7 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
   const { isHigherRole, isMediumRole, isLowerRole } = useRoles();
 
-  if (gym && !studentsApprovalStatus) {
+  if (gym && !studentsApprovalStatus && !isHigherRole()) {
     return (
       <Card className="bg-neutral-800 w-full">
         <HStack className="items-center gap-3 justify-center p-4">
