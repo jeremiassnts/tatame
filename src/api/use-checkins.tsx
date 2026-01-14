@@ -115,7 +115,7 @@ export function useCheckins() {
           );
           return {
             ...checkin,
-            name: `${clerkUser?.first_name} ${clerkUser?.last_name}`,
+            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
             imageUrl: clerkUser?.image_url,
           };
         });

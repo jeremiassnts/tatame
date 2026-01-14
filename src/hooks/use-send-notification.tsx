@@ -135,7 +135,7 @@ export function useSendNotification() {
             })
             .catch((error: any) => {
                 console.error(error);
-                showErrorToast("Erro", "Ocorreu um erro ao registrar para notificações");
+                // showErrorToast("Erro", "Ocorreu um erro ao registrar para notificações");
             });
 
         const notificationListener = Notifications.addNotificationReceivedListener(notification => {

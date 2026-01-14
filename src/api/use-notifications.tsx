@@ -42,7 +42,7 @@ export function useNotifications() {
                 );
                 return {
                     ...notification,
-                    sent_by_name: `${clerkUser?.first_name} ${clerkUser?.last_name}`,
+                    sent_by_name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
                     sent_by_image_url: clerkUser?.image_url,
                 } as Notification;
             })

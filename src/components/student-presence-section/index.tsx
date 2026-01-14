@@ -58,7 +58,7 @@ export function StudentPresenceSection({ checkins }: StudentPresenceSectionProps
         const formattedDuration = aux > 60
             ? `${Math.floor(aux / 60)}h ${aux % 60}m`
             : aux > 0 ? `${aux}m`
-                : ''
+                : '0'
         setTotalDuration(formattedDuration)
         setTotalCalories(CALORIES_PER_MINUTE * aux)
         setTotalTrainings(tempWeekDays.filter(checkin => checkin.duration > 0).length)

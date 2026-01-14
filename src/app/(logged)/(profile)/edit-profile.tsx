@@ -65,7 +65,8 @@ export default function EditProfile() {
 
     function formatBirthDay(birth: string | undefined) {
         if (!birth) return null;
-        const [_, month, day] = birth.split("-");
+        const [date] = birth.split("T");
+        const [_, month, day] = date.split("-");
         return `${month}-${day}`;
     }
 
@@ -95,7 +96,7 @@ export default function EditProfile() {
     }
 
     function formatBirth(birth: string) {
-        if (!birth) return new Date();
+        if (!birth) return undefined
         const birthDate = new Date(birth);
         return new Date(birthDate.valueOf() + birthDate.getTimezoneOffset() * 60 * 1000);
     }

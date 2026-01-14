@@ -160,7 +160,7 @@ export function useUsers() {
           );
           return {
             ...user,
-            name: `${clerkUser?.first_name} ${clerkUser?.last_name}`,
+            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
             imageUrl: clerkUser?.image_url,
             belt: user.graduations?.[0]?.belt,
             degree: user.graduations?.[0]?.degree,

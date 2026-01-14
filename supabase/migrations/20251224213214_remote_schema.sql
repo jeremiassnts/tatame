@@ -66,12 +66,4 @@ grant truncate on table "public"."notifications" to "service_role";
 grant update on table "public"."notifications" to "service_role";
 
 
-  create policy "Enable delete for authenticated users only"
-  on "public"."checkins"
-  as permissive
-  for delete
-  to authenticated
-using (true);
-
-
 
