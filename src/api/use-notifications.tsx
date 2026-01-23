@@ -13,7 +13,7 @@ export type Notification = Database["public"]["Tables"]["notifications"]["Row"] 
 }
 export function useNotifications() {
     const supabase = useSupabase();
-    const { getUserProfile, getCurrentUser } = useUsers()
+    const { getUserProfile, getCurrentUser, getProfilesInfo } = useUsers()
     const { data: userProfile } = getUserProfile
     const { sendNotification } = useSendNotification();
     const { showErrorToast } = useToast();
@@ -23,7 +23,7 @@ export function useNotifications() {
         queryKey: ["notifications"],
         queryFn: async () => {
             const { data, error } = await supabase.from("notifications")
-                .select("*, users(first_name, last_name, profile_picture)")
+                .select("*, users(clerk_user_id)")
                 .or(
                     `recipients.cs.{${userProfile?.id.toString()}},sent_by.eq.${userProfile?.id.toString()}`
                 )
@@ -34,11 +34,13 @@ export function useNotifications() {
             else if (!data) {
                 return [];
             }
+            const users = await getProfilesInfo(data.map(item => item.users?.clerk_user_id));
+
             return data.map((notification) => {
                 return {
                     ...notification,
-                    sent_by_name: `${notification.users?.first_name} ${notification.users?.last_name ?? ""}`,
-                    sent_by_image_url: notification.users?.profile_picture,
+                    sent_by_name: users.find(u => u.clerk_user_id === notification.users?.clerk_user_id)?.name,
+                    sent_by_image_url: users.find(u => u.clerk_user_id === notification.users?.clerk_user_id)?.imageUrl,
                 } as Notification;
             })
         }

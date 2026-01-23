@@ -5,11 +5,13 @@ import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import { Database } from "../types/database.types";
 import { CheckinRow } from "../types/extendend-database.types";
+import { useUsers } from "./use-users";
 
 export function useCheckins() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
+  const { getProfilesInfo } = useUsers();
 
   const create = useMutation({
     mutationFn: async (
@@ -94,7 +96,7 @@ export function useCheckins() {
       queryFn: async () => {
         const { data, error } = await supabase
           .from("checkins")
-          .select("*, users(first_name, last_name, profile_picture)")
+          .select("*, users(clerk_user_id)")
           .eq("classId", classId)
           .eq("date", new Date().toISOString());
         if (error) {
@@ -102,15 +104,14 @@ export function useCheckins() {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
           throw error;
         }
-        const userIds = data
-          .map((checkin) => checkin?.users?.clerk_user_id)
-          .filter((id) => id !== undefined);
+
+        const users = await getProfilesInfo(data.map(item => item.users?.clerk_user_id));
 
         return data.map((checkin) => {
           return {
             ...checkin,
-            name: `${checkin.users?.first_name} ${checkin.users?.last_name ?? ""}`,
-            imageUrl: checkin.users?.profile_picture,
+            name: users.find(u => u.clerk_user_id === checkin.users?.clerk_user_id)?.name,
+            imageUrl: users.find(u => u.clerk_user_id === checkin.users?.clerk_user_id)?.imageUrl,
           };
         });
       },
