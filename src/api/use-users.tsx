@@ -5,7 +5,6 @@ import { BELT_ORDER } from "../constants/belts";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
-import axiosClient from "../lib/axios";
 import { Database } from "../types/database.types";
 import { useCreateNotification } from "./use-create-notification";
 import { useRoles } from "./use-roles";
@@ -85,46 +84,6 @@ export function useUsers() {
     return data[0];
   };
 
-  const getClerkUserById = async (userId: string) => {
-    try {
-      const { data } = await axiosClient.get<{ id: string; name: string }>(
-        `/clerk-get-user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
-          },
-        }
-      );
-      return data;
-    } catch (error) {
-      console.error(JSON.stringify(error, null, 2));
-      showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário clerk");
-      return null;
-    }
-  };
-
-  const getClerkUsers = async (userIds: string[]) => {
-    try {
-      const { data } = await axiosClient.post(
-        `/clerk-get-users`,
-        {
-          user_id: userIds,
-          limit: userIds.length,
-          offset: 0,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
-          },
-        }
-      );
-      return data;
-    } catch (error) {
-      showErrorToast("Erro", "Ocorreu um erro ao buscar os usuários");
-      return null;
-    }
-  };
-
   const getUserProfile = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
@@ -155,22 +114,18 @@ export function useUsers() {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os alunos");
           throw error;
         }
-        const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
         return data.map((user) => {
-          const clerkUser = clerkUsers?.find(
-            (u: any) => u.id === user.clerk_user_id
-          );
           return {
             ...user,
-            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
-            imageUrl: clerkUser?.image_url,
+            name: `${user.first_name} ${user.last_name ?? ""}`,
+            imageUrl: user.profile_picture,
             belt: user.graduations?.[0]?.belt,
             degree: user.graduations?.[0]?.degree,
             approved_at: user.approved_at,
             denied_at: user.denied_at,
-            email: clerkUser?.email_addresses?.[0]?.email_address,
-            firstName: clerkUser?.first_name,
-            lastName: clerkUser?.last_name,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
           } as Student;
         }).sort((a, b) => {
           if (a.belt === b.belt) {
@@ -323,14 +278,10 @@ export function useUsers() {
         throw error;
       }
 
-      const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
       return data.map((user) => {
-        const clerkUser = clerkUsers?.find(
-          (u: any) => u.id === user.clerk_user_id
-        );
         return {
           ...user,
-          name: clerkUser?.first_name,
+          name: `${user.first_name} ${user.last_name ?? ""}`,
         } as Student;
       }).sort((a, b) => {
         return a.name.localeCompare(b.name);
@@ -353,26 +304,39 @@ export function useUsers() {
           throw error;
         }
 
-        const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
         return data.map((user) => {
-          const clerkUser = clerkUsers?.find(
-            (u: any) => u.id === user.clerk_user_id
-          );
           return {
             ...user,
-            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
+            name: `${user.first_name} ${user.last_name ?? ""}`,
           } as Student;
         })
       },
     });
   }
 
+  const migrateUser = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("users")
+        .update({
+          first_name: user?.firstName ?? "",
+          last_name: user?.lastName ?? "",
+          profile_picture: user?.imageUrl ?? "",
+          email: user?.emailAddresses?.[0]?.emailAddress ?? "",
+          migrated_at: new Date(),
+        })
+        .eq("clerk_user_id", user?.id!);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao migrar o usuário");
+        throw error;
+      }
+    },
+  })
+
   return {
     createUser,
     getUserByClerkUserId,
     getUserById,
-    getClerkUserById,
-    getClerkUsers,
     getUserProfile,
     getStudentsByGymId,
     approveStudent,
@@ -384,5 +348,6 @@ export function useUsers() {
     deleteUser,
     getBirthdayUsers,
     getInstructorsByGymId,
+    migrateUser,
   };
 }

@@ -81,7 +81,7 @@ export function useAttachments() {
         name: filename,
         type: mimeType,
       } as any);
-      const response = await axiosClient.post<{ url: string }>(
+      const response = await axiosClient.post<{ image_url: string }>(
         `/clerk-update-profile-image/${userId}`,
         formData,
         {
@@ -91,6 +91,7 @@ export function useAttachments() {
           },
         }
       );
+      await supabase.from("users").update({ profile_picture: response.data.image_url }).eq("clerk_user_id", userId);
       return response.data;
     },
   });

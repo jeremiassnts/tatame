@@ -11,7 +11,7 @@ import { useUsers } from "./use-users";
 export function useClass() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
-  const { getClerkUserById, getUserByClerkUserId } = useUsers();
+  const { getUserByClerkUserId } = useUsers();
   const { user } = useUser();
   const { create } = useCreateNotification()
   const { mutateAsync: createNotification } = create;
@@ -56,13 +56,11 @@ export function useClass() {
             today = addDays(today, 1);
           }
 
-          const instructor = nextClass?.instructor?.clerk_user_id
-            ? await getClerkUserById(nextClass.instructor?.clerk_user_id)
-            : null;
+          const instructor_name = nextClass?.instructor?.first_name + (nextClass?.instructor?.last_name ? ` ${nextClass?.instructor?.last_name}` : '')
 
           return {
             ...nextClass,
-            instructor_name: instructor?.name,
+            instructor_name,
           } as ClassRow;
         }
       }
@@ -135,15 +133,11 @@ export function useClass() {
             (i) => i.clerk_user_id === item.instructor?.clerk_user_id
           )
         ) {
-          const instructor = await getClerkUserById(
-            item.instructor?.clerk_user_id
-          );
-          if (instructor) {
-            instructors.push({
-              clerk_user_id: item.instructor?.clerk_user_id,
-              name: instructor.name,
-            });
-          }
+          const instructor_name = item.instructor?.first_name + (item.instructor?.last_name ? ` ${item.instructor?.last_name}` : '')
+          instructors.push({
+            clerk_user_id: item.instructor?.clerk_user_id,
+            name: instructor_name
+          });
         }
       }
 
@@ -179,13 +173,10 @@ export function useClass() {
     if (data.length === 0) {
       return null;
     }
-    const instructor = data[0]?.instructor?.clerk_user_id
-      ? await getClerkUserById(data[0]?.instructor?.clerk_user_id)
-      : null;
-
+    const instructor_name = data[0]?.instructor?.first_name + (data[0]?.instructor?.last_name ? ` ${data[0]?.instructor?.last_name}` : '')
     return {
       ...data[0],
-      instructor_name: instructor?.name,
+      instructor_name,
     } as ClassRow;
   }
 
