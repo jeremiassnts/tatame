@@ -34,12 +34,11 @@ export function SelectInput({
   label,
 }: SelectInputProps) {
   const selectedLabel = selectedValue ? options.find((option) => option.value === selectedValue)?.label : placeholder;
-
   return (
     <VStack>
       {label && <Text className="text-white font-bold mb-2 text-md">{label}</Text>}
       <Select
-        className="bg-neutral-800 rounded-md"
+        className={`bg-neutral-800 rounded-md ${disabled ? "opacity-50" : ""}`}
         onValueChange={onValueChange}
         selectedValue={selectedValue}
         selectedLabel={selectedLabel}

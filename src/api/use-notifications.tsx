@@ -13,7 +13,7 @@ export type Notification = Database["public"]["Tables"]["notifications"]["Row"] 
 }
 export function useNotifications() {
     const supabase = useSupabase();
-    const { getUserProfile, getClerkUsers, getCurrentUser } = useUsers()
+    const { getUserProfile, getCurrentUser, getProfilesInfo } = useUsers()
     const { data: userProfile } = getUserProfile
     const { sendNotification } = useSendNotification();
     const { showErrorToast } = useToast();
@@ -34,15 +34,13 @@ export function useNotifications() {
             else if (!data) {
                 return [];
             }
-            const clerkUsers = await getClerkUsers(data.map((user) => user.users?.clerk_user_id!));
+            const users = await getProfilesInfo(data.map(item => item.users?.clerk_user_id));
+
             return data.map((notification) => {
-                const clerkUser = clerkUsers?.find(
-                    (u: any) => u.id === notification.users?.clerk_user_id
-                );
                 return {
                     ...notification,
-                    sent_by_name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
-                    sent_by_image_url: clerkUser?.image_url,
+                    sent_by_name: users.find(u => u.clerk_user_id === notification.users?.clerk_user_id)?.name,
+                    sent_by_image_url: users.find(u => u.clerk_user_id === notification.users?.clerk_user_id)?.imageUrl,
                 } as Notification;
             })
         }

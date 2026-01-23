@@ -4,6 +4,7 @@ import { IconNotification } from "@/src/components/icon-notification";
 import { CalendarDaysIcon, GlobeIcon, HomeIcon, Icon, MenuIcon, PlayIcon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
 import { COLORS } from "@/src/constants/colors";
 import { useSendNotification } from "@/src/hooks/use-send-notification";
+import { queryClient } from "@/src/lib/react-query";
 import { useSegments } from "expo-router";
 import { Drawer } from 'expo-router/drawer';
 import { BellIcon } from "lucide-react-native";
@@ -12,7 +13,8 @@ import { useEffect } from "react";
 export default function Layout() {
   const segments = useSegments();
   const pathname = segments[segments.length - 1].replace(/[^a-zA-Z]/g, "");
-  const { getStudentsApprovalStatus, getUserProfile } = useUsers();
+  const { getStudentsApprovalStatus, getUserProfile, migrateUser } = useUsers();
+  const { mutateAsync: migrateUserFn } = migrateUser;
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus
   const { initializePushNotifications } = useSendNotification();
   const { isHigherRole } = useRoles()
@@ -20,9 +22,16 @@ export default function Layout() {
 
   const isApproved = isHigherRole() || studentsApprovalStatus
 
+  async function checkUserMigration() {
+    if (userProfile?.migrated_at) return;
+    await migrateUserFn();
+    queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+  }
+
   useEffect(() => {
     if (userProfile) {
       initializePushNotifications(userProfile?.id);
+      checkUserMigration();
     }
   }, [userProfile]);
 

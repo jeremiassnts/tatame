@@ -58,6 +58,7 @@ export default function Class() {
             pathname: "/(logged)/(schedule)/edit-class",
             params: {
                 classId: data?.id,
+                gymId: data?.gym_id,
             },
         });
     }

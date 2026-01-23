@@ -11,7 +11,7 @@ export function useCheckins() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
-  const { getClerkUsers } = useUsers();
+  const { getProfilesInfo } = useUsers();
 
   const create = useMutation({
     mutationFn: async (
@@ -104,19 +104,14 @@ export function useCheckins() {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
           throw error;
         }
-        const userIds = data
-          .map((checkin) => checkin?.users?.clerk_user_id)
-          .filter((id) => id !== undefined);
-        const clerkUsers = await getClerkUsers(userIds);
+
+        const users = await getProfilesInfo(data.map(item => item.users?.clerk_user_id));
 
         return data.map((checkin) => {
-          const clerkUser = clerkUsers?.find(
-            (user: any) => user.id === checkin.users?.clerk_user_id
-          );
           return {
             ...checkin,
-            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
-            imageUrl: clerkUser?.image_url,
+            name: users.find(u => u.clerk_user_id === checkin.users?.clerk_user_id)?.name,
+            imageUrl: users.find(u => u.clerk_user_id === checkin.users?.clerk_user_id)?.imageUrl,
           };
         });
       },

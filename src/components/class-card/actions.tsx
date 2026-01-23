@@ -37,6 +37,7 @@ export function Actions({ topBadgeText, isHigherRole, data, classDate }: Actions
       pathname: "/(logged)/(schedule)/edit-class",
       params: {
         classId: data.id,
+        gymId: data.gym_id,
       },
     });
     handleClose();

@@ -299,12 +299,17 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           denied_at: string | null
+          email: string | null
           expo_push_token: string | null
+          first_name: string | null
           gender: string | null
           gym_id: number | null
           id: number
           instagram: string | null
+          last_name: string | null
+          migrated_at: string | null
           phone: string | null
+          profile_picture: string | null
           role: string | null
         }
         Insert: {
@@ -315,12 +320,17 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           denied_at?: string | null
+          email?: string | null
           expo_push_token?: string | null
+          first_name?: string | null
           gender?: string | null
           gym_id?: number | null
           id?: number
           instagram?: string | null
+          last_name?: string | null
+          migrated_at?: string | null
           phone?: string | null
+          profile_picture?: string | null
           role?: string | null
         }
         Update: {
@@ -331,12 +341,17 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           denied_at?: string | null
+          email?: string | null
           expo_push_token?: string | null
+          first_name?: string | null
           gender?: string | null
           gym_id?: number | null
           id?: number
           instagram?: string | null
+          last_name?: string | null
+          migrated_at?: string | null
           phone?: string | null
+          profile_picture?: string | null
           role?: string | null
         }
         Relationships: [

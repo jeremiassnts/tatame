@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { addDays, format } from "date-fns";
+import { addDays, format, isBefore, set } from "date-fns";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
 import { Database } from "../types/database.types";
@@ -11,7 +11,7 @@ import { useUsers } from "./use-users";
 export function useClass() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
-  const { getClerkUserById, getUserByClerkUserId } = useUsers();
+  const { getUserByClerkUserId, getProfilesInfo } = useUsers();
   const { user } = useUser();
   const { create } = useCreateNotification()
   const { mutateAsync: createNotification } = create;
@@ -48,7 +48,13 @@ export function useClass() {
           while (!nextClass) {
             const dayOfTheWeek = format(today, "EEEE").toUpperCase();
             for (const item of data) {
-              if (item.day === dayOfTheWeek) {
+              const classTime = set(new Date(), {
+                hours: item.start.split(":")[0],
+                minutes: item.start.split(":")[1],
+                seconds: 0,
+                milliseconds: 0,
+              });
+              if (item.day === dayOfTheWeek && isBefore(new Date(), classTime)) {
                 nextClass = item;
                 break;
               }
@@ -56,9 +62,7 @@ export function useClass() {
             today = addDays(today, 1);
           }
 
-          const instructor = nextClass?.instructor?.clerk_user_id
-            ? await getClerkUserById(nextClass.instructor?.clerk_user_id)
-            : null;
+          const [instructor] = await getProfilesInfo([nextClass?.instructor?.clerk_user_id]);
 
           return {
             ...nextClass,
@@ -127,33 +131,12 @@ export function useClass() {
         throw error;
       }
       //fetching instructors
-      const instructors: { clerk_user_id: string; name: string }[] = [];
-      for (const item of data) {
-        if (
-          item.instructor?.clerk_user_id &&
-          !instructors.some(
-            (i) => i.clerk_user_id === item.instructor?.clerk_user_id
-          )
-        ) {
-          const instructor = await getClerkUserById(
-            item.instructor?.clerk_user_id
-          );
-          if (instructor) {
-            instructors.push({
-              clerk_user_id: item.instructor?.clerk_user_id,
-              name: instructor.name,
-            });
-          }
-        }
-      }
+      const instructors = await getProfilesInfo(data.map(item => item.instructor?.clerk_user_id));
 
       return data.map((item) => {
-        const instructor = instructors.find(
-          (i) => i.clerk_user_id === item.instructor?.clerk_user_id
-        );
         return {
           ...item,
-          instructor_name: instructor?.name,
+          instructor_name: instructors.find(i => i.clerk_user_id === item.instructor?.clerk_user_id)?.name,
         } as ClassRow;
       });
     },
@@ -179,10 +162,7 @@ export function useClass() {
     if (data.length === 0) {
       return null;
     }
-    const instructor = data[0]?.instructor?.clerk_user_id
-      ? await getClerkUserById(data[0]?.instructor?.clerk_user_id)
-      : null;
-
+    const [instructor] = await getProfilesInfo([data[0]?.instructor?.clerk_user_id]);
     return {
       ...data[0],
       instructor_name: instructor?.name,

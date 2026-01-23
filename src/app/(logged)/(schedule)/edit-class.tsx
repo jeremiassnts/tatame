@@ -1,4 +1,6 @@
 import { useClass } from "@/src/api/use-class";
+import { useRoles } from "@/src/api/use-roles";
+import { useUsers } from "@/src/api/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
 import { SelectInput } from "@/src/components/select-input";
 import { TextInput } from "@/src/components/text-input";
@@ -45,12 +47,17 @@ const createClassFormSchema = z.object({
   end: z.string().min(1, "O horário de término é obrigatório"),
   days: z.array(z.string()).min(1, "Selecione pelo menos um dia"),
   modality: z.string().min(1, "A modalidade é obrigatória"),
+  instructor_id: z.number().min(1, "O instrutor é obrigatório"),
 });
 
 export default function EditClass() {
-  const { classId } = useLocalSearchParams<{
+  const { classId, gymId } = useLocalSearchParams<{
     classId: string;
+    gymId: string;
   }>();
+  const { isHigherRole } = useRoles()
+  const { getInstructorsByGymId } = useUsers();
+  const { data: instructors, isLoading: isLoadingInstructors } = getInstructorsByGymId(parseInt(gymId));
   const { fetchClassById, editClass } = useClass();
   const [isLoading, setIsLoading] = useState(true);
   const [classData, setClassData] = useState<ClassRow | null>(null);
@@ -72,6 +79,7 @@ export default function EditClass() {
       end: "",
       days: [],
       modality: "",
+      instructor_id: 0,
     },
   });
 
@@ -86,7 +94,7 @@ export default function EditClass() {
         day: data.days[0],
         modality: data.modality,
         id: classData?.id,
-        instructor_id: classData?.instructor_id,
+        instructor_id: data.instructor_id,
         gym_id: classData?.gym_id,
         created_by: classData?.created_by,
         created_at: classData?.created_at,
@@ -109,6 +117,7 @@ export default function EditClass() {
         setValue("end", classData.end ?? "");
         setValue("modality", classData.modality ?? "");
         setValue("days", classData.day ? [classData.day] : []);
+        setValue("instructor_id", classData.instructor_id ?? 0);
       }
       setIsLoading(false);
     }
@@ -126,10 +135,11 @@ export default function EditClass() {
   const start = watch("start");
   const end = watch("end");
   const days = watch("days");
+  const instructor_id = watch("instructor_id");
 
   return (
     <SafeAreaView className="pl-5 pr-5">
-      {isLoading && (
+      {(isLoading || isLoadingInstructors) && (
         <VStack className="gap-4 pt-10">
           <Skeleton className="w-full h-[50px] rounded-md bg-neutral-800" />
           <Skeleton className="w-full h-[20px] rounded-md bg-neutral-800" />
@@ -138,7 +148,7 @@ export default function EditClass() {
           <Skeleton className="w-full h-[50px] rounded-md bg-neutral-800" />
         </VStack>
       )}
-      {!isLoading && (
+      {!isLoading && !isLoadingInstructors && (
         <ScrollView>
           <VStack className="gap-2">
             <VStack className="pb-2">
@@ -160,16 +170,17 @@ export default function EditClass() {
               returnKeyType="next"
             />
             <SelectInput
-              options={Modalities.map((modality) => ({
-                label: modality.name,
-                value: modality.value,
+              options={(instructors ?? []).map((instructor) => ({
+                label: instructor.name,
+                value: instructor.id.toString(),
               }))}
-              placeholder="Selecione a modalidade"
-              error={errors?.modality?.message}
+              placeholder="Selecione o instrutor"
+              error={errors?.instructor_id?.message}
               onValueChange={(value) => {
-                setValue("modality", value);
+                setValue("instructor_id", parseInt(value));
               }}
-              selectedValue={modality}
+              selectedValue={instructor_id.toString()}
+              disabled={!isHigherRole()}
             />
             <HStack className="gap-2 items-center justify-center">
               <DateTimePicker
@@ -197,10 +208,17 @@ export default function EditClass() {
                 value={formatTime(end)}
               />
             </HStack>
-            <TextInput
-              value={"Instrutor: " + (classData?.instructor_name ?? "")}
-              readOnly
-              isDisabled
+            <SelectInput
+              options={Modalities.map((modality) => ({
+                label: modality.name,
+                value: modality.value,
+              }))}
+              placeholder="Selecione a modalidade"
+              error={errors?.modality?.message}
+              onValueChange={(value) => {
+                setValue("modality", value);
+              }}
+              selectedValue={modality}
             />
             <Heading className="mt-2" size="md">
               Selecione os dias da semana
