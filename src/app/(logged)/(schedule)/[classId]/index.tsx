@@ -88,7 +88,7 @@ export default function Class() {
                         <Image alt="background" source={{ uri: require("@/assets/images/class-bg.jpeg") }} className="w-full h-[200px] rounded-md opacity-60" resizeMode="cover" />
                         <VStack className="p-5">
                             <HStack className="justify-between items-center w-full">
-                                <Heading className="w-[150px]" size="xl">{data.description}</Heading>
+                                <Heading className="w-[50%]" size="xl">{data.description}</Heading>
                                 <CheckIn isLowerRole={isLowerRole()} class={data} />
                             </HStack>
                             <CheckIns classId={data.id} />

@@ -24,7 +24,7 @@ export default function DateTimePicker({
   label,
 }: DateTimePickerProps) {
   const [date, setDate] = useState<Date | null>(value || null);
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
 
   return (
     <Pressable onPress={() => setShow(true)} className={className}>

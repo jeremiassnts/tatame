@@ -1,8 +1,27 @@
-# Welcome to your Expo app 👋
+# Tatame App 🥋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mobile application for martial arts gym management, built with [Expo](https://expo.dev) and React Native.
 
-## Get started
+## Prerequisites
+
+- Node.js 22.3.0 or higher
+- npm or yarn
+- Expo CLI
+- EAS CLI (for builds): `npm install -g eas-cli`
+
+### For Android
+
+- Java 17 (OpenJDK)
+- Android SDK
+- Android Studio (optional, but recommended)
+
+### For iOS
+
+- macOS
+- Xcode (latest version)
+- Apple Developer Account
+
+## Getting Started
 
 1. Install dependencies
 
@@ -25,15 +44,69 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Builds
 
-When you're ready, run:
+### Android
+
+Available Android build scripts:
 
 ```bash
-npm run reset-project
+# Development build
+./scripts/eas-build-dev.sh
+
+# Preview build
+./scripts/eas-build-preview.sh
+
+# Production build
+./scripts/eas-build-production.sh
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Android configurations:
+
+- ✅ Package: `com.anonymous.tatame`
+- ✅ Google Services configured
+- ✅ Adaptive Icon
+- ✅ Edge-to-Edge enabled
+
+### iOS
+
+Available iOS build scripts:
+
+```bash
+# Development build (simulator)
+./scripts/ios-build-dev.sh
+
+# Preview build (TestFlight)
+./scripts/ios-build-preview.sh
+
+# Production build (App Store)
+./scripts/ios-build-production.sh
+```
+
+iOS configurations:
+
+- ✅ Bundle Identifier: `com.anonymous.tatame`
+- ✅ Tablet support
+- ✅ Permissions configured (camera, microphone, photos, location)
+- ✅ Icon and splash screen
+
+📖 **[Complete iOS build guide](./docs/ios-build-guide.md)**
+
+## Project Structure
+
+```
+tatame/
+├── src/
+│   ├── app/          # Routes and screens (file-based routing)
+│   ├── components/   # Reusable components
+│   ├── api/          # API hooks and queries
+│   ├── hooks/        # Custom hooks
+│   ├── constants/    # Constants and configs
+│   └── utils/        # Utility functions
+├── assets/           # Images and resources
+├── scripts/          # Build and utility scripts
+└── docs/             # Documentation
+```
 
 ## Learn more
 

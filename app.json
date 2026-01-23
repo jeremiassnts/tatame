@@ -7,6 +7,12 @@
     "scheme": "tatameapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#141414"
+    },
     "android": {
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
@@ -71,7 +77,17 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.anonymous.tatame"
+      "bundleIdentifier": "com.anonymous.tatame",
+      "supportsTablet": true,
+      "icon": "./assets/images/icon.png",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Este app precisa de acesso à câmera para capturar fotos e vídeos.",
+        "NSMicrophoneUsageDescription": "Este app precisa de acesso ao microfone para gravar vídeos com áudio.",
+        "NSPhotoLibraryUsageDescription": "Este app precisa de acesso à biblioteca de fotos para salvar e carregar mídias.",
+        "NSPhotoLibraryAddUsageDescription": "Este app precisa de permissão para salvar fotos na sua biblioteca.",
+        "NSLocationWhenInUseUsageDescription": "Este app precisa de acesso à localização."
+      },
+      "buildNumber": "1"
     }
   }
 }
