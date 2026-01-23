@@ -208,7 +208,7 @@ export default function Schedule() {
           refreshing={isFetchingClasses && !isLoadingClasses}
           onRefresh={refetchClasses}
         />}>
-        <VStack className="gap-4 w-full mb-10">
+        <VStack className="gap-4 w-full mb-10 pb-20">
           {Array.from({ length: 3 }).map((_, index) => (
             <Skeleton
               key={index}
