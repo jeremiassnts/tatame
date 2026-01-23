@@ -44,8 +44,7 @@ export default function User() {
     const [approvedAt, setApprovedAt] = useState<string | null>(approved_at);
     const [deniedAt, setDeniedAt] = useState<string | null>(denied_at);
     const { approveStudent, denyStudent } = useUsers()
-    const { getRole } = useRoles()
-    const { data: role } = getRole
+    const { isHigherRole } = useRoles()
 
     function handleApproveStudent() {
         approveStudent.mutateAsync(Number(userId))
@@ -89,7 +88,7 @@ export default function User() {
                         {email}
                     </Text>
                     <StudentBelt belt={belt} degree={Number(degree)} />
-                    {role === "MANAGER" && isWaitingApproval && <HStack className="gap-2 mt-6">
+                    {isHigherRole() && isWaitingApproval && <HStack className="gap-2 mt-6">
                         <Button className="rounded-md border-neutral-600" variant="outline" onPress={handleApproveStudent}>
                             <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
                             <ButtonText>Aprovar</ButtonText>
@@ -99,7 +98,7 @@ export default function User() {
                             <ButtonText>Reprovar</ButtonText>
                         </Button>
                     </HStack>}
-                    {role === "MANAGER" && isDenied && <Button className="rounded-md border-neutral-600 mt-6" variant="outline" onPress={handleApproveStudent}>
+                    {isHigherRole() && isDenied && <Button className="rounded-md border-neutral-600 mt-6" variant="outline" onPress={handleApproveStudent}>
                         <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
                         <ButtonText>Reativar</ButtonText>
                     </Button>}

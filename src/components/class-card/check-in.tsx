@@ -10,11 +10,11 @@ import { CheckCircleIcon } from "../ui/icon";
 import { Skeleton } from "../ui/skeleton";
 
 interface CheckInProps {
-  role: string | null | undefined;
+  isLowerRole: boolean;
   class: ClassRow;
 }
 
-export function CheckIn({ role, class: classData }: CheckInProps) {
+export function CheckIn({ isLowerRole, class: classData }: CheckInProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { create, fetchAll, remove } = useCheckins();
   const { mutateAsync: createCheckinFn } = create;
@@ -78,7 +78,7 @@ export function CheckIn({ role, class: classData }: CheckInProps) {
 
   const currentDay = format(new Date(), "EEEE").toUpperCase()
 
-  if (role !== "STUDENT" || currentDay !== classData.day) return null;
+  if (!isLowerRole || currentDay !== classData.day) return null;
 
   if (isLoadingCheckins) {
     return <Skeleton className="w-full h-[40px] bg-neutral-700 rounded-md" />;

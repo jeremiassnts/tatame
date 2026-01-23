@@ -13,8 +13,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Gym() {
-    const { getRole } = useRoles();
-    const { data: role } = getRole;
+    const { isHigherRole } = useRoles();
     const { updateGymLogo, uploadImage } = useAttachments();
     const { user } = useUser();
     const { fetchByUser } = useGyms()
@@ -50,7 +49,7 @@ export default function Gym() {
         <SafeAreaView className="flex-1 pl-5 pr-5">
             <ScrollView>
                 <VStack className="justify-center items-center">
-                    <AvatarWithDialog fullName={gym?.name ?? ""} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym?.logo}`} size="xl" updateImageFn={role == "MANAGER" ? updateGymImage : undefined} />
+                    <AvatarWithDialog fullName={gym?.name ?? ""} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym?.logo}`} size="xl" updateImageFn={isHigherRole() ? updateGymImage : undefined} />
                     <Text className="text-white text-lg font-bold mt-3 uppercase">
                         {gym?.name}
                     </Text>

@@ -10,6 +10,11 @@ export const USER_TYPES = {
     label: "Gestor",
     description: "Gerencie suas aulas e presença dos alunos",
   },
+  INSTRUCTOR: {
+    value: "INSTRUCTOR",
+    label: "Instrutor",
+    description: "Gerencie suas aulas e presença dos alunos",
+  },
 };
 
 export type UserType = keyof typeof USER_TYPES;

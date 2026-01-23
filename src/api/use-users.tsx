@@ -16,6 +16,7 @@ export interface CreateUserProps {
 }
 
 export interface Student {
+  role: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -38,7 +39,7 @@ export function useUsers() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
-  const { getRoleByUserId } = useRoles();
+  const { isHigherRole } = useRoles();
   const { create } = useCreateNotification();
   const { mutateAsync: createNotification } = create;
 
@@ -47,7 +48,7 @@ export function useUsers() {
       const { data, error } = await supabase.from("users").insert({
         clerk_user_id: clerkUserId,
         role: role,
-        approved_at: role === "MANAGER" ? new Date().toISOString() : null,
+        approved_at: isHigherRole() ? new Date().toISOString() : null,
       });
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar o usuário");
@@ -148,7 +149,8 @@ export function useUsers() {
         const { data, error } = await supabase
           .from("users")
           .select("*, graduations(belt, degree)")
-          .eq("gym_id", gymId);
+          .eq("gym_id", gymId)
+
         if (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os alunos");
           throw error;
@@ -231,8 +233,7 @@ export function useUsers() {
   const getStudentsApprovalStatus = useQuery({
     queryKey: ["students-approval-status", user?.id],
     queryFn: async () => {
-      const role = await getRoleByUserId();
-      if (role === "MANAGER") {
+      if (isHigherRole()) {
         return true;
       }
       const { data, error } = await supabase
@@ -337,6 +338,35 @@ export function useUsers() {
     },
   })
 
+  const getInstructorsByGymId = (gymId: number) => {
+    return useQuery({
+      queryKey: ["instructors-by-gym-id", gymId],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("gym_id", gymId)
+          .or('role.eq.MANAGER,and(role.eq.INSTRUCTOR,approved_at.not.is.null)')
+
+        if (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao buscar os instrutores");
+          throw error;
+        }
+
+        const clerkUsers = await getClerkUsers(data.map((user) => user.clerk_user_id!));
+        return data.map((user) => {
+          const clerkUser = clerkUsers?.find(
+            (u: any) => u.id === user.clerk_user_id
+          );
+          return {
+            ...user,
+            name: `${clerkUser?.first_name} ${clerkUser?.last_name ?? ""}`,
+          } as Student;
+        })
+      },
+    });
+  }
+
   return {
     createUser,
     getUserByClerkUserId,
@@ -353,5 +383,6 @@ export function useUsers() {
     edit,
     deleteUser,
     getBirthdayUsers,
+    getInstructorsByGymId,
   };
 }

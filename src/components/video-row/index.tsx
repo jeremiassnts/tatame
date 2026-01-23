@@ -23,8 +23,7 @@ export function VideoRow({ id, video, createdAt, title, onDelete }: VideoRowProp
     const player = useVideoPlayer(video, player => {
         player.loop = true;
     });
-    const { getRole } = useRoles()
-    const { data: role } = getRole
+    const { isHigherRole } = useRoles()
     const { mutateAsync: deleteAssetFn, isPending: isDeletingAsset } = onDelete;
 
     async function handleDeleteAsset() {
@@ -56,7 +55,7 @@ export function VideoRow({ id, video, createdAt, title, onDelete }: VideoRowProp
                         <BadgeIcon as={CalendarDaysIcon} />
                         <BadgeText>{format(new Date(createdAt), 'dd/MM/yyyy')}</BadgeText>
                     </Badge>
-                    {role === 'MANAGER' &&
+                    {isHigherRole() &&
                         <Button className='mt-auto px-2 py-1'
                             size='xs'
                             variant='outline'

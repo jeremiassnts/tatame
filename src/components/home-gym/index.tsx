@@ -9,13 +9,12 @@ import { HomeGymHeader } from "./header";
 export function HomeGym() {
   const { fetchByUser } = useGyms();
   const { data: gym, isLoading: isLoadingGym } = fetchByUser;
-  const { getRole } = useRoles();
-  const { data: role } = getRole;
+  const { isLowerRole } = useRoles();
 
   return (
     <VStack className="items-start gap-4">
       <HomeGymHeader gym={gym} />
-      {role == "STUDENT" && <WeekPresence />}
+      {isLowerRole() && <WeekPresence />}
       <GraduationCard showBelt={false} />
       <NextClass gym={gym} isLoadingGym={isLoadingGym} />
     </VStack>

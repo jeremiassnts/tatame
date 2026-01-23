@@ -17,12 +17,12 @@ import { ChevronDownIcon } from "../ui/icon";
 
 interface ActionsProps {
   topBadgeText?: string;
-  role: string | null | undefined;
+  isHigherRole: boolean;
   data: ClassRow;
   classDate?: string;
 }
 
-export function Actions({ topBadgeText, role, data, classDate }: ActionsProps) {
+export function Actions({ topBadgeText, isHigherRole, data, classDate }: ActionsProps) {
   const router = useRouter();
   const [showOptions, setShowOptions] = useState(false);
   const { deleteClass } = useClass();
@@ -63,7 +63,7 @@ export function Actions({ topBadgeText, role, data, classDate }: ActionsProps) {
     handleClose();
   }
 
-  if (topBadgeText || role !== "MANAGER") return null;
+  if (topBadgeText || !isHigherRole) return null;
   return (
     <Button
       onPress={() => setShowOptions(true)}

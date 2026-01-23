@@ -19,8 +19,7 @@ interface ProfileGymCardProps {
 }
 
 export function ProfileGymCard({ gym }: ProfileGymCardProps) {
-  const { getRole } = useRoles();
-  const { data: role } = getRole;
+  const { isHigherRole } = useRoles();
   const router = useRouter();
   const { updateGymLogo, uploadImage } = useAttachments();
   const { user } = useUser();
@@ -59,7 +58,7 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
         <Heading size="xs" className="text-neutral-400">Academia</Heading>
       </HStack>
       <HStack className="w-full p-2 mt-4 rounded-md gap-4 items-center justify-center">
-        <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={role == "MANAGER" ? updateGymImage : undefined} />
+        <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={isHigherRole() ? updateGymImage : undefined} />
         <Pressable onPress={() => router.push(`/(logged)/(gym)`)}>
           <VStack className="justify-center items-start max-w-[80%]">
             <Text className="text-white text-lg font-bold">{gym.name}</Text>

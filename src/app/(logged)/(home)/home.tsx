@@ -11,15 +11,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Home() {
   const { fetchByUser } = useGyms();
   const { data: gym, isLoading: isLoadingGym } = fetchByUser;
-  const { getRole } = useRoles();
-  const { data: role } = getRole;
+  const { isLowerRole } = useRoles();
 
   return (
     <SafeAreaView className="pl-5 pr-5">
       <VStack className="items-start gap-4">
         <BirthdayAlert />
         <HomeGymHeader gym={gym} />
-        {role == "STUDENT" && <WeekPresence />}
+        {isLowerRole() && <WeekPresence />}
         <GraduationCard showBelt={false} />
         <NextClass gym={gym} isLoadingGym={isLoadingGym} />
       </VStack>
