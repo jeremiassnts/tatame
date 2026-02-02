@@ -8,7 +8,7 @@ import {
 import { Divider } from "@/src/components/ui/divider";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
-import { GoogleIcon } from "@/src/components/ui/icon";
+import { AppleIcon, GoogleIcon } from "@/src/components/ui/icon";
 import { Image } from "@/src/components/ui/image";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
@@ -36,7 +36,7 @@ export default function SignIn() {
   }
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isSigningInWithGoogle, setIsSigningInWithGoogle] = useState(false);
-  // const [isSigningInWithApple, setIsSigningInWithApple] = useState(false);
+  const [isSigningInWithApple, setIsSigningInWithApple] = useState(false);
   const {
     useWarmUpBrowser,
     signInWithSSO,
@@ -67,14 +67,14 @@ export default function SignIn() {
     }
   };
 
-  // const handleSignInWithApple = async () => {
-  //   try {
-  //     setIsSigningInWithApple(true);
-  //     await signInWithSSO("oauth_apple");
-  //   } finally {
-  //     setIsSigningInWithApple(false);
-  //   }
-  // };
+  const handleSignInWithApple = async () => {
+    try {
+      setIsSigningInWithApple(true);
+      await signInWithSSO("oauth_apple");
+    } finally {
+      setIsSigningInWithApple(false);
+    }
+  };
 
   const handleSignInWithEmailAndPassword = async (data: LoginFormType) => {
     try {
@@ -162,7 +162,7 @@ export default function SignIn() {
             {isSigningInWithGoogle ? "Entrando..." : "Entrar com google"}
           </ButtonText>
         </Button>
-        {/* <Button
+        <Button
           className="mt-4 h-14 rounded-md"
           onPress={handleSignInWithApple}
         >
@@ -171,7 +171,7 @@ export default function SignIn() {
           <ButtonText className="text-neutral-900">
             {isSigningInWithApple ? "Entrando..." : "Entrar com apple"}
           </ButtonText>
-        </Button> */}
+        </Button>
         <Text className="text-neutral-400 text-md text-center mt-4">
           Ainda não tem uma conta?{" "}
           <Link href="/sign-up" className="text-violet-500 font-bold">
