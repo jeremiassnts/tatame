@@ -4,7 +4,7 @@ import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { ClassCard } from "@/src/components/class-card";
 import { Box } from "@/src/components/ui/box";
-import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
+import { Button, ButtonIcon } from "@/src/components/ui/button";
 import { AddIcon } from "@/src/components/ui/icon";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
@@ -182,7 +182,7 @@ export default function Schedule() {
           <ButtonIcon as={AddIcon} color="white" />
         </Button>
       )}
-      {isLowerRole() && (
+      {/* {isLowerRole() && (
         <Button
           size="lg"
           variant="solid"
@@ -193,7 +193,7 @@ export default function Schedule() {
           {isLoadingCheckin && <ButtonSpinner color="white" />}
           <ButtonText className="text-white">CHECK-IN</ButtonText>
         </Button>
-      )}
+      )} */}
       <Box className="w-full max-h-[100px]">
         <WeekDays
           weekDays={weekDays}

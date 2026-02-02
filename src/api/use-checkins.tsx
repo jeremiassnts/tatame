@@ -68,6 +68,28 @@ export function useCheckins() {
     },
   });
 
+  const fetchAllByClassId = (classId: number) => useQuery({
+    queryKey: ["just-checkins-by-class-id", classId],
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      const { data, error } = await supabase
+        .from("checkins")
+        .select("*, users!inner(clerk_user_id)")
+        .eq("users.clerk_user_id", user?.id!)
+        .eq("date", new Date().toISOString())
+        .eq("classId", classId);
+
+      if (error) {
+        console.error(error);
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
   const fetchLastCheckins = useQuery({
     queryKey: ["last-checkins"],
     queryFn: async () => {
@@ -148,5 +170,6 @@ export function useCheckins() {
     fetchByClassId,
     fetchLastCheckins,
     fetchLastMonthCheckins,
+    fetchAllByClassId,
   };
 }

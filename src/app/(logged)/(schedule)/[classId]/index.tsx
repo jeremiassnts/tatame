@@ -90,7 +90,7 @@ export default function Class() {
                         <VStack className="p-5">
                             <HStack className="justify-between items-center w-full">
                                 <Heading className="w-[50%]" size="xl">{data.description}</Heading>
-                                <CheckIn isLowerRole={isLowerRole()} class={data} />
+                                {isLowerRole() && <CheckIn class={data} classDate={classDate} />}
                             </HStack>
                             <CheckIns classId={data.id} />
                             <Divider className="my-4" />

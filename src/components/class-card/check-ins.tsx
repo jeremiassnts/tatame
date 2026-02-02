@@ -12,6 +12,7 @@ export function CheckIns({ classId }: CheckInsProps) {
   const { fetchByClassId } = useCheckins();
   const { data: checkins, isLoading: isLoadingCheckins } = fetchByClassId(classId);
 
+
   if (isLoadingCheckins) {
     return <Skeleton className="w-full h-[30px] bg-neutral-700 rounded-md mt-2 mb-2" />;
   }

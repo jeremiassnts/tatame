@@ -60,7 +60,7 @@ export function ClassCard({
           </Text>
         </VStack>
         <Actions topBadgeText={topBadgeText} isHigherRole={canOpenActions} data={data} classDate={classDate} />
-        <CheckIn isLowerRole={isLowerRole()} class={data} />
+        {isLowerRole() && <CheckIn class={data} classDate={classDate} />}
       </HStack>
       <CheckIns classId={data.id} />
       {classDate && <HStack className="gap-2 items-center justify-start">
