@@ -1,5 +1,6 @@
 import { useUsers } from "@/src/api/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
+import IosDateTimePicker from "@/src/components/ios-date-time-picker";
 import { SelectInput } from "@/src/components/select-input";
 import { TextInput } from "@/src/components/text-input";
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
@@ -13,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView } from "react-native";
+import { Platform, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
 
@@ -169,7 +170,8 @@ export default function EditProfile() {
                         selectedValue={watch("gender")}
                         label="Gênero"
                     />
-                    <DateTimePicker
+
+                    {Platform.OS === "ios" ? <IosDateTimePicker
                         value={formatBirth(birth)}
                         setNewDate={(date: Date | undefined) => {
                             if (date) {
@@ -179,7 +181,17 @@ export default function EditProfile() {
                         placeholder="Selecione a data de nascimento"
                         error={errors?.birth?.message}
                         label="Data de nascimento"
-                    />
+                    /> : <DateTimePicker
+                        value={formatBirth(birth)}
+                        setNewDate={(date: Date | undefined) => {
+                            if (date) {
+                                setValue("birth", date.toISOString());
+                            }
+                        }}
+                        placeholder="Selecione a data de nascimento"
+                        error={errors?.birth?.message}
+                        label="Data de nascimento"
+                    />}
                     <HStack className="gap-2 w-full items-center justify-center mt-4">
                         <Button
                             action="secondary"

@@ -1,6 +1,7 @@
 import { useClass } from "@/src/api/use-class";
 import { useUsers } from "@/src/api/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
+import IosTimePicker from "@/src/components/ios-time-picker";
 import { TextInput } from "@/src/components/text-input";
 import {
   Button,
@@ -29,7 +30,7 @@ import { format } from "date-fns";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView } from "react-native";
+import { Platform, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
 
@@ -131,7 +132,16 @@ export default function CreateClass() {
             isDisabled
           />
           <HStack className="gap-2 items-center justify-center">
-            <DateTimePicker
+            {Platform.OS === "ios" ? <IosTimePicker
+              setNewDate={(date: Date | undefined) => {
+                if (date) {
+                  setValue("start", format(date, "HH:mm"));
+                }
+              }}
+              placeholder="Início"
+              error={errors?.start?.message}
+              className="w-[49%]"
+            /> : <DateTimePicker
               setNewDate={(date: Date | undefined) => {
                 if (date) {
                   setValue("start", format(date, "HH:mm"));
@@ -141,8 +151,17 @@ export default function CreateClass() {
               error={errors?.start?.message}
               mode="time"
               className="w-[49%]"
-            />
-            <DateTimePicker
+            />}
+            {Platform.OS == "ios" ? <IosTimePicker
+              setNewDate={(date: Date | undefined) => {
+                if (date) {
+                  setValue("end", format(date, "HH:mm"));
+                }
+              }}
+              placeholder="Término"
+              error={errors?.end?.message}
+              className="w-[49%]"
+            /> : <DateTimePicker
               setNewDate={(date: Date | undefined) => {
                 if (date) {
                   setValue("end", format(date, "HH:mm"));
@@ -152,7 +171,7 @@ export default function CreateClass() {
               error={errors?.end?.message}
               mode="time"
               className="w-[49%]"
-            />
+            />}
           </HStack>
           <TextInput
             value={"Instrutor: " + (user?.fullName ?? "")}

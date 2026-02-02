@@ -2,6 +2,7 @@ import { useClass } from "@/src/api/use-class";
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
+import IosTimePicker from "@/src/components/ios-time-picker";
 import { SelectInput } from "@/src/components/select-input";
 import { TextInput } from "@/src/components/text-input";
 import {
@@ -37,7 +38,7 @@ import { format, parse } from "date-fns";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView } from "react-native";
+import { Platform, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
 
@@ -183,7 +184,17 @@ export default function EditClass() {
               disabled={!isHigherRole()}
             />
             <HStack className="gap-2 items-center justify-center">
-              <DateTimePicker
+              {Platform.OS === "ios" ? <IosTimePicker
+                setNewDate={(date: Date | undefined) => {
+                  if (date) {
+                    setValue("start", format(date, "HH:mm"));
+                  }
+                }}
+                placeholder="Início"
+                error={errors?.start?.message}
+                className="w-[49%]"
+                value={formatTime(start)}
+              /> : <DateTimePicker
                 setNewDate={(date: Date | undefined) => {
                   if (date) {
                     setValue("start", format(date, "HH:mm"));
@@ -194,8 +205,18 @@ export default function EditClass() {
                 mode="time"
                 className="w-[49%]"
                 value={formatTime(start)}
-              />
-              <DateTimePicker
+              />}
+              {Platform.OS === "ios" ? <IosTimePicker
+                setNewDate={(date: Date | undefined) => {
+                  if (date) {
+                    setValue("end", format(date, "HH:mm"));
+                  }
+                }}
+                placeholder="Término"
+                error={errors?.end?.message}
+                className="w-[49%]"
+                value={formatTime(end)}
+              /> : <DateTimePicker
                 setNewDate={(date: Date | undefined) => {
                   if (date) {
                     setValue("end", format(date, "HH:mm"));
@@ -206,7 +227,7 @@ export default function EditClass() {
                 mode="time"
                 className="w-[49%]"
                 value={formatTime(end)}
-              />
+              />}
             </HStack>
             <SelectInput
               options={Modalities.map((modality) => ({
