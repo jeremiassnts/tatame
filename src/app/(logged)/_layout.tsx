@@ -81,7 +81,7 @@ export default function Layout() {
             size="md"
             color={pathname === "home" ? COLORS.active : COLORS.inactive}
           />
-        ),
+        )
       }} />
       <Drawer.Screen name="(schedule)" options={{
         drawerLabel: "Agenda",

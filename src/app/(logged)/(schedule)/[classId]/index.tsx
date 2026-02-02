@@ -3,6 +3,7 @@ import { useClass } from "@/src/api/use-class";
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { AddContent } from "@/src/components/add-content";
+import { BackButton } from "@/src/components/back-button";
 import { CheckIn } from "@/src/components/class-card/check-in";
 import { CheckIns } from "@/src/components/class-card/check-ins";
 import { Box } from "@/src/components/ui/box";
@@ -71,6 +72,10 @@ export default function Class() {
         router.replace("/(logged)/(schedule)");
     }
 
+    async function handleGoBack() {
+        router.navigate("/(logged)/(schedule)");
+    }
+
     const instructions = data && data.assets ? data.assets.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate)) : [];
     const videos = data && data.assets ? data.assets.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate)) : [];
 
@@ -86,6 +91,7 @@ export default function Class() {
             {(!isLoading && !isFetching) && data && (
                 <ScrollView>
                     <VStack>
+                        <BackButton className="mb-4 ml-4" onPress={handleGoBack} />
                         <Image alt="background" source={{ uri: require("@/assets/images/class-bg.jpeg") }} className="w-full h-[200px] rounded-md opacity-60" resizeMode="cover" />
                         <VStack className="p-5">
                             <HStack className="justify-between items-center w-full">

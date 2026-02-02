@@ -6,7 +6,7 @@ export default function Layout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: COLORS.background },
+        contentStyle: { backgroundColor: COLORS.background, marginTop: -30 },
       }}
     >
       <Stack.Screen name="index" />

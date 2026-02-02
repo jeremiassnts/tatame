@@ -1,5 +1,6 @@
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
+import { BackButton } from "@/src/components/back-button";
 import { InfoRow } from "@/src/components/personal-data-section/info-row";
 import { StudentBelt } from "@/src/components/student-belt";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
@@ -14,7 +15,7 @@ import { VStack } from "@/src/components/ui/vstack";
 import { GENDERS } from "@/src/constants/genders";
 import { queryClient } from "@/src/lib/react-query";
 import { format } from "date-fns";
-import { useLocalSearchParams } from "expo-router/build/hooks";
+import { useLocalSearchParams, useRouter } from "expo-router/build/hooks";
 import { Instagram } from "lucide-react-native";
 import { useState } from "react";
 import { ScrollView } from "react-native";
@@ -45,6 +46,7 @@ export default function User() {
     const [deniedAt, setDeniedAt] = useState<string | null>(denied_at);
     const { approveStudent, denyStudent } = useUsers()
     const { isHigherRole } = useRoles()
+    const router = useRouter();
 
     function handleApproveStudent() {
         approveStudent.mutateAsync(Number(userId))
@@ -113,6 +115,9 @@ export default function User() {
                             <InfoRow icon={CalendarDaysIcon} label="Data de nascimento" value={birthFormatted} />
                         </VStack>
                     </Card>
+                    <HStack className="justify-center w-full mt-4">
+                        <BackButton />
+                    </HStack>
                 </VStack>
             </ScrollView>
         </SafeAreaView>
