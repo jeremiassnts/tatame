@@ -1,38 +1,37 @@
-import { Link } from "expo-router";
-import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image } from "@/src/components/ui/image";
-import { Heading } from "@/src/components/ui/heading";
-import { Text } from "@/src/components/ui/text";
+import EmailVerification from "@/src/components/email-verification";
 import { TextInput } from "@/src/components/text-input";
-import { VStack } from "@/src/components/ui/vstack";
 import {
   Button,
   ButtonIcon,
   ButtonSpinner,
   ButtonText,
 } from "@/src/components/ui/button";
-import { HStack } from "@/src/components/ui/hstack";
 import { Divider } from "@/src/components/ui/divider";
+import { Heading } from "@/src/components/ui/heading";
+import { HStack } from "@/src/components/ui/hstack";
 import { AppleIcon, GoogleIcon } from "@/src/components/ui/icon";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as WebBrowser from "expo-web-browser";
+import { Image } from "@/src/components/ui/image";
+import { Text } from "@/src/components/ui/text";
+import { VStack } from "@/src/components/ui/vstack";
+import { useLogIn } from "@/src/hooks/use-log-in";
 import {
   signUpFormSchema,
   SignUpFormType,
   useSignUp,
 } from "@/src/hooks/use-sign-up";
-import { useLogIn } from "@/src/hooks/use-log-in";
-import EmailVerification from "@/src/components/email-verification";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Handle any pending authentication sessions
 WebBrowser.maybeCompleteAuthSession();
 
 export default function SignUp() {
   const [pendingVerification, setPendingVerification] = useState(false);
-  const [code, setCode] = useState("");
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [isSigningUpWithGoogle, setIsSigningUpWithGoogle] = useState(false);
   const [isSigningUpWithApple, setIsSigningUpWithApple] = useState(false);
@@ -55,27 +54,27 @@ export default function SignUp() {
       lastName: "",
     },
   });
-  const { useWarmUpBrowser, signUpWithEmailAndPassword, verifyEmail } =
+  const { useWarmUpBrowser, signUpWithEmailAndPassword } =
     useSignUp();
-  const { signInWithGoogle } = useLogIn();
+  const { signInWithSSO } = useLogIn();
 
   const handleSignInWithGoogle = async () => {
     try {
       setIsSigningUpWithGoogle(true);
-      await signInWithGoogle();
+      await signInWithSSO("oauth_google");
     } finally {
       setIsSigningUpWithGoogle(false);
     }
   };
 
-  // const handleSignInWithApple = async () => {
-  //   try {
-  //     setIsSigningUpWithApple(true);
-  //     await signInWithApple();
-  //   } finally {
-  //     setIsSigningUpWithApple(false);
-  //   }
-  // };
+  const handleSignInWithApple = async () => {
+    try {
+      setIsSigningUpWithApple(true);
+      await signInWithSSO("oauth_apple");
+    } finally {
+      setIsSigningUpWithApple(false);
+    }
+  };
 
   const handleSignInWithEmailAndPassword = async (data: SignUpFormType) => {
     try {
@@ -219,7 +218,7 @@ export default function SignUp() {
                 : "Cadastrar com google"}
             </ButtonText>
           </Button>
-          {/* <Button
+          <Button
             className="mt-4 h-14 rounded-md"
             onPress={handleSignInWithApple}
           >
@@ -228,7 +227,7 @@ export default function SignUp() {
             <ButtonText className="text-neutral-900">
               {isSigningUpWithApple ? "Cadastrando..." : "Cadastrar com apple"}
             </ButtonText>
-          </Button> */}
+          </Button>
           <Text className="text-neutral-400 text-md text-center mt-4">
             Já possui uma conta?{" "}
             <Link href="/sign-in" className="text-violet-500 font-bold">
