@@ -2,6 +2,16 @@
 
 Mobile application for martial arts gym management, built with [Expo](https://expo.dev) and React Native.
 
+## Tech stack
+
+- **Expo** (SDK 54) & **React Native** — cross-platform mobile
+- **Expo Router** — file-based routing
+- **Supabase** — backend, auth, and database
+- **Clerk** — authentication (Expo)
+- **React Query** — server state and API hooks
+- **NativeWind** — Tailwind-style styling
+- **React Hook Form** & **Zod** — forms and validation
+
 ## Prerequisites
 
 - Node.js 22.3.0 or higher
@@ -44,6 +54,12 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+### Environment
+
+The app uses Expo public env vars (e.g. `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY`, `EXPO_PUBLIC_R2_URL`). Configure them in a `.env` (or `.env.local`) at the project root so the app can connect to Supabase, Clerk, and other services.
+
+For Supabase TypeScript types: `npm run db:types` (requires `SUPABASE_PROJECT_ID`).
+
 ## Builds
 
 ### Android
@@ -68,6 +84,12 @@ Android configurations:
 - ✅ Adaptive Icon
 - ✅ Edge-to-Edge enabled
 
+Utility scripts (Android):
+
+- `./scripts/android-devices.sh` — list connected devices
+- `./scripts/android-install.sh` — install APK on device
+- `./scripts/android-logs.sh` — view device logs
+
 ### iOS
 
 Available iOS build scripts:
@@ -79,8 +101,11 @@ Available iOS build scripts:
 # Preview build (TestFlight)
 ./scripts/ios-build-preview.sh
 
-# Production build (App Store)
+# Production build (App Store) — local EAS build
 ./scripts/ios-build-production.sh
+
+# Production build (App Store) — alternative EAS script
+./scripts/eas-build-production-ios.sh
 ```
 
 iOS configurations:
@@ -102,9 +127,11 @@ tatame/
 │   ├── api/          # API hooks and queries
 │   ├── hooks/        # Custom hooks
 │   ├── constants/    # Constants and configs
+│   ├── types/        # TypeScript types (e.g. database, date)
 │   └── utils/        # Utility functions
 ├── assets/           # Images and resources
 ├── scripts/          # Build and utility scripts
+├── supabase/         # Supabase migrations and config
 └── docs/             # Documentation
 ```
 
