@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tatame",
     "slug": "tatame",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "portrait",
     "scheme": "tatameapp",
     "userInterfaceStyle": "automatic",
@@ -21,7 +21,11 @@
         "backgroundColor": "#141414"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.tatame"
+      "package": "com.anonymous.tatame",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static",
@@ -85,7 +89,8 @@
         "NSMicrophoneUsageDescription": "Este app precisa de acesso ao microfone para gravar vídeos com áudio.",
         "NSPhotoLibraryUsageDescription": "Este app precisa de acesso à biblioteca de fotos para salvar e carregar mídias.",
         "NSPhotoLibraryAddUsageDescription": "Este app precisa de permissão para salvar fotos na sua biblioteca.",
-        "NSLocationWhenInUseUsageDescription": "Este app precisa de acesso à localização."
+        "NSLocationWhenInUseUsageDescription": "Este app precisa de acesso à localização.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "buildNumber": "1"
     }
