@@ -45,3 +45,4 @@ app-example
 **/*.apk
 **/*.aab
 **/signing_key.json
+**/*.ipa
