@@ -57,7 +57,7 @@ January 14, 2026
 "development": {
   "developmentClient": true,
   "distribution": "internal",
-  "node": "22.3.0",
+  "node": "24.11.0",
   "android": {
     "env": {
       "JAVA_HOME": "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
@@ -78,7 +78,7 @@ January 14, 2026
 ```json
 "preview": {
   "distribution": "internal",
-  "node": "22.3.0",
+  "node": "24.11.0",
   "android": { ... },
   "ios": {
     "simulator": false
@@ -95,7 +95,7 @@ January 14, 2026
 ```json
 "production": {
   "autoIncrement": true,
-  "node": "22.3.0",
+  "node": "24.11.0",
   "android": { ... },
   "ios": {
     "autoIncrement": true

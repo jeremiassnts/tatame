@@ -14,7 +14,7 @@ Mobile application for martial arts gym management, built with [Expo](https://ex
 
 ## Prerequisites
 
-- Node.js 22.3.0 or higher
+- Node.js 24.11.0 or higher
 - npm or yarn
 - Expo CLI
 - EAS CLI (for builds): `npm install -g eas-cli`
