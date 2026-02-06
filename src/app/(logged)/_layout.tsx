@@ -1,4 +1,5 @@
 import { useRoles } from "@/src/api/use-roles";
+import { useUserPlans } from "@/src/api/use-user-plans";
 import { useUsers } from "@/src/api/use-users";
 import { IconNotification } from "@/src/components/icon-notification";
 import { CalendarDaysIcon, GlobeIcon, HomeIcon, Icon, MenuIcon, PlayIcon, UserIcon, UsersIcon } from "@/src/components/ui/icon";
@@ -19,6 +20,8 @@ export default function Layout() {
   const { initializePushNotifications } = useSendNotification();
   const { isHigherRole } = useRoles()
   const { data: userProfile } = getUserProfile
+  const { getPlansByUser } = useUserPlans();
+  const { data: plans } = getPlansByUser(userProfile?.id!, userProfile?.role!);
 
   const isApproved = isHigherRole() || studentsApprovalStatus
 
@@ -35,8 +38,11 @@ export default function Layout() {
     }
   }, [userProfile]);
 
+  const headerShown = (userProfile?.role === "MANAGER" && plans && plans.length > 0) || userProfile?.role !== "MANAGER";
+
   return (
     <Drawer screenOptions={{
+      headerShown: headerShown,
       headerLeft: () => <IconNotification showAmount icon={MenuIcon} size="xl" color="white" style={{ marginLeft: 15 }} />,
       headerStyle: {
         backgroundColor: COLORS.background,

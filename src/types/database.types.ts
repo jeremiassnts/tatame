@@ -290,6 +290,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_plans: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: number
+          plan_id: string | null
+          user_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: number
+          plan_id?: string | null
+          user_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: number
+          plan_id?: string | null
+          user_id?: number | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           approved_at: string | null

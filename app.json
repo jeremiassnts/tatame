@@ -68,7 +68,14 @@
       ],
       "expo-web-browser",
       "expo-maps",
-      "expo-video"
+      "expo-video",
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.anonymous.tatame",
+          "enableGooglePay": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -90,7 +97,9 @@
         "NSPhotoLibraryUsageDescription": "Este app precisa de acesso à biblioteca de fotos para salvar e carregar mídias.",
         "NSPhotoLibraryAddUsageDescription": "Este app precisa de permissão para salvar fotos na sua biblioteca.",
         "NSLocationWhenInUseUsageDescription": "Este app precisa de acesso à localização.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": ["pt-BR"]
       },
       "buildNumber": "1"
     }

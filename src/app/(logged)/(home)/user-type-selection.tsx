@@ -44,14 +44,20 @@ export default function Home() {
         const user = await getUserByClerkUserId(userId ?? "");
         if (user && user.role) {
           setUserType(user.role as UserType);
-          // router.replace("/(logged)/(home)/user-approval-check");
-          router.replace("/(logged)/(home)/home");
+          if (user.role === "MANAGER") {
+            router.replace("/(logged)/(home)/manager-plan-selection");
+          } else {
+            router.replace("/(logged)/(home)/home");
+          }
         } else {
           setIsUserTypeLoaded(true);
         }
       } else {
-        // router.replace("/(logged)/(home)/user-approval-check");
-        router.replace("/(logged)/(home)/home");
+        if (userType === "MANAGER") {
+          router.replace("/(logged)/(home)/manager-plan-selection");
+        } else {
+          router.replace("/(logged)/(home)/home");
+        }
       }
     };
     fetchUserType();

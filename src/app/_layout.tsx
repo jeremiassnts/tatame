@@ -6,11 +6,27 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import * as Application from "expo-application";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { Platform } from "react-native";
 import "react-native-reanimated";
 import { useVersions } from "../api/use-versions";
 import { VersionAlert } from "../components/version-alert";
 import { COLORS } from "../constants/colors";
 import { queryClient } from "../lib/react-query";
+
+const StripeProviderWrapper = Platform.OS === "web"
+  ? ({ children }: { children: React.ReactNode }) => <>{children}</>
+  : (function StripeProviderNative({ children }: { children: React.ReactNode }) {
+    const { StripeProvider } = require("@stripe/stripe-react-native");
+    return (
+      <StripeProvider
+        publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
+        merchantIdentifier="merchant.com.anonymous.tatame"
+        urlScheme="tatameapp"
+      >
+        {children}
+      </StripeProvider>
+    );
+  });
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -25,7 +41,9 @@ export default function RootApp() {
     >
       <GluestackUIProvider mode="dark">
         <QueryClientProvider client={queryClient}>
-          <RootLayout />
+          <StripeProviderWrapper>
+            <RootLayout />
+          </StripeProviderWrapper>
         </QueryClientProvider>
       </GluestackUIProvider>
     </ClerkProvider>
