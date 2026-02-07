@@ -1,5 +1,4 @@
 import { useStripeHook } from "@/src/api/stripe/use-stripe-hook";
-import { useUserPlans } from "@/src/api/use-user-plans";
 import { useUsers } from "@/src/api/use-users";
 import ManagerPlan from "@/src/components/manager-plan";
 import { SplashScreen } from "@/src/components/splash-screen";
@@ -8,6 +7,7 @@ import { Heading } from "@/src/components/ui/heading";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { VStack } from "@/src/components/ui/vstack";
 import { useToast } from "@/src/hooks/use-toast";
+import { queryClient } from "@/src/lib/react-query";
 import { useStripe } from "@stripe/stripe-react-native";
 import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
@@ -21,17 +21,18 @@ export default function ManagerPlanSelection() {
         createSubscription,
         createSetupIntent,
         createEphemeralKey,
+        fetchSubscriptionByCustomerId,
     } = useStripeHook();
     const { data: products, isLoading: isLoadingProducts } = fetchProducts;
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [isLoading, setIsLoading] = useState(false);
-    const { getPlansByUser } = useUserPlans();
-    const { data: plans, isLoading: isLoadingPlans } = getPlansByUser;
     const { getUserProfile } = useUsers();
     const { data: userProfile, isLoading: isLoadingUserProfile } = getUserProfile;
     const { showErrorToast } = useToast();
     const router = useRouter();
+    const { data: subscription, isLoading: isLoadingSubscription } =
+        fetchSubscriptionByCustomerId(userProfile?.customer_id ?? "");
 
     function handleSelectPlan(planId: string) {
         setSelectedPlan(planId);
@@ -49,6 +50,7 @@ export default function ManagerPlanSelection() {
                     (userProfile?.last_name ?? "")
                 ).trim(),
                 email: userProfile?.email ?? "",
+                userId: userProfile?.id ?? 0,
             });
             const product = products?.find((product) => product.id === selectedPlan);
             //create payment intent
@@ -64,18 +66,17 @@ export default function ManagerPlanSelection() {
             await setup(customer.id, ephemeralKey, setupIntentSecret);
             const { error } = await presentPaymentSheet();
             if (error) {
-                console.log(JSON.stringify(error, null, 2));
-                showErrorToast(
-                    "Erro na plataforma de pagamento",
-                    "Ocorreu um erro ao iniciar o pagamento, tente novamente.",
-                );
+                throw error;
             }
             //create subscription
             await createSubscription.mutateAsync({
                 customerId: customer.id,
                 priceId: product?.default_price.id ?? "",
+                userId: userProfile?.id ?? 0,
             });
-
+            queryClient.invalidateQueries({
+                queryKey: ["subscription-by-customer-id"],
+            });
             router.navigate("/(logged)/(home)/home");
         } catch (error) {
             console.log(JSON.stringify(error, null, 2));
@@ -87,9 +88,9 @@ export default function ManagerPlanSelection() {
         setIsLoading(false);
     }
 
-    if (isLoadingPlans) {
+    if (isLoadingSubscription) {
         return <SplashScreen />;
-    } else if (plans && plans.length > 0) {
+    } else if (subscription) {
         return <Redirect href="/(logged)/(home)/home" />;
     }
 
@@ -105,12 +106,7 @@ export default function ManagerPlanSelection() {
             setupIntentClientSecret: setupIntentSecret,
         });
         if (error) {
-            console.log(JSON.stringify(error, null, 2));
-            showErrorToast(
-                "Erro na plataforma de pagamento",
-                "Ocorreu um erro ao iniciar o pagamento, tente novamente.",
-            );
-            setIsLoading(false);
+            throw error;
         }
     };
 

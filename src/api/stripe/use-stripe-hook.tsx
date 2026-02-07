@@ -30,13 +30,22 @@ export function useStripeHook() {
     });
 
     const createCustomer = useMutation({
-        mutationFn: async ({ name, email }: { name: string; email: string }) => {
+        mutationFn: async ({
+            name,
+            email,
+            userId,
+        }: {
+            name: string;
+            email: string;
+            userId: number;
+        }) => {
             const token = await getToken();
             const response = await tatameClient.post<CreateCustomerResponse>(
                 "/stripe/customers",
                 {
                     name,
                     email,
+                    userId,
                 },
                 {
                     headers: {
@@ -52,14 +61,16 @@ export function useStripeHook() {
         mutationFn: async ({
             customerId,
             priceId,
+            userId,
         }: {
             customerId: string;
             priceId: string;
+            userId: number;
         }) => {
             const token = await getToken();
             const response = await tatameClient.post<CreateSubscriptionResponse>(
                 "/stripe/subscriptions",
-                { customerId, priceId },
+                { customerId, priceId, userId },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -126,6 +137,23 @@ export function useStripeHook() {
         },
     });
 
+    const fetchSubscriptionByCustomerId = (customerId: string) =>
+        useQuery({
+            queryKey: ["subscription-by-customer-id"],
+            queryFn: async () => {
+                const token = await getToken();
+                const response = await tatameClient.get(
+                    `/stripe/subscriptions/customer/${customerId}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    },
+                );
+                return response.data.data ?? null;
+            },
+        });
+
     return {
         fetchProducts,
         createCustomer,
@@ -133,5 +161,6 @@ export function useStripeHook() {
         createPaymentIntent,
         createSetupIntent,
         createEphemeralKey,
+        fetchSubscriptionByCustomerId,
     };
 }

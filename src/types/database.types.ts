@@ -290,38 +290,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_plans: {
-        Row: {
-          created_at: string
-          deleted_at: string | null
-          id: number
-          plan_id: string | null
-          user_id: number | null
-        }
-        Insert: {
-          created_at?: string
-          deleted_at?: string | null
-          id?: number
-          plan_id?: string | null
-          user_id?: number | null
-        }
-        Update: {
-          created_at?: string
-          deleted_at?: string | null
-          id?: number
-          plan_id?: string | null
-          user_id?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_plans_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       users: {
         Row: {
           approved_at: string | null
@@ -329,6 +297,7 @@ export type Database = {
           birth_day: string | null
           clerk_user_id: string
           created_at: string
+          customer_id: string | null
           deleted_at: string | null
           denied_at: string | null
           email: string | null
@@ -343,6 +312,7 @@ export type Database = {
           phone: string | null
           profile_picture: string | null
           role: string | null
+          subscription_id: string | null
         }
         Insert: {
           approved_at?: string | null
@@ -350,6 +320,7 @@ export type Database = {
           birth_day?: string | null
           clerk_user_id: string
           created_at?: string
+          customer_id?: string | null
           deleted_at?: string | null
           denied_at?: string | null
           email?: string | null
@@ -364,6 +335,7 @@ export type Database = {
           phone?: string | null
           profile_picture?: string | null
           role?: string | null
+          subscription_id?: string | null
         }
         Update: {
           approved_at?: string | null
@@ -371,6 +343,7 @@ export type Database = {
           birth_day?: string | null
           clerk_user_id?: string
           created_at?: string
+          customer_id?: string | null
           deleted_at?: string | null
           denied_at?: string | null
           email?: string | null
@@ -385,6 +358,7 @@ export type Database = {
           phone?: string | null
           profile_picture?: string | null
           role?: string | null
+          subscription_id?: string | null
         }
         Relationships: [
           {
