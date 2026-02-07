@@ -36,13 +36,13 @@ export interface Student {
 }
 
 export interface ProfileInfo {
-  id: number
-  clerk_user_id: string
-  name: string
-  email: string
-  imageUrl: string
-  firstName: string
-  lastName: string
+  id: number;
+  clerk_user_id: string;
+  name: string;
+  email: string;
+  imageUrl: string;
+  firstName: string;
+  lastName: string;
 }
 
 export function useUsers() {
@@ -102,13 +102,13 @@ export function useUsers() {
       const { data: gyms } = await supabase
         .from("gyms")
         .select("*")
-        .eq("id", data?.gym_id!)
+        .eq("id", data?.gym_id!);
       const gym = gyms?.[0];
       return {
         ...user,
         ...data,
         gym,
-      };
+      } as Database["public"]["Tables"]["users"]["Row"];
     },
   });
 
@@ -119,39 +119,51 @@ export function useUsers() {
         const { data, error } = await supabase
           .from("users")
           .select("*, graduations(belt, degree)")
-          .eq("gym_id", gymId)
+          .eq("gym_id", gymId);
 
         if (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os alunos");
           throw error;
         }
-        const users = await getProfilesInfo(data.map(item => item.clerk_user_id));
-        return data.map((user) => {
-          return {
-            ...user,
-            name: users.find(u => u.clerk_user_id === user.clerk_user_id)?.name,
-            imageUrl: users.find(u => u.clerk_user_id === user.clerk_user_id)?.imageUrl,
-            belt: user.graduations?.[0]?.belt,
-            degree: user.graduations?.[0]?.degree,
-            approved_at: user.approved_at,
-            denied_at: user.denied_at,
-            email: users.find(u => u.clerk_user_id === user.clerk_user_id)?.email,
-            firstName: users.find(u => u.clerk_user_id === user.clerk_user_id)?.firstName,
-            lastName: users.find(u => u.clerk_user_id === user.clerk_user_id)?.lastName,
-          } as Student;
-        }).sort((a, b) => {
-          if (a.belt === b.belt) {
-            if (a.degree === b.degree) {
-              return a.name.localeCompare(b.name);
+        const users = await getProfilesInfo(
+          data.map((item) => item.clerk_user_id),
+        );
+        return data
+          .map((user) => {
+            return {
+              ...user,
+              name: users.find((u) => u.clerk_user_id === user.clerk_user_id)
+                ?.name,
+              imageUrl: users.find(
+                (u) => u.clerk_user_id === user.clerk_user_id,
+              )?.imageUrl,
+              belt: user.graduations?.[0]?.belt,
+              degree: user.graduations?.[0]?.degree,
+              approved_at: user.approved_at,
+              denied_at: user.denied_at,
+              email: users.find((u) => u.clerk_user_id === user.clerk_user_id)
+                ?.email,
+              firstName: users.find(
+                (u) => u.clerk_user_id === user.clerk_user_id,
+              )?.firstName,
+              lastName: users.find(
+                (u) => u.clerk_user_id === user.clerk_user_id,
+              )?.lastName,
+            } as Student;
+          })
+          .sort((a, b) => {
+            if (a.belt === b.belt) {
+              if (a.degree === b.degree) {
+                return a.name.localeCompare(b.name);
+              }
+              return b.degree! - a.degree!;
             }
-            return b.degree! - a.degree!;
-          }
-          //@ts-ignore
-          return BELT_ORDER[a.belt] - BELT_ORDER[b.belt];
-        });
+            //@ts-ignore
+            return BELT_ORDER[a.belt] - BELT_ORDER[b.belt];
+          });
       },
     });
-  }
+  };
 
   const approveStudent = useMutation({
     mutationFn: async (userId: number) => {
@@ -171,7 +183,7 @@ export function useUsers() {
         channel: "push",
         status: "pending",
         viewed_by: [],
-      })
+      });
     },
   });
 
@@ -193,7 +205,7 @@ export function useUsers() {
         channel: "push",
         status: "pending",
         viewed_by: [],
-      })
+      });
     },
   });
 
@@ -209,7 +221,10 @@ export function useUsers() {
         .eq("clerk_user_id", user?.id!);
 
       if (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao buscar o status de aprovação dos alunos");
+        showErrorToast(
+          "Erro",
+          "Ocorreu um erro ao buscar o status de aprovação dos alunos",
+        );
         throw error;
       }
 
@@ -218,7 +233,9 @@ export function useUsers() {
   });
 
   const update = useMutation({
-    mutationFn: async (data: Database["public"]["Tables"]["users"]["Update"]) => {
+    mutationFn: async (
+      data: Database["public"]["Tables"]["users"]["Update"],
+    ) => {
       const { error } = await supabase
         .from("users")
         .update(data)
@@ -228,13 +245,13 @@ export function useUsers() {
         throw error;
       }
     },
-  })
+  });
 
   const getCurrentUser = async () => {
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .eq("clerk_user_id", user?.id!)
+      .eq("clerk_user_id", user?.id!);
 
     if (error) {
       showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário atual");
@@ -243,10 +260,12 @@ export function useUsers() {
       return null;
     }
     return data[0] as Database["public"]["Tables"]["users"]["Row"];
-  }
+  };
 
   const edit = useMutation({
-    mutationFn: async (data: Database["public"]["Tables"]["users"]["Update"]) => {
+    mutationFn: async (
+      data: Database["public"]["Tables"]["users"]["Update"],
+    ) => {
       const { error } = await supabase
         .from("users")
         .update(data)
@@ -257,7 +276,7 @@ export function useUsers() {
         throw error;
       }
     },
-  })
+  });
 
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
@@ -273,7 +292,7 @@ export function useUsers() {
         throw error;
       }
     },
-  })
+  });
 
   const getBirthdayUsers = useQuery({
     queryKey: ["birthday-users", format(new Date(), "MM-dd")],
@@ -282,26 +301,34 @@ export function useUsers() {
       const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("birth_day", formatted)
+        .eq("birth_day", formatted);
 
       if (error) {
         console.error(JSON.stringify(error, null, 2));
-        showErrorToast("Erro", "Ocorreu um erro ao buscar os usuários de aniversário");
+        showErrorToast(
+          "Erro",
+          "Ocorreu um erro ao buscar os usuários de aniversário",
+        );
         throw error;
       }
 
-      const users = await getProfilesInfo(data.map(item => item.clerk_user_id));
+      const users = await getProfilesInfo(
+        data.map((item) => item.clerk_user_id),
+      );
 
-      return data.map((user) => {
-        return {
-          ...user,
-          name: users.find(u => u.clerk_user_id === user.clerk_user_id)?.name,
-        } as Student;
-      }).sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+      return data
+        .map((user) => {
+          return {
+            ...user,
+            name: users.find((u) => u.clerk_user_id === user.clerk_user_id)
+              ?.name,
+          } as Student;
+        })
+        .sort((a, b) => {
+          return a.name.localeCompare(b.name);
+        });
     },
-  })
+  });
 
   const getInstructorsByGymId = (gymId: number) => {
     return useQuery({
@@ -311,24 +338,29 @@ export function useUsers() {
           .from("users")
           .select("*")
           .eq("gym_id", gymId)
-          .or('role.eq.MANAGER,and(role.eq.INSTRUCTOR,approved_at.not.is.null)')
+          .or(
+            "role.eq.MANAGER,and(role.eq.INSTRUCTOR,approved_at.not.is.null)",
+          );
 
         if (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os instrutores");
           throw error;
         }
 
-        const users = await getProfilesInfo(data.map(item => item.clerk_user_id));
+        const users = await getProfilesInfo(
+          data.map((item) => item.clerk_user_id),
+        );
 
         return data.map((user) => {
           return {
             ...user,
-            name: users.find(u => u.clerk_user_id === user.clerk_user_id)?.name,
+            name: users.find((u) => u.clerk_user_id === user.clerk_user_id)
+              ?.name,
           } as Student;
-        })
+        });
       },
     });
-  }
+  };
 
   const migrateUser = useMutation({
     mutationFn: async () => {
@@ -347,7 +379,7 @@ export function useUsers() {
         throw error;
       }
     },
-  })
+  });
 
   const getClerkUsers = async (userIds: string[]) => {
     try {
@@ -362,7 +394,7 @@ export function useUsers() {
           headers: {
             Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
           },
-        }
+        },
       );
       return data;
     } catch (error) {
@@ -372,13 +404,16 @@ export function useUsers() {
   };
 
   const getProfilesInfo = async (userIds: string[]) => {
-    const { data, error } = await supabase.from("users").select("*").in("clerk_user_id", userIds);
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .in("clerk_user_id", userIds);
     if (error) {
       showErrorToast("Erro", "Ocorreu um erro ao buscar os usuários");
       throw error;
     }
 
-    let users: ProfileInfo[] = []
+    let users: ProfileInfo[] = [];
     for (const user of data as Database["public"]["Tables"]["users"]["Row"][]) {
       if (user.migrated_at) {
         users.push({
@@ -403,10 +438,14 @@ export function useUsers() {
       }
     }
 
-    if (data.some(user => !user.migrated_at)) {
-      const clerkUsers = await getClerkUsers(data.filter(user => !user.migrated_at).map(user => user.clerk_user_id));
+    if (data.some((user) => !user.migrated_at)) {
+      const clerkUsers = await getClerkUsers(
+        data
+          .filter((user) => !user.migrated_at)
+          .map((user) => user.clerk_user_id),
+      );
       for (const user of clerkUsers) {
-        const index = users.findIndex(u => u.clerk_user_id === user.id);
+        const index = users.findIndex((u) => u.clerk_user_id === user.id);
         if (index !== -1) {
           users[index].name = user.first_name + " " + user.last_name;
           users[index].email = user.email;
@@ -418,7 +457,7 @@ export function useUsers() {
     }
 
     return users;
-  }
+  };
 
   return {
     createUser,

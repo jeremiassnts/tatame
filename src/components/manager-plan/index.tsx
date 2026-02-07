@@ -27,28 +27,28 @@ export default function ManagerPlan({
 }: ManagerPlanProps) {
     return (
         <Card
-            className={`w-full rounded-md border p-6 flex flex-col gap-2 ${isSelected ? "border-violet-500" : "border-neutral-700"}`}
+            className={`w-full rounded-md border-2 p-5 pt-12 flex flex-col gap-2 bg-neutral-800 ${isSelected ? "border-violet-500" : "border-neutral-700"}`}
         >
-            <Text className="text-neutral-200 font-normal text-neutral-200 text-lg">
-                {title.toUpperCase()}
-            </Text>
+            <Badge size="lg" className="absolute top-0 right-0 bg-violet-500">
+                <BadgeText>{title}</BadgeText>
+            </Badge>
             {price == 0 && (
                 <Heading size="2xl" className="text-neutral-200">
                     GRÁTIS
                 </Heading>
             )}
+            {firstMonthFree && (
+                <Badge className="bg-violet-500 absolute top-0 left-0">
+                    <BadgeText size="lg">PRIMEIRO MÊS GRÁTIS</BadgeText>
+                </Badge>
+            )}
             {price > 0 && (
-                <VStack className="gap-2 items-start justify-center">
-                    {firstMonthFree && (
-                        <Badge className="bg-violet-500">
-                            <BadgeText size="lg">PRIMEIRO MÊS GRÁTIS</BadgeText>
-                        </Badge>
-                    )}
-                    <Heading size="2xl" className="text-neutral-200">
+                <HStack className="gap-2 items-end justify-start">
+                    <Heading size="3xl" className="text-neutral-200">
                         {currency.toUpperCase()} ${(price / 100).toLocaleString("pt-BR")}
                     </Heading>
                     <Text className="text-neutral-400">POR MÊS</Text>
-                </VStack>
+                </HStack>
             )}
             <Text className="text-neutral-400">{description}</Text>
             <VStack className="justify-start items-start gap-1">
