@@ -15,7 +15,7 @@ export type Notification =
     };
 export function useNotifications() {
     const supabase = useSupabase();
-    const { getCurrentUser, getProfilesInfo } = useUsers();
+    const { getCurrentUser } = useUsers();
     const { sendNotification } = useSendNotification();
     const { showErrorToast } = useToast();
     const { isHigherRole } = useRoles();
@@ -26,7 +26,7 @@ export function useNotifications() {
         queryFn: async () => {
             const { data, error } = await supabase
                 .from("notifications")
-                .select("*, users(clerk_user_id)")
+                .select("*, users(first_name, last_name, profile_picture)")
                 .or(
                     `recipients.cs.{${user?.id.toString()}},sent_by.eq.${user?.id.toString()}`,
                 )
@@ -36,19 +36,17 @@ export function useNotifications() {
             } else if (!data) {
                 return [];
             }
-            const users = await getProfilesInfo(
-                data.map((item) => item.users?.clerk_user_id),
-            );
 
             return data.map((notification) => {
+                const sent_by_name = (
+                    (notification.users?.first_name ?? "") +
+                    " " +
+                    (notification.users?.last_name ?? "")
+                ).trim();
                 return {
                     ...notification,
-                    sent_by_name: users.find(
-                        (u) => u.clerk_user_id === notification.users?.clerk_user_id,
-                    )?.name,
-                    sent_by_image_url: users.find(
-                        (u) => u.clerk_user_id === notification.users?.clerk_user_id,
-                    )?.imageUrl,
+                    sent_by_name: sent_by_name,
+                    sent_by_image_url: notification.users?.profile_picture ?? "",
                 } as Notification;
             });
         },

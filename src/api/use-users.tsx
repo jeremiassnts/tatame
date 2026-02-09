@@ -5,7 +5,6 @@ import { BELT_ORDER } from "../constants/belts";
 import { UserType } from "../constants/user-type";
 import { useToast } from "../hooks/use-toast";
 import { useSupabase } from "../hooks/useSupabase";
-import axiosClient from "../lib/axios";
 import { Database } from "../types/database.types";
 import { useCreateNotification } from "./use-create-notification";
 import { useRoles } from "./use-roles";
@@ -14,27 +13,6 @@ export interface CreateUserProps {
   clerkUserId: string;
   role: UserType;
 }
-
-export interface Student {
-  role: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  approved_at: string | null;
-  denied_at: string | null;
-  id: number;
-  clerk_user_id: string;
-  gym_id: number;
-  name: string;
-  imageUrl: string;
-  belt: string;
-  degree: number;
-  instagram: string | null;
-  phone: string | null;
-  gender: string | null;
-  birth: string | null;
-}
-
 export interface ProfileInfo {
   id: number;
   clerk_user_id: string;
@@ -123,42 +101,16 @@ export function useUsers() {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os alunos");
           throw error;
         }
-        const users = await getProfilesInfo(
-          data.map((item) => item.clerk_user_id),
-        );
-        return data
-          .map((user) => {
-            return {
-              ...user,
-              name: users.find((u) => u.clerk_user_id === user.clerk_user_id)
-                ?.name,
-              imageUrl: users.find(
-                (u) => u.clerk_user_id === user.clerk_user_id,
-              )?.imageUrl,
-              belt: user.graduations?.[0]?.belt,
-              degree: user.graduations?.[0]?.degree,
-              approved_at: user.approved_at,
-              denied_at: user.denied_at,
-              email: users.find((u) => u.clerk_user_id === user.clerk_user_id)
-                ?.email,
-              firstName: users.find(
-                (u) => u.clerk_user_id === user.clerk_user_id,
-              )?.firstName,
-              lastName: users.find(
-                (u) => u.clerk_user_id === user.clerk_user_id,
-              )?.lastName,
-            } as Student;
-          })
-          .sort((a, b) => {
-            if (a.belt === b.belt) {
-              if (a.degree === b.degree) {
-                return a.name.localeCompare(b.name);
-              }
-              return b.degree! - a.degree!;
+        return data.sort((a, b) => {
+          if (a.belt === b.belt) {
+            if (a.degree === b.degree) {
+              return a.name.localeCompare(b.name);
             }
-            //@ts-ignore
-            return BELT_ORDER[a.belt] - BELT_ORDER[b.belt];
-          });
+            return b.degree! - a.degree!;
+          }
+          //@ts-ignore
+          return BELT_ORDER[a.belt] - BELT_ORDER[b.belt];
+        });
       },
     });
   };
@@ -310,21 +262,11 @@ export function useUsers() {
         throw error;
       }
 
-      const users = await getProfilesInfo(
-        data.map((item) => item.clerk_user_id),
+      return (data as Database["public"]["Tables"]["users"]["Row"][]).sort(
+        (a, b) => {
+          return (a.first_name ?? "").localeCompare(b.first_name ?? "");
+        },
       );
-
-      return data
-        .map((user) => {
-          return {
-            ...user,
-            name: users.find((u) => u.clerk_user_id === user.clerk_user_id)
-              ?.name,
-          } as Student;
-        })
-        .sort((a, b) => {
-          return a.name.localeCompare(b.name);
-        });
     },
   });
 
@@ -345,17 +287,7 @@ export function useUsers() {
           throw error;
         }
 
-        const users = await getProfilesInfo(
-          data.map((item) => item.clerk_user_id),
-        );
-
-        return data.map((user) => {
-          return {
-            ...user,
-            name: users.find((u) => u.clerk_user_id === user.clerk_user_id)
-              ?.name,
-          } as Student;
-        });
+        return data as Database["public"]["Tables"]["users"]["Row"][];
       },
     });
   };
@@ -379,84 +311,6 @@ export function useUsers() {
     },
   });
 
-  const getClerkUsers = async (userIds: string[]) => {
-    try {
-      const { data } = await axiosClient.post(
-        `/clerk-get-users`,
-        {
-          user_id: userIds,
-          limit: userIds.length,
-          offset: 0,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
-          },
-        },
-      );
-      return data;
-    } catch (error) {
-      showErrorToast("Erro", "Ocorreu um erro ao buscar os usuários");
-      return null;
-    }
-  };
-
-  const getProfilesInfo = async (userIds: string[]) => {
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .in("clerk_user_id", userIds);
-    if (error) {
-      showErrorToast("Erro", "Ocorreu um erro ao buscar os usuários");
-      throw error;
-    }
-
-    let users: ProfileInfo[] = [];
-    for (const user of data as Database["public"]["Tables"]["users"]["Row"][]) {
-      if (user.migrated_at) {
-        users.push({
-          id: user.id,
-          clerk_user_id: user.clerk_user_id,
-          name: `${user.first_name} ${user.last_name ?? ""}`,
-          email: user.email ?? "",
-          imageUrl: user.profile_picture ?? "",
-          firstName: user.first_name ?? "",
-          lastName: user.last_name ?? "",
-        });
-      } else {
-        users.push({
-          id: user.id,
-          clerk_user_id: user.clerk_user_id,
-          name: "",
-          email: "",
-          imageUrl: "",
-          firstName: "",
-          lastName: "",
-        });
-      }
-    }
-
-    if (data.some((user) => !user.migrated_at)) {
-      const clerkUsers = await getClerkUsers(
-        data
-          .filter((user) => !user.migrated_at)
-          .map((user) => user.clerk_user_id),
-      );
-      for (const user of clerkUsers) {
-        const index = users.findIndex((u) => u.clerk_user_id === user.id);
-        if (index !== -1) {
-          users[index].name = user.first_name + " " + user.last_name;
-          users[index].email = user.email;
-          users[index].imageUrl = user.image_url;
-          users[index].firstName = user.first_name ?? "";
-          users[index].lastName = user.last_name ?? "";
-        }
-      }
-    }
-
-    return users;
-  };
-
   return {
     createUser,
     getUserByClerkUserId,
@@ -473,6 +327,5 @@ export function useUsers() {
     getBirthdayUsers,
     getInstructorsByGymId,
     migrateUser,
-    getProfilesInfo,
   };
 }

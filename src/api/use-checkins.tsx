@@ -11,17 +11,18 @@ export function useCheckins() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
   const { user } = useUser();
-  const { getProfilesInfo } = useUsers();
+  const { } = useUsers();
 
   const create = useMutation({
     mutationFn: async (
-      checkin: Database["public"]["Tables"]["checkins"]["Insert"]
+      checkin: Database["public"]["Tables"]["checkins"]["Insert"],
     ) => {
       //verify if the user has already checked in for this class
-      const { data: checkinData } = await supabase.from("checkins")
+      const { data: checkinData } = await supabase
+        .from("checkins")
         .select("*")
         .eq("classId", checkin.classId)
-        .eq("userId", checkin.userId)
+        .eq("userId", checkin.userId);
       if (checkinData && checkinData.length > 0) {
         return;
       }
@@ -68,27 +69,28 @@ export function useCheckins() {
     },
   });
 
-  const fetchAllByClassId = (classId: number) => useQuery({
-    queryKey: ["just-checkins-by-class-id", classId],
-    queryFn: async () => {
-      if (!user?.id) return [];
+  const fetchAllByClassId = (classId: number) =>
+    useQuery({
+      queryKey: ["just-checkins-by-class-id", classId],
+      queryFn: async () => {
+        if (!user?.id) return [];
 
-      const { data, error } = await supabase
-        .from("checkins")
-        .select("*, users!inner(clerk_user_id)")
-        .eq("users.clerk_user_id", user?.id!)
-        .eq("date", new Date().toISOString())
-        .eq("classId", classId);
+        const { data, error } = await supabase
+          .from("checkins")
+          .select("*, users!inner(clerk_user_id)")
+          .eq("users.clerk_user_id", user?.id!)
+          .eq("date", new Date().toISOString())
+          .eq("classId", classId);
 
-      if (error) {
-        console.error(error);
-        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
-        throw error;
-      }
+        if (error) {
+          console.error(error);
+          showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+          throw error;
+        }
 
-      return data;
-    },
-  });
+        return data;
+      },
+    });
 
   const fetchLastCheckins = useQuery({
     queryKey: ["last-checkins"],
@@ -99,8 +101,8 @@ export function useCheckins() {
         .from("checkins")
         .select("*, users!inner(clerk_user_id)")
         .eq("users.clerk_user_id", user?.id!)
-        .gte('date', subDays(new Date(), 15).toISOString())
-        .lte('date', new Date().toISOString())
+        .gte("date", subDays(new Date(), 15).toISOString())
+        .lte("date", new Date().toISOString());
 
       if (error) {
         console.error(error);
@@ -118,7 +120,7 @@ export function useCheckins() {
       queryFn: async () => {
         const { data, error } = await supabase
           .from("checkins")
-          .select("*, users(clerk_user_id)")
+          .select("*, users(first_name, last_name, profile_picture)")
           .eq("classId", classId)
           .eq("date", new Date().toISOString());
         if (error) {
@@ -127,13 +129,15 @@ export function useCheckins() {
           throw error;
         }
 
-        const users = await getProfilesInfo(data.map(item => item.users?.clerk_user_id));
-
         return data.map((checkin) => {
           return {
             ...checkin,
-            name: users.find(u => u.clerk_user_id === checkin.users?.clerk_user_id)?.name,
-            imageUrl: users.find(u => u.clerk_user_id === checkin.users?.clerk_user_id)?.imageUrl,
+            name: (
+              (checkin.users?.first_name ?? "") +
+              " " +
+              (checkin.users?.last_name ?? "")
+            ).trim(),
+            imageUrl: checkin.users?.profile_picture ?? "",
           };
         });
       },
@@ -147,11 +151,13 @@ export function useCheckins() {
 
       const { data, error } = await supabase
         .from("checkins")
-        .select("*, users!inner(clerk_user_id), class!inner(id, start, end, day)")
+        .select(
+          "*, users!inner(clerk_user_id), class!inner(id, start, end, day)",
+        )
         .eq("users.clerk_user_id", user?.id!)
-        .gte('date', subDays(new Date(), 30).toISOString())
-        .lte('date', new Date().toISOString())
-        .order('date', { ascending: false })
+        .gte("date", subDays(new Date(), 30).toISOString())
+        .lte("date", new Date().toISOString())
+        .order("date", { ascending: false });
 
       if (error) {
         console.error(error);

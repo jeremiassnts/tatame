@@ -11,9 +11,9 @@ import { useUsers } from "./use-users";
 export function useClass() {
   const supabase = useSupabase();
   const { showErrorToast } = useToast();
-  const { getUserByClerkUserId, getProfilesInfo } = useUsers();
+  const { getUserByClerkUserId } = useUsers();
   const { user } = useUser();
-  const { create } = useCreateNotification()
+  const { create } = useCreateNotification();
   const { mutateAsync: createNotification } = create;
 
   const fetchNextClass = useQuery({
@@ -28,9 +28,9 @@ export function useClass() {
               `
                   *,
                   gym:gyms!gym_id(name),
-                  instructor:users!instructor_id(clerk_user_id),
+                  instructor:users!instructor_id(first_name, last_name),
                   assets:assets!class_id(id, content, type, valid_until, created_at, title)
-                  `
+                  `,
             )
             .filter("gym_id", "eq", sp_user.gym_id)
             .filter("deleted_at", "is", null)
@@ -54,19 +54,25 @@ export function useClass() {
                 seconds: 0,
                 milliseconds: 0,
               });
-              if (item.day === dayOfTheWeek && isBefore(new Date(), classTime)) {
+              if (
+                item.day === dayOfTheWeek &&
+                isBefore(new Date(), classTime)
+              ) {
                 nextClass = item;
                 break;
               }
             }
             today = addDays(today, 1);
           }
-
-          const [instructor] = await getProfilesInfo([nextClass?.instructor?.clerk_user_id]);
+          const instructor = (
+            (nextClass?.instructor?.first_name ?? "") +
+            " " +
+            (nextClass?.instructor?.last_name ?? "")
+          ).trim();
 
           return {
             ...nextClass,
-            instructor_name: instructor?.name,
+            instructor_name: instructor,
           } as ClassRow;
         }
       }
@@ -76,15 +82,19 @@ export function useClass() {
 
   const createClass = useMutation({
     mutationFn: async (
-      classData: Database["public"]["Tables"]["class"]["Insert"]
+      classData: Database["public"]["Tables"]["class"]["Insert"],
     ) => {
-      const { data, error } = await supabase.from("class").insert(classData).select()
+      const { data, error } = await supabase
+        .from("class")
+        .insert(classData)
+        .select();
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar a aula");
         throw error;
       }
 
-      const { data: students } = await supabase.from("users")
+      const { data: students } = await supabase
+        .from("users")
         .select("*")
         .eq("gym_id", classData.gym_id)
         .eq("role", "STUDENT")
@@ -98,7 +108,7 @@ export function useClass() {
         sent_by: classData.created_by,
         status: "pending",
         viewed_by: [classData.created_by?.toString() ?? ""],
-      })
+      });
 
       return data[0];
     },
@@ -118,9 +128,9 @@ export function useClass() {
           `
         *,
         gym:gyms!gym_id(name),
-        instructor:users!instructor_id(clerk_user_id),
+        instructor:users!instructor_id(first_name, last_name),
         assets:assets!class_id(id, content, type, valid_until, created_at, title)
-        `
+        `,
         )
         .filter("gym_id", "eq", sp_user.gym_id)
         .filter("deleted_at", "is", null)
@@ -131,12 +141,15 @@ export function useClass() {
         throw error;
       }
       //fetching instructors
-      const instructors = await getProfilesInfo(data.map(item => item.instructor?.clerk_user_id));
-
       return data.map((item) => {
+        const instructor = (
+          (item.instructor?.first_name ?? "") +
+          " " +
+          (item.instructor?.last_name ?? "")
+        ).trim();
         return {
           ...item,
-          instructor_name: instructors.find(i => i.clerk_user_id === item.instructor?.clerk_user_id)?.name,
+          instructor_name: instructor,
         } as ClassRow;
       });
     },
@@ -148,10 +161,10 @@ export function useClass() {
       .select(
         `
         *,
-        instructor:users!instructor_id(clerk_user_id),
+        instructor:users!instructor_id(first_name, last_name),
         gym:gyms!gym_id(name, address),
         assets:assets!class_id(id, content, type, valid_until, created_at, title)
-        `
+        `,
       )
       .filter("id", "eq", classId);
 
@@ -162,16 +175,20 @@ export function useClass() {
     if (data.length === 0) {
       return null;
     }
-    const [instructor] = await getProfilesInfo([data[0]?.instructor?.clerk_user_id]);
+    const instructor = (
+      (data[0]?.instructor?.first_name ?? "") +
+      " " +
+      (data[0]?.instructor?.last_name ?? "")
+    ).trim();
     return {
       ...data[0],
-      instructor_name: instructor?.name,
+      instructor_name: instructor,
     } as ClassRow;
   }
 
   const editClass = useMutation({
     mutationFn: async (
-      data: Database["public"]["Tables"]["class"]["Update"]
+      data: Database["public"]["Tables"]["class"]["Update"],
     ) => {
       if (!data.id) {
         showErrorToast("Erro", "O ID da aula é obrigatório");
@@ -191,9 +208,12 @@ export function useClass() {
 
   const deleteClass = useMutation({
     mutationFn: async (classId: number) => {
-      const { error } = await supabase.from("class").update({
-        deleted_at: new Date().toISOString(),
-      }).eq("id", classId);
+      const { error } = await supabase
+        .from("class")
+        .update({
+          deleted_at: new Date().toISOString(),
+        })
+        .eq("id", classId);
 
       if (error) {
         showErrorToast("Erro", "Ocorreu um erro ao deletar a aula");
@@ -202,13 +222,18 @@ export function useClass() {
     },
   });
 
-  const findClassToCheckIn = async (gymId: number, time: string, day: string) => {
-    const { data, error } = await supabase.from("class")
+  const findClassToCheckIn = async (
+    gymId: number,
+    time: string,
+    day: string,
+  ) => {
+    const { data, error } = await supabase
+      .from("class")
       .select("*")
       .eq("gym_id", gymId)
       .eq("day", day)
       .lte("start", time)
-      .gte("end", time)
+      .gte("end", time);
 
     if (error) {
       console.error(error);
@@ -216,7 +241,7 @@ export function useClass() {
     }
 
     return data[0] as ClassRow;
-  }
+  };
 
   return {
     fetchNextClass,
