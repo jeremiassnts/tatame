@@ -25,7 +25,7 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
   const { fetchNextClass } = useClass();
   const { data: nextClass, isLoading: isLoadingNextClass } = fetchNextClass;
   const { getStudentsApprovalStatus } = useUsers();
-  const { profile, isLoading: isLoadingProfile } = useProfileContext();
+  const { user, isLoading: isLoadingUser } = useProfileContext();
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
   const { isHigherRole, isMediumRole, isLowerRole } = useRoles();
 
@@ -49,13 +49,13 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
       <Skeleton
         className="h-[150px] w-full bg-neutral-800 rounded-md"
         speed={4}
-        isLoaded={!isLoadingNextClass && !isLoadingProfile}
+        isLoaded={!isLoadingNextClass && !isLoadingUser}
       />
       {gym &&
         !isLoadingNextClass &&
         !isLoadingGym &&
         !nextClass &&
-        profile &&
+        user &&
         isHigherRole() && (
           <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
             <Button
@@ -77,7 +77,7 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
           </Pressable>
         </Box>
       )}
-      {!gym && !isLoadingNextClass && profile && isHigherRole() && (
+      {!gym && !isLoadingNextClass && user && isHigherRole() && (
         <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
           <Button onPress={() => router.push("/(logged)/(home)/create-gym")}>
             <ButtonIcon as={AddIcon} />
@@ -85,7 +85,7 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
           </Button>
         </Box>
       )}
-      {!gym && !isLoadingNextClass && profile && isMediumRole() && (
+      {!gym && !isLoadingNextClass && user && isMediumRole() && (
         <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
           <Button onPress={() => router.push("/(logged)/(home)/select-gym")}>
             <ButtonIcon as={AddIcon} />

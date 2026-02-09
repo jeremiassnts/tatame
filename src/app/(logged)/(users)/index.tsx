@@ -10,37 +10,37 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Users() {
     const { getStudentsByGymId } = useUsers();
-    const { profile } = useProfileContext();
+    const { user } = useProfileContext();
     const {
         data,
         isLoading: isLoadingStudents,
         refetch: refetchStudents,
-    } = getStudentsByGymId(profile?.gym_id!);
+    } = getStudentsByGymId(user?.gym_id!);
 
     const students = data?.filter((user) => user.role === "STUDENT");
     const studentsWaitingApproval = students?.filter(
         (student) =>
-            student.id !== profile?.id && !student.approved_at && !student.denied_at,
+            student.id !== user?.id && !student.approved_at && !student.denied_at,
     );
     const studentsApproved = students?.filter(
-        (student) => student.id !== profile?.id && student.approved_at,
+        (student) => student.id !== user?.id && student.approved_at,
     );
     const studentsDenied = students?.filter(
-        (student) => student.id !== profile?.id && student.denied_at,
+        (student) => student.id !== user?.id && student.denied_at,
     );
 
     const instructors = data?.filter((user) => user.role === "INSTRUCTOR");
     const instructorsWaitingApproval = instructors?.filter(
         (instructor) =>
-            instructor.id !== profile?.id &&
+            instructor.id !== user?.id &&
             !instructor.approved_at &&
             !instructor.denied_at,
     );
     const instructorsApproved = instructors?.filter(
-        (instructor) => instructor.id !== profile?.id && instructor.approved_at,
+        (instructor) => instructor.id !== user?.id && instructor.approved_at,
     );
     const instructorsDenied = instructors?.filter(
-        (instructor) => instructor.id !== profile?.id && instructor.denied_at,
+        (instructor) => instructor.id !== user?.id && instructor.denied_at,
     );
 
     return (

@@ -28,26 +28,25 @@ export default function Layout() {
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
   const { initializePushNotifications } = useSendNotification();
   const { isHigherRole } = useRoles();
-  const { profile } = useProfileContext();
+  const { user } = useProfileContext();
 
   const isApproved = isHigherRole() || studentsApprovalStatus;
 
   async function checkUserMigration() {
-    if (profile?.migrated_at) return;
+    if (user?.migrated_at) return;
     await migrateUserFn();
     queryClient.invalidateQueries({ queryKey: ["user-profile"] });
   }
 
   useEffect(() => {
-    if (profile) {
-      initializePushNotifications(profile?.id);
+    if (user) {
+      initializePushNotifications(user?.id);
       checkUserMigration();
     }
-  }, [profile]);
+  }, [user]);
 
   const headerShown =
-    (profile?.role === "MANAGER" && !!profile?.plan) ||
-    profile?.role !== "MANAGER";
+    (user?.role === "MANAGER" && !!user?.plan) || user?.role !== "MANAGER";
 
   return (
     <Drawer

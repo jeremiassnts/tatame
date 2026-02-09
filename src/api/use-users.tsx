@@ -95,20 +95,18 @@ export function useUsers() {
     return data[0];
   };
 
-  const getProfile = useQuery({
+  const getUser = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
-      const data = await getUserByClerkUserId(user?.id!);
-      const { data: gyms } = await supabase
-        .from("gyms")
+      const { data, error } = await supabase
+        .from("users")
         .select("*")
-        .eq("id", data?.gym_id!);
-      const gym = gyms?.[0];
-      return {
-        ...user,
-        ...data,
-        gym,
-      };
+        .eq("clerk_user_id", user?.id!);
+      if (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
+        throw error;
+      }
+      return data[0] as Database["public"]["Tables"]["users"]["Row"];
     },
   });
 
@@ -463,7 +461,7 @@ export function useUsers() {
     createUser,
     getUserByClerkUserId,
     getUserById,
-    getProfile,
+    getUser,
     getStudentsByGymId,
     approveStudent,
     denyStudent,

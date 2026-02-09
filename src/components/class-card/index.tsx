@@ -28,7 +28,7 @@ export function ClassCard({
   classDate,
 }: ClassCardProps) {
   const { isHigherRole, isLowerRole, isMediumRole } = useRoles();
-  const { profile } = useProfileContext();
+  const { user } = useProfileContext();
   const startOfWeekDate = classDate
     ? startOfWeek(new Date(classDate))
     : undefined;
@@ -48,7 +48,7 @@ export function ClassCard({
     : 0;
 
   const canOpenActions =
-    isHigherRole() || (isMediumRole() && data.instructor_id === profile?.id);
+    isHigherRole() || (isMediumRole() && data.instructor_id === user?.id);
 
   return (
     <Card

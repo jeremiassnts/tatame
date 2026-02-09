@@ -1,5 +1,5 @@
-import { useGyms } from "@/src/api/use-gyms";
 import { useRoles } from "@/src/api/use-roles";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { GraduationCard } from "../graduation-card";
 import { NextClass } from "../next-class";
 import { VStack } from "../ui/vstack";
@@ -7,16 +7,15 @@ import { WeekPresence } from "../week-presence";
 import { HomeGymHeader } from "./header";
 
 export function HomeGym() {
-  const { fetchByUser } = useGyms();
-  const { data: gym, isLoading: isLoadingGym } = fetchByUser;
   const { isLowerRole } = useRoles();
+  const { gym, isLoading } = useProfileContext();
 
   return (
     <VStack className="items-start gap-4">
       <HomeGymHeader gym={gym} />
       {isLowerRole() && <WeekPresence />}
       <GraduationCard showBelt={false} />
-      <NextClass gym={gym} isLoadingGym={isLoadingGym} />
+      <NextClass gym={gym} isLoadingGym={isLoading} />
     </VStack>
   );
 }

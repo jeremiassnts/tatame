@@ -28,7 +28,7 @@ export default function ManagerPlanSelection() {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [isLoading, setIsLoading] = useState(false);
     const { update } = useUsers();
-    const { profile, isLoading: isLoadingProfile } = useProfileContext();
+    const { user, isLoading: isLoadingUser } = useProfileContext();
     const { showErrorToast } = useToast();
     const router = useRouter();
 
@@ -43,7 +43,7 @@ export default function ManagerPlanSelection() {
             const product = products?.find((product) => product.id === selectedPlan);
             if (product?.default_price.unit_amount! <= 0) {
                 await update.mutateAsync({
-                    id: profile?.id ?? 0,
+                    id: user?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
                     subscription_id: null,
                     customer_id: null,
@@ -56,9 +56,9 @@ export default function ManagerPlanSelection() {
             } else {
                 //create customer
                 const customer = await createCustomer.mutateAsync({
-                    name: (profile?.first_name + " " + (profile?.last_name ?? "")).trim(),
-                    email: profile?.email ?? "",
-                    userId: profile?.id ?? 0,
+                    name: (user?.first_name + " " + (user?.last_name ?? "")).trim(),
+                    email: user?.email ?? "",
+                    userId: user?.id ?? 0,
                 });
                 //create payment intent
                 const { client_secret: setupIntentSecret } =
@@ -79,11 +79,11 @@ export default function ManagerPlanSelection() {
                 await createSubscription.mutateAsync({
                     customerId: customer.id,
                     priceId: product?.default_price.id ?? "",
-                    userId: profile?.id ?? 0,
+                    userId: user?.id ?? 0,
                 });
                 //save plan
                 await update.mutateAsync({
-                    id: profile?.id ?? 0,
+                    id: user?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
                 });
                 queryClient.invalidateQueries({
@@ -101,9 +101,9 @@ export default function ManagerPlanSelection() {
         setIsLoading(false);
     }
 
-    if (isLoadingProfile) {
+    if (isLoadingUser) {
         return <SplashScreen />;
-    } else if (profile?.plan) {
+    } else if (user?.plan) {
         return <Redirect href="/(logged)/(home)/home" />;
     }
 
@@ -125,14 +125,14 @@ export default function ManagerPlanSelection() {
 
     return (
         <SafeAreaView className="flex-1 justify-start items-start pt-[60px]">
-            {(isLoadingProducts || isLoadingProfile) && (
+            {(isLoadingProducts || isLoadingUser) && (
                 <VStack className="gap-4 w-full px-5">
                     <Skeleton className="w-full h-[40px] mb-4 rounded-md bg-neutral-800" />
                     <Skeleton className="w-full h-[200px] rounded-md bg-neutral-800" />
                     <Skeleton className="w-full h-[200px] rounded-md bg-neutral-800" />
                 </VStack>
             )}
-            {!isLoadingProducts && !isLoadingProfile && (
+            {!isLoadingProducts && !isLoadingUser && (
                 <VStack className="gap-4 w-full px-5 justify-center items-center">
                     <Heading size="xl" className="text-neutral-200">
                         Selecione o plano de assinatura

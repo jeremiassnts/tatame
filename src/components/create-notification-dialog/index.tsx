@@ -1,5 +1,4 @@
 import { useCreateNotification } from "@/src/api/use-create-notification";
-import { useGyms } from "@/src/api/use-gyms";
 import { useUsers } from "@/src/api/use-users";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,17 +44,13 @@ type CreateNotificationFormType = z.infer<typeof createNotificationFormSchema>;
 export default function CreateNotificationDialog() {
     const [isOpen, setIsOpen] = useState(false);
     const { getStudentsByGymId } = useUsers();
-    const { profile } = useProfileContext();
-    const { fetchByUser } = useGyms();
+    const { user, gym } = useProfileContext();
     const { create } = useCreateNotification();
-    const { data: gym } = fetchByUser;
     const { mutateAsync: createNotification, isPending: isCreatingNotification } =
         create;
     const { data: tempStudents, isLoading: isLoadingStudents } =
         getStudentsByGymId(gym?.id ?? 0);
-    const students = tempStudents?.filter(
-        (student) => student.id !== profile?.id,
-    );
+    const students = tempStudents?.filter((student) => student.id !== user?.id);
     const {
         setValue,
         watch,
@@ -100,9 +95,9 @@ export default function CreateNotificationDialog() {
             content: data.content,
             recipients: data.recipients.map((id) => id.toString()),
             channel: "push",
-            sent_by: profile?.id,
+            sent_by: user?.id,
             status: "pending",
-            viewed_by: [profile?.id?.toString() ?? ""],
+            viewed_by: [user?.id?.toString() ?? ""],
         });
         reset();
         setIsOpen(false);

@@ -1,4 +1,3 @@
-import { useGyms } from "@/src/api/use-gyms";
 import { useRoles } from "@/src/api/use-roles";
 import { BirthdayAlert } from "@/src/components/birthday-alert";
 import { GraduationCard } from "@/src/components/graduation-card";
@@ -6,12 +5,12 @@ import { HomeGymHeader } from "@/src/components/home-gym/header";
 import { NextClass } from "@/src/components/next-class";
 import { VStack } from "@/src/components/ui/vstack";
 import { WeekPresence } from "@/src/components/week-presence";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home() {
-  const { fetchByUser } = useGyms();
-  const { data: gym, isLoading: isLoadingGym } = fetchByUser;
   const { isLowerRole } = useRoles();
+  const { gym, isLoading } = useProfileContext();
 
   return (
     <SafeAreaView className="pl-5 pr-5">
@@ -20,7 +19,7 @@ export default function Home() {
         <HomeGymHeader gym={gym} />
         {isLowerRole() && <WeekPresence />}
         <GraduationCard showBelt={false} />
-        <NextClass gym={gym} isLoadingGym={isLoadingGym} />
+        <NextClass gym={gym} isLoadingGym={isLoading} />
       </VStack>
     </SafeAreaView>
   );

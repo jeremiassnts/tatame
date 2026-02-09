@@ -1,23 +1,34 @@
 import { createContext } from "react";
+import { useGyms } from "../api/use-gyms";
 import { useUsers } from "../api/use-users";
+import { Database } from "../types/database.types";
 
 interface ProfileContextType {
-    profile: any | undefined;
+    user: Database["public"]["Tables"]["users"]["Row"] | undefined | null;
+    gym: Database["public"]["Tables"]["gyms"]["Row"] | undefined | null;
+    refetch: (() => Promise<void>) | null;
     isLoading: boolean;
 }
 export const ProfileContext = createContext<ProfileContextType>({
-    profile: undefined,
+    user: undefined,
+    gym: undefined,
     isLoading: false,
+    refetch: null,
 });
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-    const { getProfile } = useUsers();
+    const { getUser } = useUsers();
+    const { fetchByUser } = useGyms();
 
     return (
         <ProfileContext.Provider
             value={{
-                profile: getProfile.data,
-                isLoading: getProfile.isLoading,
+                user: getUser.data,
+                gym: fetchByUser.data,
+                isLoading: getUser.isLoading || fetchByUser.isLoading,
+                refetch: async () => {
+                    await Promise.all([getUser.refetch(), fetchByUser.refetch()]);
+                },
             }}
         >
             {children}

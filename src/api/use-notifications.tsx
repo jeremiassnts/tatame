@@ -19,7 +19,7 @@ export function useNotifications() {
     const { sendNotification } = useSendNotification();
     const { showErrorToast } = useToast();
     const { isHigherRole } = useRoles();
-    const { profile } = useProfileContext();
+    const { user } = useProfileContext();
 
     const list = useQuery({
         queryKey: ["notifications"],
@@ -28,7 +28,7 @@ export function useNotifications() {
                 .from("notifications")
                 .select("*, users(clerk_user_id)")
                 .or(
-                    `recipients.cs.{${profile?.id.toString()}},sent_by.eq.${profile?.id.toString()}`,
+                    `recipients.cs.{${user?.id.toString()}},sent_by.eq.${user?.id.toString()}`,
                 )
                 .order("created_at", { ascending: false });
             if (error) {

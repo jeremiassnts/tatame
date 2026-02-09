@@ -1,5 +1,4 @@
 import { useAttachments } from "@/src/api/use-attachments";
-import { useGyms } from "@/src/api/use-gyms";
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { StudentRow } from "@/src/components/student-row";
@@ -7,6 +6,7 @@ import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
 import { useUser } from "@clerk/clerk-expo";
 import { ScrollView } from "react-native-gesture-handler";
@@ -16,10 +16,13 @@ export default function Gym() {
     const { isHigherRole } = useRoles();
     const { updateGymLogo, uploadImage } = useAttachments();
     const { user } = useUser();
-    const { fetchByUser } = useGyms()
-    const { data: gym, isLoading: isLoadingGym, refetch: refetchGym } = fetchByUser
-    const { getStudentsByGymId } = useUsers()
-    const { data: students, isLoading: isLoadingStudents, refetch: refetchStudents } = getStudentsByGymId(gym?.id ?? 0)
+    const { getStudentsByGymId } = useUsers();
+    const { gym } = useProfileContext();
+    const {
+        data: students,
+        isLoading: isLoadingStudents,
+        refetch: refetchStudents,
+    } = getStudentsByGymId(gym?.id ?? 0);
 
     async function updateGymImage(logo: string) {
         if (!gym?.id) return;
@@ -38,38 +41,44 @@ export default function Gym() {
         }
     }
 
-    async function refetchData() {
-        await refetchGym();
-        await refetchStudents();
-    }
-
-    const studentsApproved = students?.filter((student) => student.approved_at)
+    const studentsApproved = students?.filter((student) => student.approved_at);
 
     return (
         <SafeAreaView className="flex-1 pl-5 pr-5">
             <ScrollView>
                 <VStack className="justify-center items-center">
-                    <AvatarWithDialog fullName={gym?.name ?? ""} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym?.logo}`} size="xl" updateImageFn={isHigherRole() ? updateGymImage : undefined} />
+                    <AvatarWithDialog
+                        fullName={gym?.name ?? ""}
+                        imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym?.logo}`}
+                        size="xl"
+                        updateImageFn={isHigherRole() ? updateGymImage : undefined}
+                    />
                     <Text className="text-white text-lg font-bold mt-3 uppercase">
                         {gym?.name}
                     </Text>
-                    <Text className="text-neutral-400 text-md">
-                        {gym?.address}
-                    </Text>
+                    <Text className="text-neutral-400 text-md">{gym?.address}</Text>
                 </VStack>
-                {isLoadingStudents && <VStack className="w-full pt-6 gap-4">
-                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
-                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
-                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
-                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
-                    <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
-                </VStack>}
-                {studentsApproved && studentsApproved.length > 0 && <ScrollView className="w-full pt-6">
-                    {studentsApproved?.map((student) => (
-                        <StudentRow key={student.id} student={student} />
-                    ))}
-                </ScrollView>}
-                {studentsApproved && studentsApproved.length === 0 && <Text className="text-neutral-400 text-md text-center">Nenhum aluno aprovado</Text>}
+                {isLoadingStudents && (
+                    <VStack className="w-full pt-6 gap-4">
+                        <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                        <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                        <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                        <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                        <Skeleton className="w-full h-14 rounded-md bg-neutral-800" />
+                    </VStack>
+                )}
+                {studentsApproved && studentsApproved.length > 0 && (
+                    <ScrollView className="w-full pt-6">
+                        {studentsApproved?.map((student) => (
+                            <StudentRow key={student.id} student={student} />
+                        ))}
+                    </ScrollView>
+                )}
+                {studentsApproved && studentsApproved.length === 0 && (
+                    <Text className="text-neutral-400 text-md text-center">
+                        Nenhum aluno aprovado
+                    </Text>
+                )}
             </ScrollView>
         </SafeAreaView>
     );

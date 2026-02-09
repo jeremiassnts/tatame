@@ -42,7 +42,7 @@ type ClassProps = {
 export default function Class() {
     const { classId, classDate } = useLocalSearchParams<ClassProps>();
     const { fetchClassById, deleteClass } = useClass();
-    const { profile, isLoading: isLoadingProfile } = useProfileContext();
+    const { user, isLoading: isLoadingProfile } = useProfileContext();
     const { data, isLoading, refetch, isFetching } = useQuery({
         queryKey: ["class", classId],
         queryFn: () => fetchClassById(parseInt(classId)),
@@ -103,7 +103,7 @@ export default function Class() {
             : [];
 
     const canManageClass =
-        isHigherRole() || (isMediumRole() && data?.instructor_id === profile?.id);
+        isHigherRole() || (isMediumRole() && data?.instructor_id === user?.id);
 
     return (
         <SafeAreaView className="flex-1">

@@ -30,7 +30,7 @@ export function useAttachments() {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
           },
-        }
+        },
       );
       return response.data.url;
     },
@@ -59,14 +59,14 @@ export function useAttachments() {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
           },
-        }
+        },
       );
       return response.data.url;
     },
   });
 
   const updateUserImage = useMutation({
-    mutationFn: async (props: { image: string; userId: number }) => {
+    mutationFn: async (props: { image: string; userId: string }) => {
       const { image, userId } = props;
       if (!image) return;
       const formData = new FormData();
@@ -89,9 +89,12 @@ export function useAttachments() {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
           },
-        }
+        },
       );
-      await supabase.from("users").update({ profile_picture: response.data.image_url }).eq("clerk_user_id", userId);
+      await supabase
+        .from("users")
+        .update({ profile_picture: response.data.image_url })
+        .eq("clerk_user_id", userId);
       return response.data;
     },
   });
@@ -106,7 +109,7 @@ export function useAttachments() {
       if (error) {
         showErrorToast(
           "Erro",
-          "Ocorreu um erro ao atualizar a logo da academia"
+          "Ocorreu um erro ao atualizar a logo da academia",
         );
         throw error;
       }
