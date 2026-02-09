@@ -3,12 +3,11 @@ import { useUsers } from "@/src/api/use-users";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { formatDay, formatTime } from "@/src/utils/class";
 import { isAfter, startOfWeek } from "date-fns";
-import { Text as TextIcon } from 'lucide-react-native';
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
-import { ArrowRightIcon, PlayIcon, UserIcon } from "../ui/icon";
+import { ArrowRightIcon, UserIcon } from "../ui/icon";
 import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 import { Actions } from "./actions";
@@ -31,11 +30,27 @@ export function ClassCard({
   const { isHigherRole, isLowerRole, isMediumRole } = useRoles();
   const { getUserProfile } = useUsers();
   const { data: userProfile } = getUserProfile;
-  const startOfWeekDate = classDate ? startOfWeek(new Date(classDate)) : undefined;
-  const videos = startOfWeekDate ? data.assets?.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate))?.length : 0;
-  const instructions = startOfWeekDate ? data.assets?.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate))?.length : 0;
+  const startOfWeekDate = classDate
+    ? startOfWeek(new Date(classDate))
+    : undefined;
+  const videos = startOfWeekDate
+    ? data.assets?.filter(
+      (a) =>
+        a.type === "video" &&
+        isAfter(new Date(a.valid_until ?? ""), startOfWeekDate),
+    )?.length
+    : 0;
+  const instructions = startOfWeekDate
+    ? data.assets?.filter(
+      (a) =>
+        a.type === "text" &&
+        isAfter(new Date(a.valid_until ?? ""), startOfWeekDate),
+    )?.length
+    : 0;
 
-  const canOpenActions = isHigherRole() || (isMediumRole() && data.instructor_id === userProfile?.id);
+  const canOpenActions =
+    isHigherRole() ||
+    (isMediumRole() && data.instructor_id === userProfile?.id);
 
   return (
     <Card
@@ -56,14 +71,20 @@ export function ClassCard({
             {data.description}
           </Heading>
           <Text>
-            {formatDay(data.day)} / {formatTime(data.start)} - {formatTime(data.end)}
+            {formatDay(data.day)} / {formatTime(data.start)} -{" "}
+            {formatTime(data.end)}
           </Text>
         </VStack>
-        <Actions topBadgeText={topBadgeText} isHigherRole={canOpenActions} data={data} classDate={classDate} />
+        <Actions
+          topBadgeText={topBadgeText}
+          isHigherRole={canOpenActions}
+          data={data}
+          classDate={classDate}
+        />
         {isLowerRole() && <CheckIn class={data} classDate={classDate} />}
       </HStack>
       <CheckIns classId={data.id} />
-      {classDate && <HStack className="gap-2 items-center justify-start">
+      {/* {classDate && <HStack className="gap-2 items-center justify-start">
         <Badge className="gap-1">
           <BadgeIcon as={PlayIcon} />
           <BadgeText>{videos}</BadgeText>
@@ -72,7 +93,7 @@ export function ClassCard({
           <BadgeIcon as={TextIcon} />
           <BadgeText>{instructions}</BadgeText>
         </Badge>
-      </HStack>}
+      </HStack>} */}
       <HStack className="justify-between pt-4">
         <Badge className="gap-1">
           <BadgeIcon as={UserIcon} />

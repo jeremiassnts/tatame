@@ -167,7 +167,7 @@ export default function Layout() {
           drawerLabel: "Biblioteca",
           title: "Biblioteca",
           drawerItemStyle: {
-            display: isApproved ? "flex" : "none",
+            display: "none", //isApproved ? "flex" : "none",
           },
           drawerIcon: () => (
             <Icon
