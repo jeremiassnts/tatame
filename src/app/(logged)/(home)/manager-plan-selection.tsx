@@ -6,6 +6,7 @@ import { Button, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
 import { Heading } from "@/src/components/ui/heading";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { VStack } from "@/src/components/ui/vstack";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { queryClient } from "@/src/lib/react-query";
 import { useStripe } from "@stripe/stripe-react-native";
@@ -26,8 +27,8 @@ export default function ManagerPlanSelection() {
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [isLoading, setIsLoading] = useState(false);
-    const { getUserProfile, update } = useUsers();
-    const { data: userProfile, isLoading: isLoadingUserProfile } = getUserProfile;
+    const { update } = useUsers();
+    const { profile, isLoading: isLoadingProfile } = useProfileContext();
     const { showErrorToast } = useToast();
     const router = useRouter();
 
@@ -42,7 +43,7 @@ export default function ManagerPlanSelection() {
             const product = products?.find((product) => product.id === selectedPlan);
             if (product?.default_price.unit_amount! <= 0) {
                 await update.mutateAsync({
-                    id: userProfile?.id ?? 0,
+                    id: profile?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
                     subscription_id: null,
                     customer_id: null,
@@ -55,13 +56,9 @@ export default function ManagerPlanSelection() {
             } else {
                 //create customer
                 const customer = await createCustomer.mutateAsync({
-                    name: (
-                        userProfile?.first_name +
-                        " " +
-                        (userProfile?.last_name ?? "")
-                    ).trim(),
-                    email: userProfile?.email ?? "",
-                    userId: userProfile?.id ?? 0,
+                    name: (profile?.first_name + " " + (profile?.last_name ?? "")).trim(),
+                    email: profile?.email ?? "",
+                    userId: profile?.id ?? 0,
                 });
                 //create payment intent
                 const { client_secret: setupIntentSecret } =
@@ -82,11 +79,11 @@ export default function ManagerPlanSelection() {
                 await createSubscription.mutateAsync({
                     customerId: customer.id,
                     priceId: product?.default_price.id ?? "",
-                    userId: userProfile?.id ?? 0,
+                    userId: profile?.id ?? 0,
                 });
                 //save plan
                 await update.mutateAsync({
-                    id: userProfile?.id ?? 0,
+                    id: profile?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
                 });
                 queryClient.invalidateQueries({
@@ -104,9 +101,9 @@ export default function ManagerPlanSelection() {
         setIsLoading(false);
     }
 
-    if (isLoadingUserProfile) {
+    if (isLoadingProfile) {
         return <SplashScreen />;
-    } else if (userProfile?.plan) {
+    } else if (profile?.plan) {
         return <Redirect href="/(logged)/(home)/home" />;
     }
 
@@ -128,14 +125,14 @@ export default function ManagerPlanSelection() {
 
     return (
         <SafeAreaView className="flex-1 justify-start items-start pt-[60px]">
-            {(isLoadingProducts || isLoadingUserProfile) && (
+            {(isLoadingProducts || isLoadingProfile) && (
                 <VStack className="gap-4 w-full px-5">
                     <Skeleton className="w-full h-[40px] mb-4 rounded-md bg-neutral-800" />
                     <Skeleton className="w-full h-[200px] rounded-md bg-neutral-800" />
                     <Skeleton className="w-full h-[200px] rounded-md bg-neutral-800" />
                 </VStack>
             )}
-            {!isLoadingProducts && !isLoadingUserProfile && (
+            {!isLoadingProducts && !isLoadingProfile && (
                 <VStack className="gap-4 w-full px-5 justify-center items-center">
                     <Heading size="xl" className="text-neutral-200">
                         Selecione o plano de assinatura

@@ -1,5 +1,5 @@
 import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { formatDay, formatTime } from "@/src/utils/class";
 import { isAfter, startOfWeek } from "date-fns";
@@ -28,8 +28,7 @@ export function ClassCard({
   classDate,
 }: ClassCardProps) {
   const { isHigherRole, isLowerRole, isMediumRole } = useRoles();
-  const { getUserProfile } = useUsers();
-  const { data: userProfile } = getUserProfile;
+  const { profile } = useProfileContext();
   const startOfWeekDate = classDate
     ? startOfWeek(new Date(classDate))
     : undefined;
@@ -49,8 +48,7 @@ export function ClassCard({
     : 0;
 
   const canOpenActions =
-    isHigherRole() ||
-    (isMediumRole() && data.instructor_id === userProfile?.id);
+    isHigherRole() || (isMediumRole() && data.instructor_id === profile?.id);
 
   return (
     <Card

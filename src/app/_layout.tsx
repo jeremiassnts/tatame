@@ -12,6 +12,7 @@ import { useVersions } from "../api/use-versions";
 import { VersionAlert } from "../components/version-alert";
 import { COLORS } from "../constants/colors";
 import { queryClient } from "../lib/react-query";
+import { ProfileProvider } from "../providers/profile-provider";
 
 const StripeProviderWrapper =
   Platform.OS === "web"
@@ -47,7 +48,9 @@ export default function RootApp() {
       <GluestackUIProvider mode="dark">
         <QueryClientProvider client={queryClient}>
           <StripeProviderWrapper>
-            <RootLayout />
+            <ProfileProvider>
+              <RootLayout />
+            </ProfileProvider>
           </StripeProviderWrapper>
         </QueryClientProvider>
       </GluestackUIProvider>
@@ -61,6 +64,7 @@ function RootLayout() {
   const { data: lastVersion } = getLastVersion;
 
   if (
+    !__DEV__ &&
     lastVersion &&
     lastVersion?.appVersion !== Application.nativeApplicationVersion
   ) {

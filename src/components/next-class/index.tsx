@@ -1,6 +1,7 @@
 import { useClass } from "@/src/api/use-class";
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { Database } from "@/src/types/database.types";
 import { useRouter } from "expo-router";
 import { Pressable } from "react-native";
@@ -23,9 +24,9 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
   const router = useRouter();
   const { fetchNextClass } = useClass();
   const { data: nextClass, isLoading: isLoadingNextClass } = fetchNextClass;
-  const { getUserProfile, getStudentsApprovalStatus } = useUsers();
-  const { data: userProfile, isLoading: isLoadingUserProfile } = getUserProfile;
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus
+  const { getStudentsApprovalStatus } = useUsers();
+  const { profile, isLoading: isLoadingProfile } = useProfileContext();
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
   const { isHigherRole, isMediumRole, isLowerRole } = useRoles();
 
   if (gym && !studentsApprovalStatus && !isHigherRole()) {
@@ -33,10 +34,14 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
       <Card className="bg-neutral-800 w-full">
         <HStack className="items-center gap-3 justify-center p-4">
           <Icon as={ClockIcon} />
-          <Text>Aguardando a aprovação do seu {isLowerRole() ? 'professor' : 'gestor'} para {isLowerRole() ? 'ver as próximas aulas' : 'gerenciar as aulas'}</Text>
+          <Text>
+            Aguardando a aprovação do seu{" "}
+            {isLowerRole() ? "professor" : "gestor"} para{" "}
+            {isLowerRole() ? "ver as próximas aulas" : "gerenciar as aulas"}
+          </Text>
         </HStack>
       </Card>
-    )
+    );
   }
 
   return (
@@ -44,13 +49,13 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
       <Skeleton
         className="h-[150px] w-full bg-neutral-800 rounded-md"
         speed={4}
-        isLoaded={!isLoadingNextClass && !isLoadingUserProfile}
+        isLoaded={!isLoadingNextClass && !isLoadingProfile}
       />
       {gym &&
         !isLoadingNextClass &&
         !isLoadingGym &&
         !nextClass &&
-        userProfile &&
+        profile &&
         isHigherRole() && (
           <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
             <Button
@@ -72,18 +77,15 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
           </Pressable>
         </Box>
       )}
-      {!gym &&
-        !isLoadingNextClass &&
-        userProfile &&
-        isHigherRole() && (
-          <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
-            <Button onPress={() => router.push("/(logged)/(home)/create-gym")}>
-              <ButtonIcon as={AddIcon} />
-              <ButtonText>Cadastrar academia</ButtonText>
-            </Button>
-          </Box>
-        )}
-      {!gym && !isLoadingNextClass && userProfile && isMediumRole() && (
+      {!gym && !isLoadingNextClass && profile && isHigherRole() && (
+        <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
+          <Button onPress={() => router.push("/(logged)/(home)/create-gym")}>
+            <ButtonIcon as={AddIcon} />
+            <ButtonText>Cadastrar academia</ButtonText>
+          </Button>
+        </Box>
+      )}
+      {!gym && !isLoadingNextClass && profile && isMediumRole() && (
         <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
           <Button onPress={() => router.push("/(logged)/(home)/select-gym")}>
             <ButtonIcon as={AddIcon} />

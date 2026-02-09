@@ -11,19 +11,20 @@ import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useUser } from "@clerk/clerk-expo";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
-  const { getUserProfile, getStudentsApprovalStatus } = useUsers();
+  const { getStudentsApprovalStatus } = useUsers();
   const { updateUserImage } = useAttachments();
   const { user } = useUser();
   const { fetchLastMonthCheckins } = useCheckins();
   const { isLowerRole } = useRoles();
+  const { profile, isLoading } = useProfileContext();
 
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus
-  const { data: userProfile, isLoading } = getUserProfile;
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
   const { data: lastMonthCheckins } = fetchLastMonthCheckins;
 
   return (
@@ -38,26 +39,36 @@ export default function Profile() {
           <Skeleton className="w-full h-[60px] rounded-md bg-neutral-800" />
         </VStack>
       )}
-      {!isLoading && userProfile && (
+      {!isLoading && profile && (
         <ScrollView>
           <VStack className="items-center justify-center pl-5 pr-5 mb-10">
-            <AvatarWithDialog fullName={userProfile.fullName}
+            <AvatarWithDialog
+              fullName={profile.fullName}
               imageUrl={user?.imageUrl ?? ""}
               size="xl"
               updateImageFn={async (image) => {
-                await updateUserImage.mutateAsync({ image, userId: userProfile.clerk_user_id });
+                await updateUserImage.mutateAsync({
+                  image,
+                  userId: profile.clerk_user_id,
+                });
               }}
             />
             <Text className="text-white text-lg font-bold mt-3">
-              {userProfile.fullName}
+              {profile.fullName}
             </Text>
             <Text className="text-neutral-400 text-md">
-              {userProfile.emailAddresses?.[0]?.emailAddress}
+              {profile.emailAddresses?.[0]?.emailAddress}
             </Text>
             <GraduationCard showBelt={true} />
-            <PersonalDataSection user={userProfile} firstName={userProfile.firstName} lastName={userProfile.lastName} />
-            {lastMonthCheckins && studentsApprovalStatus && isLowerRole() && <StudentPresenceSection checkins={lastMonthCheckins} />}
-            {studentsApprovalStatus && <ProfileGymCard gym={userProfile.gym} />}
+            <PersonalDataSection
+              user={profile}
+              firstName={profile.firstName}
+              lastName={profile.lastName}
+            />
+            {lastMonthCheckins && studentsApprovalStatus && isLowerRole() && (
+              <StudentPresenceSection checkins={lastMonthCheckins} />
+            )}
+            {studentsApprovalStatus && <ProfileGymCard gym={profile.gym} />}
             <AccountSection />
           </VStack>
         </ScrollView>

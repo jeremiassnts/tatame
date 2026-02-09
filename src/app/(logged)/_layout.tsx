@@ -12,6 +12,7 @@ import {
   UsersIcon,
 } from "@/src/components/ui/icon";
 import { COLORS } from "@/src/constants/colors";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useSendNotification } from "@/src/hooks/use-send-notification";
 import { queryClient } from "@/src/lib/react-query";
 import { useSegments } from "expo-router";
@@ -22,31 +23,31 @@ import { useEffect } from "react";
 export default function Layout() {
   const segments = useSegments();
   const pathname = segments[segments.length - 1].replace(/[^a-zA-Z]/g, "");
-  const { getStudentsApprovalStatus, getUserProfile, migrateUser } = useUsers();
+  const { getStudentsApprovalStatus, migrateUser } = useUsers();
   const { mutateAsync: migrateUserFn } = migrateUser;
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
   const { initializePushNotifications } = useSendNotification();
   const { isHigherRole } = useRoles();
-  const { data: userProfile } = getUserProfile;
+  const { profile } = useProfileContext();
 
   const isApproved = isHigherRole() || studentsApprovalStatus;
 
   async function checkUserMigration() {
-    if (userProfile?.migrated_at) return;
+    if (profile?.migrated_at) return;
     await migrateUserFn();
     queryClient.invalidateQueries({ queryKey: ["user-profile"] });
   }
 
   useEffect(() => {
-    if (userProfile) {
-      initializePushNotifications(userProfile?.id);
+    if (profile) {
+      initializePushNotifications(profile?.id);
       checkUserMigration();
     }
-  }, [userProfile]);
+  }, [profile]);
 
   const headerShown =
-    (userProfile?.role === "MANAGER" && !!userProfile?.plan) ||
-    userProfile?.role !== "MANAGER";
+    (profile?.role === "MANAGER" && !!profile?.plan) ||
+    profile?.role !== "MANAGER";
 
   return (
     <Drawer

@@ -1,7 +1,6 @@
 import { useAssets } from "@/src/api/use-assets";
 import { useClass } from "@/src/api/use-class";
 import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
 import { AddContent } from "@/src/components/add-content";
 import { BackButton } from "@/src/components/back-button";
 import { CheckIn } from "@/src/components/class-card/check-in";
@@ -11,12 +10,22 @@ import { Button, ButtonIcon, ButtonText } from "@/src/components/ui/button";
 import { Divider } from "@/src/components/ui/divider";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
-import { CalendarDaysIcon, CloseIcon, EditIcon, Icon, InfoIcon, LocationIcon, TrashIcon, UserIcon } from "@/src/components/ui/icon";
+import {
+    CalendarDaysIcon,
+    CloseIcon,
+    EditIcon,
+    Icon,
+    InfoIcon,
+    LocationIcon,
+    TrashIcon,
+    UserIcon,
+} from "@/src/components/ui/icon";
 import { Image } from "@/src/components/ui/image";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { VideoPlayer } from "@/src/components/video-player";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
 import { formatDay, formatTime } from "@/src/utils/class";
 import { useQuery } from "@tanstack/react-query";
@@ -28,13 +37,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 type ClassProps = {
     classId: string;
     classDate: string;
-}
+};
 
 export default function Class() {
     const { classId, classDate } = useLocalSearchParams<ClassProps>();
-    const { getUserProfile } = useUsers();
-    const { data: userProfile } = getUserProfile;
     const { fetchClassById, deleteClass } = useClass();
+    const { profile, isLoading: isLoadingProfile } = useProfileContext();
     const { data, isLoading, refetch, isFetching } = useQuery({
         queryKey: ["class", classId],
         queryFn: () => fetchClassById(parseInt(classId)),
@@ -42,8 +50,9 @@ export default function Class() {
     const { isHigherRole, isLowerRole, isMediumRole } = useRoles();
     const router = useRouter();
     const { mutateAsync: deleteClassFn } = deleteClass;
-    const { deleteAsset } = useAssets()
-    const { mutateAsync: deleteAssetFn, isPending: isDeletingAsset } = deleteAsset;
+    const { deleteAsset } = useAssets();
+    const { mutateAsync: deleteAssetFn, isPending: isDeletingAsset } =
+        deleteAsset;
     const startOfWeekDate = startOfWeek(new Date(classDate));
 
     async function handleDeleteAsset(assetId: number) {
@@ -76,45 +85,78 @@ export default function Class() {
         router.navigate("/(logged)/(schedule)");
     }
 
-    const instructions = data && data.assets ? data.assets.filter(a => a.type === 'text' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate)) : [];
-    const videos = data && data.assets ? data.assets.filter(a => a.type === 'video' && isAfter(new Date(a.valid_until ?? ''), startOfWeekDate)) : [];
+    const instructions =
+        data && data.assets
+            ? data.assets.filter(
+                (a) =>
+                    a.type === "text" &&
+                    isAfter(new Date(a.valid_until ?? ""), startOfWeekDate),
+            )
+            : [];
+    const videos =
+        data && data.assets
+            ? data.assets.filter(
+                (a) =>
+                    a.type === "video" &&
+                    isAfter(new Date(a.valid_until ?? ""), startOfWeekDate),
+            )
+            : [];
 
-    const canManageClass = isHigherRole() || (isMediumRole() && data?.instructor_id === userProfile?.id);
+    const canManageClass =
+        isHigherRole() || (isMediumRole() && data?.instructor_id === profile?.id);
 
     return (
         <SafeAreaView className="flex-1">
-            {(isLoading || isFetching) && <VStack className="gap-4 pr-5 pl-5">
-                <Skeleton className="w-full h-[150px] bg-neutral-800 rounded-md" />
-                <Skeleton className="w-full h-10 bg-neutral-800 rounded-md" />
-                <Skeleton className="w-full h-[100px] bg-neutral-800 rounded-md" />
-            </VStack>}
-            {(!isLoading && !isFetching) && data && (
+            {(isLoading || isFetching) && (
+                <VStack className="gap-4 pr-5 pl-5">
+                    <Skeleton className="w-full h-[150px] bg-neutral-800 rounded-md" />
+                    <Skeleton className="w-full h-10 bg-neutral-800 rounded-md" />
+                    <Skeleton className="w-full h-[100px] bg-neutral-800 rounded-md" />
+                </VStack>
+            )}
+            {!isLoading && !isFetching && data && (
                 <ScrollView>
                     <VStack>
                         <BackButton className="mb-4 ml-4" onPress={handleGoBack} />
-                        <Image alt="background" source={{ uri: require("@/assets/images/class-bg.jpeg") }} className="w-full h-[200px] rounded-md opacity-60" resizeMode="cover" />
+                        <Image
+                            alt="background"
+                            source={{ uri: require("@/assets/images/class-bg.jpeg") }}
+                            className="w-full h-[200px] rounded-md opacity-60"
+                            resizeMode="cover"
+                        />
                         <VStack className="p-5">
                             <HStack className="justify-between items-center w-full">
-                                <Heading className="w-[50%]" size="xl">{data.description}</Heading>
-                                {isLowerRole() && <CheckIn class={data} classDate={classDate} />}
+                                <Heading className="w-[50%]" size="xl">
+                                    {data.description}
+                                </Heading>
+                                {isLowerRole() && (
+                                    <CheckIn class={data} classDate={classDate} />
+                                )}
                             </HStack>
                             <CheckIns classId={data.id} />
                             <Divider className="my-4" />
                             <VStack className="gap-2">
                                 <HStack className="gap-2 items-center">
-                                    <Icon as={CalendarDaysIcon} size="md" className="text-neutral-400" />
+                                    <Icon
+                                        as={CalendarDaysIcon}
+                                        size="md"
+                                        className="text-neutral-400"
+                                    />
                                     <Text className="text-white">
-                                        {formatDay(data.day)} / {formatTime(data.start)} - {formatTime(data.end)}
+                                        {formatDay(data.day)} / {formatTime(data.start)} -{" "}
+                                        {formatTime(data.end)}
                                     </Text>
                                 </HStack>
                                 <HStack className="gap-2 items-center">
                                     <Icon as={UserIcon} size="md" className="text-neutral-400" />
-                                    <Text className="text-white">
-                                        {data.instructor_name}
-                                    </Text>
+                                    <Text className="text-white">{data.instructor_name}</Text>
                                 </HStack>
                                 <HStack className="gap-2 items-center">
-                                    <Icon as={LocationIcon} size="md" className="text-neutral-400" />
+                                    <Icon
+                                        as={LocationIcon}
+                                        size="md"
+                                        className="text-neutral-400"
+                                    />
                                     <Text className="text-white">
                                         {data.gym.name} - {data.gym.address}
                                     </Text>
@@ -129,21 +171,40 @@ export default function Class() {
                             <Divider className="my-4" />
                             <VStack className="w-full gap-2">
                                 <Heading size="md">Conteúdo</Heading>
-                                {videos.length === 0 && instructions.length === 0 && (<Text className="text-neutral-400">
-                                    Seu professor ainda não adicionou conteúdo para a aula
-                                </Text>)}
+                                {videos.length === 0 && instructions.length === 0 && (
+                                    <Text className="text-neutral-400">
+                                        Seu professor ainda não adicionou conteúdo para a aula
+                                    </Text>
+                                )}
                                 {instructions.length > 0 && (
                                     <VStack className="gap-2 pt-2">
-                                        {instructions.map(a => (
-                                            <VStack key={a.id} className="bg-neutral-800 rounded-md p-4 gap-2">
+                                        {instructions.map((a) => (
+                                            <VStack
+                                                key={a.id}
+                                                className="bg-neutral-800 rounded-md p-4 gap-2"
+                                            >
                                                 <HStack className="justify-between items-center">
-                                                    <Text className="text-neutral-200 max-w-[80%]" key={a.id}>{a.content}</Text>
-                                                    {canManageClass && <Button className="rounded-full w-6 h-6" variant="outline" size="xs"
-                                                        onPress={() => handleDeleteAsset(a.id)}>
-                                                        <ButtonIcon as={TrashIcon} />
-                                                    </Button>}
+                                                    <Text
+                                                        className="text-neutral-200 max-w-[80%]"
+                                                        key={a.id}
+                                                    >
+                                                        {a.content}
+                                                    </Text>
+                                                    {canManageClass && (
+                                                        <Button
+                                                            className="rounded-full w-6 h-6"
+                                                            variant="outline"
+                                                            size="xs"
+                                                            onPress={() => handleDeleteAsset(a.id)}
+                                                        >
+                                                            <ButtonIcon as={TrashIcon} />
+                                                        </Button>
+                                                    )}
                                                 </HStack>
-                                                <Text className="text-neutral-500 text-sm ml-auto" >Publicado às {format(new Date(a.created_at), 'dd/MM/yyyy HH:mm')}</Text>
+                                                <Text className="text-neutral-500 text-sm ml-auto">
+                                                    Publicado às{" "}
+                                                    {format(new Date(a.created_at), "dd/MM/yyyy HH:mm")}
+                                                </Text>
                                             </VStack>
                                         ))}
                                     </VStack>
@@ -151,33 +212,56 @@ export default function Class() {
 
                                 {videos.length > 0 && (
                                     <VStack className="gap-2">
-                                        {videos.map(a => (
+                                        {videos.map((a) => (
                                             <Box key={a.id} className="bg-neutral-800 rounded-md p-4">
                                                 <HStack className="justify-between items-center mb-4">
-                                                    <Heading size="md" className="text-neutral-200 max-w-[80%]">{a.title}</Heading>
-                                                    {canManageClass && <Button className="rounded-full w-6 h-6 ml-auto" variant="outline" size="xs"
-                                                        onPress={() => handleDeleteAsset(a.id)}>
-                                                        <ButtonIcon as={TrashIcon} />
-                                                    </Button>}
+                                                    <Heading
+                                                        size="md"
+                                                        className="text-neutral-200 max-w-[80%]"
+                                                    >
+                                                        {a.title}
+                                                    </Heading>
+                                                    {canManageClass && (
+                                                        <Button
+                                                            className="rounded-full w-6 h-6 ml-auto"
+                                                            variant="outline"
+                                                            size="xs"
+                                                            onPress={() => handleDeleteAsset(a.id)}
+                                                        >
+                                                            <ButtonIcon as={TrashIcon} />
+                                                        </Button>
+                                                    )}
                                                 </HStack>
-                                                <VideoPlayer key={a.id} video={`${process.env.EXPO_PUBLIC_R2_URL}${a.content}`} />
-                                                <Text className="text-neutral-500 text-sm ml-auto mt-2" >Publicado às {format(new Date(a.created_at), 'dd/MM/yyyy HH:mm')}</Text>
+                                                <VideoPlayer
+                                                    key={a.id}
+                                                    video={`${process.env.EXPO_PUBLIC_R2_URL}${a.content}`}
+                                                />
+                                                <Text className="text-neutral-500 text-sm ml-auto mt-2">
+                                                    Publicado às{" "}
+                                                    {format(new Date(a.created_at), "dd/MM/yyyy HH:mm")}
+                                                </Text>
                                             </Box>
                                         ))}
                                     </VStack>
                                 )}
                             </VStack>
-                            {canManageClass && <HStack className="gap-2 items-center justify-center mt-6 flex-wrap">
-                                <AddContent classId={data.id} refetch={refetch} classDate={classDate} />
-                                <Button onPress={handleEditClass}>
-                                    <ButtonIcon as={EditIcon} />
-                                    <ButtonText>Editar</ButtonText>
-                                </Button>
-                                <Button onPress={handleDeleteClass}>
-                                    <ButtonIcon as={CloseIcon} />
-                                    <ButtonText>Excluir</ButtonText>
-                                </Button>
-                            </HStack>}
+                            {canManageClass && (
+                                <HStack className="gap-2 items-center justify-center mt-6 flex-wrap">
+                                    <AddContent
+                                        classId={data.id}
+                                        refetch={refetch}
+                                        classDate={classDate}
+                                    />
+                                    <Button onPress={handleEditClass}>
+                                        <ButtonIcon as={EditIcon} />
+                                        <ButtonText>Editar</ButtonText>
+                                    </Button>
+                                    <Button onPress={handleDeleteClass}>
+                                        <ButtonIcon as={CloseIcon} />
+                                        <ButtonText>Excluir</ButtonText>
+                                    </Button>
+                                </HStack>
+                            )}
                         </VStack>
                     </VStack>
                 </ScrollView>

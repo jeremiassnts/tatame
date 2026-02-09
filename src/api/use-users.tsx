@@ -95,7 +95,7 @@ export function useUsers() {
     return data[0];
   };
 
-  const getUserProfile = useQuery({
+  const getProfile = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
       const data = await getUserByClerkUserId(user?.id!);
@@ -108,7 +108,7 @@ export function useUsers() {
         ...user,
         ...data,
         gym,
-      } as Database["public"]["Tables"]["users"]["Row"];
+      };
     },
   });
 
@@ -463,7 +463,7 @@ export function useUsers() {
     createUser,
     getUserByClerkUserId,
     getUserById,
-    getUserProfile,
+    getProfile,
     getStudentsByGymId,
     approveStudent,
     denyStudent,
