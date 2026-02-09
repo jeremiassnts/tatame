@@ -13,20 +13,25 @@ import { VersionAlert } from "../components/version-alert";
 import { COLORS } from "../constants/colors";
 import { queryClient } from "../lib/react-query";
 
-const StripeProviderWrapper = Platform.OS === "web"
-  ? ({ children }: { children: React.ReactNode }) => <>{children}</>
-  : (function StripeProviderNative({ children }: { children: React.ReactNode }) {
-    const { StripeProvider } = require("@stripe/stripe-react-native");
-    return (
-      <StripeProvider
-        publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
-        merchantIdentifier="merchant.com.anonymous.tatame"
-        urlScheme="tatameapp"
-      >
-        {children}
-      </StripeProvider>
-    );
-  });
+const StripeProviderWrapper =
+  Platform.OS === "web"
+    ? ({ children }: { children: React.ReactNode }) => <>{children}</>
+    : function StripeProviderNative({
+      children,
+    }: {
+      children: React.ReactNode;
+    }) {
+      const { StripeProvider } = require("@stripe/stripe-react-native");
+      return (
+        <StripeProvider
+          publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
+          merchantIdentifier="merchant.com.anonymous.tatame"
+          urlScheme="tatameapp"
+        >
+          {children}
+        </StripeProvider>
+      );
+    };
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -53,10 +58,13 @@ export default function RootApp() {
 function RootLayout() {
   const { isSignedIn } = useAuth();
   const { getLastVersion } = useVersions();
-  const { data: lastVersion } = getLastVersion
+  const { data: lastVersion } = getLastVersion;
 
-  if (!__DEV__ && lastVersion && lastVersion?.appVersion !== Application.nativeApplicationVersion) {
-    return <VersionAlert lastVersion={lastVersion?.appVersion} />
+  if (
+    lastVersion &&
+    lastVersion?.appVersion !== Application.nativeApplicationVersion
+  ) {
+    return <VersionAlert lastVersion={lastVersion?.appVersion} />;
   }
 
   return (

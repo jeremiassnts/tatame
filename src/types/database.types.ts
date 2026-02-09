@@ -14,6 +14,30 @@ export type Database = {
   };
   public: {
     Tables: {
+      app_stores: {
+        Row: {
+          created_at: string;
+          disabled_at: string | null;
+          id: number;
+          store: string | null;
+          url: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          disabled_at?: string | null;
+          id?: number;
+          store?: string | null;
+          url?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          disabled_at?: string | null;
+          id?: number;
+          store?: string | null;
+          url?: string | null;
+        };
+        Relationships: [];
+      };
       assets: {
         Row: {
           class_id: number | null;

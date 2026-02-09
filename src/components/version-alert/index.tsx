@@ -1,5 +1,8 @@
+import { useAppStores } from "@/src/api/use-app-stores";
+import { useToast } from "@/src/hooks/use-toast";
 import * as Application from "expo-application";
-import * as Linking from 'expo-linking';
+import * as Linking from "expo-linking";
+import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, ButtonText } from "../ui/button";
 import { Heading } from "../ui/heading";
@@ -11,9 +14,19 @@ interface VersionAlertProps {
     lastVersion: string;
 }
 export function VersionAlert({ lastVersion }: VersionAlertProps) {
-    const googlePlayAppLink = process.env.EXPO_PUBLIC_GOOGLE_PLAY_APP_LINK;
+    const { getStoreUrls } = useAppStores();
+    const { data: storeUrls } = getStoreUrls;
+    const { showErrorToast } = useToast();
+
     function handleUpdateVersion() {
-        Linking.openURL(googlePlayAppLink as string);
+        const storeUrl = storeUrls?.find(
+            (store) => store.store === Platform.OS,
+        )?.url;
+        if (storeUrl) {
+            Linking.openURL(storeUrl);
+        } else {
+            showErrorToast("Erro", "Não foi possível encontrar a URL da loja");
+        }
     }
     return (
         <SafeAreaView className="bg-[#141414] flex items-center justify-center flex-1">
@@ -30,18 +43,18 @@ export function VersionAlert({ lastVersion }: VersionAlertProps) {
                     Versão obsoleta
                 </Heading>
                 <Text className="text-center">
-                    Por favor, atualize o aplicativo para a versão mais recente. (versão atual: {Application.nativeApplicationVersion}) (versão necessária: {lastVersion})
+                    Por favor, atualize o aplicativo para a versão mais recente. (versão
+                    atual: {Application.nativeApplicationVersion}) (versão necessária:{" "}
+                    {lastVersion})
                 </Text>
                 <Button
                     className="mt-4 bg-violet-700"
                     size="md"
                     onPress={handleUpdateVersion}
                 >
-                    <ButtonText className="text-white">
-                        Atualizar
-                    </ButtonText>
+                    <ButtonText className="text-white">Atualizar</ButtonText>
                 </Button>
             </VStack>
         </SafeAreaView>
-    )
+    );
 }
