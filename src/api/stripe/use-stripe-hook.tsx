@@ -1,6 +1,5 @@
-import { useAuth } from "@clerk/clerk-expo";
+import { useApi } from "@/src/hooks/use-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import tatameClient from "../../lib/tatame-api";
 import {
     CreateCustomerResponse,
     CreateEphemeralKeyResponse,
@@ -11,22 +10,14 @@ import {
 } from "./types";
 
 export function useStripeHook() {
-    const { getToken } = useAuth();
+    const { get, post } = useApi();
 
     const products = {
         list: useQuery({
             queryKey: ["products"],
             queryFn: async () => {
-                const token = await getToken();
-                const response = await tatameClient.get<FetchProductsResponse>(
-                    "/stripe/products",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    },
-                );
-                return response.data.data;
+                const { data } = await get<FetchProductsResponse>("/stripe/products");
+                return data;
             },
         }),
     };
@@ -42,21 +33,11 @@ export function useStripeHook() {
                 email: string;
                 userId: number;
             }) => {
-                const token = await getToken();
-                const response = await tatameClient.post<CreateCustomerResponse>(
+                const { data } = await post<CreateCustomerResponse>(
                     "/stripe/customers",
-                    {
-                        name,
-                        email,
-                        userId,
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    },
+                    { name, email, userId },
                 );
-                return response.data.data;
+                return data;
             },
         }),
     };
@@ -72,33 +53,21 @@ export function useStripeHook() {
                 priceId: string;
                 userId: number;
             }) => {
-                const token = await getToken();
-                const response = await tatameClient.post<CreateSubscriptionResponse>(
+                const { data } = await post<CreateSubscriptionResponse>(
                     "/stripe/subscriptions",
                     { customerId, priceId, userId },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    },
                 );
-                return response.data.data;
+                return data;
             },
         }),
         getByCustomerId: (customerId: string) =>
             useQuery({
                 queryKey: ["subscription-by-customer-id"],
                 queryFn: async () => {
-                    const token = await getToken();
-                    const response = await tatameClient.get(
+                    const { data } = await get<CreateSubscriptionResponse>(
                         `/stripe/subscriptions/customer/${customerId}`,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                        },
                     );
-                    return response.data.data ?? null;
+                    return data ?? null;
                 },
             }),
     };
@@ -114,17 +83,11 @@ export function useStripeHook() {
                 amount: number;
                 currency: string;
             }) => {
-                const token = await getToken();
-                const response = await tatameClient.post<CreatePaymentIntentResponse>(
+                const { data } = await post<CreatePaymentIntentResponse>(
                     "/stripe/payment-intents",
                     { customerId, amount, currency },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    },
                 );
-                return response.data.data;
+                return data;
             },
         }),
     };
@@ -132,17 +95,11 @@ export function useStripeHook() {
     const setupIntents = {
         create: useMutation({
             mutationFn: async ({ customerId }: { customerId: string }) => {
-                const token = await getToken();
-                const response = await tatameClient.post<CreateSetupIntentResponse>(
+                const { data } = await post<CreateSetupIntentResponse>(
                     "/stripe/setup-intents",
                     { customerId },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    },
                 );
-                return response.data.data;
+                return data;
             },
         }),
     };
@@ -150,17 +107,11 @@ export function useStripeHook() {
     const ephemeralKeys = {
         create: useMutation({
             mutationFn: async ({ customerId }: { customerId: string }) => {
-                const token = await getToken();
-                const response = await tatameClient.post<CreateEphemeralKeyResponse>(
+                const { data } = await post<CreateEphemeralKeyResponse>(
                     "/stripe/ephemeral-keys",
                     { customerId },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    },
                 );
-                return response.data.data;
+                return data;
             },
         }),
     };
@@ -172,12 +123,5 @@ export function useStripeHook() {
         paymentIntents,
         setupIntents,
         ephemeralKeys,
-        // fetchProducts,
-        // createCustomer,
-        // createSubscription,
-        // createPaymentIntent,
-        // createSetupIntent,
-        // createEphemeralKey,
-        // fetchSubscriptionByCustomerId,
     };
 }
