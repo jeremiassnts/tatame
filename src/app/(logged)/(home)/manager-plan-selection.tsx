@@ -21,18 +21,15 @@ export default function ManagerPlanSelection() {
         createSubscription,
         createSetupIntent,
         createEphemeralKey,
-        fetchSubscriptionByCustomerId,
     } = useStripeHook();
     const { data: products, isLoading: isLoadingProducts } = fetchProducts;
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [isLoading, setIsLoading] = useState(false);
-    const { getUserProfile } = useUsers();
+    const { getUserProfile, update } = useUsers();
     const { data: userProfile, isLoading: isLoadingUserProfile } = getUserProfile;
     const { showErrorToast } = useToast();
     const router = useRouter();
-    const { data: subscription, isLoading: isLoadingSubscription } =
-        fetchSubscriptionByCustomerId(userProfile?.customer_id ?? "");
 
     function handleSelectPlan(planId: string) {
         setSelectedPlan(planId);
@@ -42,42 +39,61 @@ export default function ManagerPlanSelection() {
         try {
             if (!selectedPlan) return;
             setIsLoading(true);
-            //create customer
-            const customer = await createCustomer.mutateAsync({
-                name: (
-                    userProfile?.first_name +
-                    " " +
-                    (userProfile?.last_name ?? "")
-                ).trim(),
-                email: userProfile?.email ?? "",
-                userId: userProfile?.id ?? 0,
-            });
             const product = products?.find((product) => product.id === selectedPlan);
-            //create payment intent
-            const { client_secret: setupIntentSecret } =
-                await createSetupIntent.mutateAsync({
+            if (product?.default_price.unit_amount! <= 0) {
+                await update.mutateAsync({
+                    id: userProfile?.id ?? 0,
+                    plan: product?.name?.toLowerCase(),
+                    subscription_id: null,
+                    customer_id: null,
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ["user-profile"],
+                });
+                router.navigate("/(logged)/(home)/home");
+                return;
+            } else {
+                //create customer
+                const customer = await createCustomer.mutateAsync({
+                    name: (
+                        userProfile?.first_name +
+                        " " +
+                        (userProfile?.last_name ?? "")
+                    ).trim(),
+                    email: userProfile?.email ?? "",
+                    userId: userProfile?.id ?? 0,
+                });
+                //create payment intent
+                const { client_secret: setupIntentSecret } =
+                    await createSetupIntent.mutateAsync({
+                        customerId: customer.id,
+                    });
+                //create ephemeral key
+                const { secret: ephemeralKey } = await createEphemeralKey.mutateAsync({
                     customerId: customer.id,
                 });
-            //create ephemeral key
-            const { secret: ephemeralKey } = await createEphemeralKey.mutateAsync({
-                customerId: customer.id,
-            });
-            //initialize payment sheet
-            await setup(customer.id, ephemeralKey, setupIntentSecret);
-            const { error } = await presentPaymentSheet();
-            if (error) {
-                throw error;
+                //initialize payment sheet
+                await setup(customer.id, ephemeralKey, setupIntentSecret);
+                const { error } = await presentPaymentSheet();
+                if (error) {
+                    throw error;
+                }
+                //create subscription
+                await createSubscription.mutateAsync({
+                    customerId: customer.id,
+                    priceId: product?.default_price.id ?? "",
+                    userId: userProfile?.id ?? 0,
+                });
+                //save plan
+                await update.mutateAsync({
+                    id: userProfile?.id ?? 0,
+                    plan: product?.name?.toLowerCase(),
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ["user-profile"],
+                });
+                router.navigate("/(logged)/(home)/home");
             }
-            //create subscription
-            await createSubscription.mutateAsync({
-                customerId: customer.id,
-                priceId: product?.default_price.id ?? "",
-                userId: userProfile?.id ?? 0,
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["subscription-by-customer-id"],
-            });
-            router.navigate("/(logged)/(home)/home");
         } catch (error) {
             console.log(JSON.stringify(error, null, 2));
             showErrorToast(
@@ -88,9 +104,9 @@ export default function ManagerPlanSelection() {
         setIsLoading(false);
     }
 
-    if (isLoadingSubscription) {
+    if (isLoadingUserProfile) {
         return <SplashScreen />;
-    } else if (subscription) {
+    } else if (userProfile?.plan) {
         return <Redirect href="/(logged)/(home)/home" />;
     }
 

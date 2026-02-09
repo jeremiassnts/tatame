@@ -1,4 +1,3 @@
-import { useStripeHook } from "@/src/api/stripe/use-stripe-hook";
 import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { IconNotification } from "@/src/components/icon-notification";
@@ -29,10 +28,6 @@ export default function Layout() {
   const { initializePushNotifications } = useSendNotification();
   const { isHigherRole } = useRoles();
   const { data: userProfile } = getUserProfile;
-  const { fetchSubscriptionByCustomerId } = useStripeHook();
-  const { data: subscription } = fetchSubscriptionByCustomerId(
-    userProfile?.customer_id ?? "",
-  );
 
   const isApproved = isHigherRole() || studentsApprovalStatus;
 
@@ -50,7 +45,7 @@ export default function Layout() {
   }, [userProfile]);
 
   const headerShown =
-    (userProfile?.role === "MANAGER" && subscription) ||
+    (userProfile?.role === "MANAGER" && !!userProfile?.plan) ||
     userProfile?.role !== "MANAGER";
 
   return (
