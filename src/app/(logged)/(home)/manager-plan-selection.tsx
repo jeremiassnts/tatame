@@ -16,14 +16,9 @@ import { Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ManagerPlanSelection() {
-    const {
-        fetchProducts,
-        createCustomer,
-        createSubscription,
-        createSetupIntent,
-        createEphemeralKey,
-    } = useStripeHook();
-    const { data: products, isLoading: isLoadingProducts } = fetchProducts;
+    const stripeApi = useStripeHook();
+    const { data: products, isLoading: isLoadingProducts } =
+        stripeApi.products.list;
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [isLoading, setIsLoading] = useState(false);
@@ -55,20 +50,21 @@ export default function ManagerPlanSelection() {
                 return;
             } else {
                 //create customer
-                const customer = await createCustomer.mutateAsync({
+                const customer = await stripeApi.customers.create.mutateAsync({
                     name: (user?.first_name + " " + (user?.last_name ?? "")).trim(),
                     email: user?.email ?? "",
                     userId: user?.id ?? 0,
                 });
                 //create payment intent
                 const { client_secret: setupIntentSecret } =
-                    await createSetupIntent.mutateAsync({
+                    await stripeApi.setupIntents.create.mutateAsync({
                         customerId: customer.id,
                     });
                 //create ephemeral key
-                const { secret: ephemeralKey } = await createEphemeralKey.mutateAsync({
-                    customerId: customer.id,
-                });
+                const { secret: ephemeralKey } =
+                    await stripeApi.ephemeralKeys.create.mutateAsync({
+                        customerId: customer.id,
+                    });
                 //initialize payment sheet
                 await setup(customer.id, ephemeralKey, setupIntentSecret);
                 const { error } = await presentPaymentSheet();
@@ -76,7 +72,7 @@ export default function ManagerPlanSelection() {
                     throw error;
                 }
                 //create subscription
-                await createSubscription.mutateAsync({
+                await stripeApi.subscriptions.create.mutateAsync({
                     customerId: customer.id,
                     priceId: product?.default_price.id ?? "",
                     userId: user?.id ?? 0,
