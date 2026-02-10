@@ -19,27 +19,27 @@ export function useRoles() {
       throw error;
     }
     return data[0].role;
-  }
+  };
 
   const getRole = useQuery({
     queryKey: ["role-by-user", user?.id],
-    queryFn: getRoleByUserId
+    queryFn: getRoleByUserId,
   });
 
-  const isHigherRole = () => {
-    const role = getRole.data;
-    return role === "MANAGER"
-  }
+  const isHigherRole = (role?: string) => {
+    const aux = role ? role : getRole.data;
+    return aux === "MANAGER";
+  };
 
-  const isMediumRole = () => {
-    const role = getRole.data;
-    return role === "INSTRUCTOR" || role === "MANAGER"
-  }
+  const isMediumRole = (role?: string) => {
+    const aux = role ? role : getRole.data;
+    return aux === "INSTRUCTOR" || aux === "MANAGER";
+  };
 
-  const isLowerRole = () => {
-    const role = getRole.data;
-    return role === "STUDENT"
-  }
+  const isLowerRole = (role?: string) => {
+    const aux = role ? role : getRole.data;
+    return aux === "STUDENT";
+  };
 
   return {
     isHigherRole,

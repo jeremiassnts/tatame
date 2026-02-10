@@ -45,8 +45,7 @@ export default function Layout() {
     }
   }, [user]);
 
-  const headerShown =
-    (user?.role === "MANAGER" && !!user?.plan) || user?.role !== "MANAGER";
+  const headerShown = (isHigherRole() && !!user?.plan) || !isHigherRole();
 
   return (
     <Drawer

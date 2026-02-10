@@ -1,3 +1,4 @@
+import { useRoles } from "@/src/api/use-roles";
 import { useUsers } from "@/src/api/use-users";
 import { SplashScreen } from "@/src/components/splash-screen";
 import { Box } from "@/src/components/ui/box";
@@ -22,8 +23,9 @@ export default function Home() {
   const router = useRouter();
   const { getUserByClerkUserId, createUser } = useUsers();
   const { userId } = useAuth();
-  const { mutateAsync: createUserFn, isPending: isLoading } = createUser
+  const { mutateAsync: createUserFn, isPending: isLoading } = createUser;
   const [tempUserType, setTempUserType] = useState<UserType | null>(null);
+  const { isHigherRole } = useRoles();
 
   async function handleContinue() {
     if (!tempUserType) return;
@@ -44,7 +46,7 @@ export default function Home() {
         const user = await getUserByClerkUserId(userId ?? "");
         if (user && user.role) {
           setUserType(user.role as UserType);
-          if (user.role === "MANAGER") {
+          if (isHigherRole(user.role)) {
             router.replace("/(logged)/(home)/manager-plan-selection");
           } else {
             router.replace("/(logged)/(home)/home");
@@ -53,7 +55,7 @@ export default function Home() {
           setIsUserTypeLoaded(true);
         }
       } else {
-        if (userType === "MANAGER") {
+        if (isHigherRole(userType)) {
           router.replace("/(logged)/(home)/manager-plan-selection");
         } else {
           router.replace("/(logged)/(home)/home");
@@ -64,9 +66,7 @@ export default function Home() {
   }, []);
 
   if (!isUserTypeLoaded) {
-    return (
-      <SplashScreen />
-    );
+    return <SplashScreen />;
   }
 
   return (
@@ -101,8 +101,8 @@ export default function Home() {
                 size="lg"
                 variant="elevated"
                 className={`flex flex-row items-center gap-4 border-[1px] ${tempUserType === user_type.value
-                  ? "border-violet-800"
-                  : "border-neutral-900"
+                    ? "border-violet-800"
+                    : "border-neutral-900"
                   }`}
               >
                 <Box className="bg-violet-800 p-2 rounded-full">
