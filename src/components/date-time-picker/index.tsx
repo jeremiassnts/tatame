@@ -24,11 +24,13 @@ export default function DateTimePicker({
   label,
 }: DateTimePickerProps) {
   const [date, setDate] = useState<Date | null>(value || null);
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
 
   return (
     <Pressable onPress={() => setShow(true)} className={className}>
-      {label && <Text className="text-white font-bold mb-2 text-md">{label}</Text>}
+      {label && (
+        <Text className="text-white font-bold mb-2 text-md">{label}</Text>
+      )}
       <Text
         className={`w-full bg-neutral-800 p-3 pl-4 pr-4 rounded-md text-md`}
       >

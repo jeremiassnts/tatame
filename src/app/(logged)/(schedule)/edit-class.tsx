@@ -21,10 +21,7 @@ import {
 import { Grid, GridItem } from "@/src/components/ui/grid";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
-import {
-  CheckIcon,
-  EditIcon
-} from "@/src/components/ui/icon";
+import { CheckIcon, EditIcon } from "@/src/components/ui/icon";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
@@ -56,9 +53,10 @@ export default function EditClass() {
     classId: string;
     gymId: string;
   }>();
-  const { isHigherRole } = useRoles()
+  const { isHigherRole } = useRoles();
   const { getInstructorsByGymId } = useUsers();
-  const { data: instructors, isLoading: isLoadingInstructors } = getInstructorsByGymId(parseInt(gymId));
+  const { data: instructors, isLoading: isLoadingInstructors } =
+    getInstructorsByGymId(parseInt(gymId));
   const { fetchClassById, editClass } = useClass();
   const [isLoading, setIsLoading] = useState(true);
   const [classData, setClassData] = useState<ClassRow | null>(null);
@@ -171,10 +169,17 @@ export default function EditClass() {
               returnKeyType="next"
             />
             <SelectInput
-              options={(instructors ?? []).map((instructor) => ({
-                label: instructor.name,
-                value: instructor.id.toString(),
-              }))}
+              options={(instructors ?? []).map((instructor) => {
+                const name = (
+                  instructor.first_name +
+                  " " +
+                  (instructor.last_name ?? "")
+                ).trim();
+                return {
+                  label: name,
+                  value: instructor.id.toString(),
+                };
+              })}
               placeholder="Selecione o instrutor"
               error={errors?.instructor_id?.message}
               onValueChange={(value) => {
@@ -184,50 +189,58 @@ export default function EditClass() {
               disabled={!isHigherRole()}
             />
             <HStack className="gap-2 items-center justify-center">
-              {Platform.OS === "ios" ? <IosTimePicker
-                setNewDate={(date: Date | undefined) => {
-                  if (date) {
-                    setValue("start", format(date, "HH:mm"));
-                  }
-                }}
-                placeholder="Início"
-                error={errors?.start?.message}
-                className="w-[49%]"
-                value={formatTime(start)}
-              /> : <DateTimePicker
-                setNewDate={(date: Date | undefined) => {
-                  if (date) {
-                    setValue("start", format(date, "HH:mm"));
-                  }
-                }}
-                placeholder="Início"
-                error={errors?.start?.message}
-                mode="time"
-                className="w-[49%]"
-                value={formatTime(start)}
-              />}
-              {Platform.OS === "ios" ? <IosTimePicker
-                setNewDate={(date: Date | undefined) => {
-                  if (date) {
-                    setValue("end", format(date, "HH:mm"));
-                  }
-                }}
-                placeholder="Término"
-                error={errors?.end?.message}
-                className="w-[49%]"
-                value={formatTime(end)}
-              /> : <DateTimePicker
-                setNewDate={(date: Date | undefined) => {
-                  if (date) {
-                    setValue("end", format(date, "HH:mm"));
-                  }
-                }}
-                placeholder="Término"
-                error={errors?.end?.message}
-                mode="time"
-                className="w-[49%]"
-                value={formatTime(end)}
-              />}
+              {Platform.OS === "ios" ? (
+                <IosTimePicker
+                  setNewDate={(date: Date | undefined) => {
+                    if (date) {
+                      setValue("start", format(date, "HH:mm"));
+                    }
+                  }}
+                  placeholder="Início"
+                  error={errors?.start?.message}
+                  className="w-[49%]"
+                  value={formatTime(start)}
+                />
+              ) : (
+                <DateTimePicker
+                  setNewDate={(date: Date | undefined) => {
+                    if (date) {
+                      setValue("start", format(date, "HH:mm"));
+                    }
+                  }}
+                  placeholder="Início"
+                  error={errors?.start?.message}
+                  mode="time"
+                  className="w-[49%]"
+                  value={formatTime(start)}
+                />
+              )}
+              {Platform.OS === "ios" ? (
+                <IosTimePicker
+                  setNewDate={(date: Date | undefined) => {
+                    if (date) {
+                      setValue("end", format(date, "HH:mm"));
+                    }
+                  }}
+                  placeholder="Término"
+                  error={errors?.end?.message}
+                  className="w-[49%]"
+                  value={formatTime(end)}
+                />
+              ) : (
+                <DateTimePicker
+                  setNewDate={(date: Date | undefined) => {
+                    if (date) {
+                      setValue("end", format(date, "HH:mm"));
+                    }
+                  }}
+                  placeholder="Término"
+                  error={errors?.end?.message}
+                  mode="time"
+                  className="w-[49%]"
+                  value={formatTime(end)}
+                />
+              )}
             </HStack>
             <SelectInput
               options={Modalities.map((modality) => ({

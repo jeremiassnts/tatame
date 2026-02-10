@@ -84,6 +84,9 @@ export function useUsers() {
         showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
         throw error;
       }
+      if (!data[0]) {
+        return null;
+      }
       return data[0] as Database["public"]["Tables"]["users"]["Row"];
     },
   });
