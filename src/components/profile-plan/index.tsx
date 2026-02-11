@@ -1,8 +1,11 @@
 import { useStripeHook } from "@/src/api/stripe/use-stripe-hook";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
+import { useToast } from "@/src/hooks/use-toast";
+import { useStripe } from "@stripe/stripe-react-native";
+import { useState } from "react";
 import { Badge, BadgeText } from "../ui/badge";
 import { Box } from "../ui/box";
-import { Button, ButtonText } from "../ui/button";
+import { Button, ButtonSpinner, ButtonText } from "../ui/button";
 import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
@@ -16,9 +19,58 @@ export function ProfilePlan() {
     const { user, isLoading: isLoadingProfile } = useProfileContext();
     const { data: subscription, isLoading: isLoadingSubscription } =
         stripeApi.subscriptions.get(user?.subscription_id ?? "");
+    const { initPaymentSheet, presentPaymentSheet } = useStripe();
+    const { showErrorToast, showSuccessToast } = useToast();
+    const [isUpdatingPayment, setIsUpdatingPayment] = useState(false);
 
     async function handleChangePaymentData() {
-        console.log("change payment data");
+        try {
+            if (!user?.customer_id) {
+                showErrorToast(
+                    "Erro",
+                    "Não foi possível identificar seus dados de pagamento.",
+                );
+                return;
+            }
+            setIsUpdatingPayment(true);
+            // Criar Setup Intent para o customer existente
+            const { client_secret: setupIntentSecret } =
+                await stripeApi.setupIntents.create.mutateAsync({
+                    customerId: user.customer_id,
+                });
+            // Criar Ephemeral Key
+            const { secret: ephemeralKey } =
+                await stripeApi.ephemeralKeys.create.mutateAsync({
+                    customerId: user.customer_id,
+                });
+            // Inicializar Payment Sheet
+            const { error: initError } = await initPaymentSheet({
+                merchantDisplayName: "Tatame",
+                customerId: user.customer_id,
+                customerEphemeralKeySecret: ephemeralKey,
+                setupIntentClientSecret: setupIntentSecret,
+            });
+            if (initError) {
+                throw initError;
+            }
+            // Apresentar Payment Sheet
+            const { error: presentError } = await presentPaymentSheet();
+            if (presentError) {
+                throw presentError;
+            }
+            showSuccessToast(
+                "Sucesso",
+                "Dados de pagamento atualizados com sucesso!",
+            );
+        } catch (error) {
+            console.log(JSON.stringify(error, null, 2));
+            showErrorToast(
+                "Erro na plataforma de pagamento",
+                "Ocorreu um erro ao atualizar os dados de pagamento, tente novamente.",
+            );
+        } finally {
+            setIsUpdatingPayment(false);
+        }
     }
 
     const isLoading = isLoadingProfile || isLoadingSubscription;
@@ -68,8 +120,17 @@ export function ProfilePlan() {
                         </Text>
                     </HStack>
                     <VStack className="mt-4 w-[70%] gap-2 mx-auto">
-                        <Button variant="solid" action="primary" className="w-full">
-                            <ButtonText>Alterar dados de pagamento</ButtonText>
+                        <Button
+                            variant="solid"
+                            action="primary"
+                            className="w-full"
+                            onPress={handleChangePaymentData}
+                            disabled={isUpdatingPayment}
+                        >
+                            {!isUpdatingPayment && (
+                                <ButtonText>Alterar dados de pagamento</ButtonText>
+                            )}
+                            {isUpdatingPayment && <ButtonSpinner />}
                         </Button>
                         <CancelButton
                             plan={user?.plan ?? ""}
