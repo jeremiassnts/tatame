@@ -10,12 +10,17 @@ import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { queryClient } from "@/src/lib/react-query";
 import { useStripe } from "@stripe/stripe-react-native";
-import { Redirect, useRouter } from "expo-router";
-import { useState } from "react";
-import { Pressable } from "react-native";
+import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+type ManagerPlanSelectionParams = {
+    plan: string;
+};
+
 export default function ManagerPlanSelection() {
+    const { plan } = useLocalSearchParams<ManagerPlanSelectionParams>();
     const stripeApi = useStripeHook();
     const { data: products, isLoading: isLoadingProducts } =
         stripeApi.products.list;
@@ -26,6 +31,7 @@ export default function ManagerPlanSelection() {
     const { user, isLoading: isLoadingUser } = useProfileContext();
     const { showErrorToast } = useToast();
     const router = useRouter();
+    const mustSelectPlan = plan === "free";
 
     function handleSelectPlan(planId: string) {
         setSelectedPlan(planId);
@@ -99,7 +105,7 @@ export default function ManagerPlanSelection() {
 
     if (isLoadingUser) {
         return <SplashScreen />;
-    } else if (user?.plan) {
+    } else if (user?.plan && !mustSelectPlan) {
         return <Redirect href="/(logged)/(home)/home" />;
     }
 
@@ -119,61 +125,78 @@ export default function ManagerPlanSelection() {
         }
     };
 
+    useEffect(() => {
+        if (plan && products) {
+            const product = products.find(
+                (product) => product.name.toLowerCase() === plan.toLowerCase(),
+            );
+            if (product) {
+                setSelectedPlan(product.id);
+            }
+        }
+    }, [plan, products]);
+
     return (
-        <SafeAreaView className="flex-1 justify-start items-start pt-[60px]">
-            {(isLoadingProducts || isLoadingUser) && (
-                <VStack className="gap-4 w-full px-5">
-                    <Skeleton className="w-full h-[40px] mb-4 rounded-md bg-neutral-800" />
-                    <Skeleton className="w-full h-[200px] rounded-md bg-neutral-800" />
-                    <Skeleton className="w-full h-[200px] rounded-md bg-neutral-800" />
-                </VStack>
-            )}
-            {!isLoadingProducts && !isLoadingUser && (
-                <VStack className="gap-4 w-full px-5 justify-center items-center">
-                    <Heading size="xl" className="text-neutral-200">
-                        Selecione o plano de assinatura
-                    </Heading>
-                    {products &&
-                        products
-                            .sort(
-                                (a, b) =>
-                                    a.default_price.unit_amount - b.default_price.unit_amount,
-                            )
-                            .map((product) => (
-                                <Pressable
-                                    key={product.id}
-                                    onPress={() => handleSelectPlan(product.id)}
-                                >
-                                    <ManagerPlan
-                                        title={product.name}
-                                        description={product.description}
-                                        price={product.default_price.unit_amount}
-                                        currency={product.default_price.currency}
-                                        features={
-                                            (product.metadata.features as string).split(";") ?? []
-                                        }
-                                        firstMonthFree={
-                                            (
-                                                product.metadata.first_month_free as string
-                                            ).toUpperCase() === "TRUE"
-                                        }
-                                        isSelected={selectedPlan === product.id}
-                                    />
-                                </Pressable>
-                            ))}
-                    <Button
-                        variant="solid"
-                        className="w-full bg-violet-500 disabled:opacity-50"
-                        disabled={!selectedPlan || isLoading}
-                        onPress={handleContinue}
-                    >
-                        {!isLoading && (
-                            <ButtonText className="text-white text-md">Selecionar</ButtonText>
-                        )}
-                        {isLoading && <ButtonSpinner color="white" />}
-                    </Button>
-                </VStack>
-            )}
+        <SafeAreaView
+            className={`flex-1 justify-start items-start ${plan ? "pt-0" : "pt-[60px]"} ${plan ? "pb-[60px]" : "pb-0"}`}
+        >
+            <ScrollView>
+                {(isLoadingProducts || isLoadingUser) && (
+                    <VStack className="gap-4 w-full px-5">
+                        <Skeleton className="w-full h-[40px] mb-4 rounded-md bg-neutral-800" />
+                        <Skeleton className="w-full h-[200px] rounded-md bg-neutral-800" />
+                        <Skeleton className="w-full h-[200px] rounded-md bg-neutral-800" />
+                    </VStack>
+                )}
+                {!isLoadingProducts && !isLoadingUser && (
+                    <VStack className="gap-4 w-full px-5 justify-center items-center">
+                        <Heading size="xl" className="text-neutral-200">
+                            Selecione o plano de assinatura
+                        </Heading>
+                        {products &&
+                            products
+                                .sort(
+                                    (a, b) =>
+                                        a.default_price.unit_amount - b.default_price.unit_amount,
+                                )
+                                .map((product) => (
+                                    <Pressable
+                                        key={product.id}
+                                        onPress={() => handleSelectPlan(product.id)}
+                                    >
+                                        <ManagerPlan
+                                            title={product.name}
+                                            description={product.description}
+                                            price={product.default_price.unit_amount}
+                                            currency={product.default_price.currency}
+                                            features={
+                                                (product.metadata.features as string).split(";") ?? []
+                                            }
+                                            firstMonthFree={
+                                                (
+                                                    product.metadata.first_month_free as string
+                                                ).toUpperCase() === "TRUE"
+                                            }
+                                            isSelected={selectedPlan === product.id}
+                                        />
+                                    </Pressable>
+                                ))}
+                        <Button
+                            variant="solid"
+                            className="w-full bg-violet-500 disabled:opacity-50"
+                            disabled={!selectedPlan || isLoading}
+                            onPress={handleContinue}
+                        >
+                            {!isLoading && (
+                                <ButtonText className="text-white text-md">
+                                    Selecionar
+                                </ButtonText>
+                            )}
+                            {isLoading && <ButtonSpinner color="white" />}
+                        </Button>
+                    </VStack>
+                )}
+            </ScrollView>
         </SafeAreaView>
     );
 }

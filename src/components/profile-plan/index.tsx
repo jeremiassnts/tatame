@@ -2,6 +2,7 @@ import { useStripeHook } from "@/src/api/stripe/use-stripe-hook";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { useStripe } from "@stripe/stripe-react-native";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Badge, BadgeText } from "../ui/badge";
 import { Box } from "../ui/box";
@@ -22,6 +23,7 @@ export function ProfilePlan() {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const { showErrorToast, showSuccessToast } = useToast();
     const [isUpdatingPayment, setIsUpdatingPayment] = useState(false);
+    const router = useRouter();
 
     async function handleChangePaymentData() {
         try {
@@ -73,6 +75,15 @@ export function ProfilePlan() {
         }
     }
 
+    function handleViewPlans() {
+        router.navigate({
+            pathname: "/(logged)/(home)/manager-plan-selection",
+            params: {
+                plan: "free",
+            },
+        });
+    }
+
     const isLoading = isLoadingProfile || isLoadingSubscription;
     return (
         <Card className="w-full border-2 border-neutral-800 mt-4 bg-neutral-900">
@@ -84,7 +95,7 @@ export function ProfilePlan() {
             {isLoading && (
                 <Skeleton className="w-full h-[100px] mt-4 rounded-md bg-neutral-800" />
             )}
-            {!isLoading && subscription && (
+            {!isLoading && subscription && user && user.plan !== "free" && (
                 <Box className="pt-4">
                     <HStack className="justify-between items-center">
                         <VStack className="gap-0 items-start justify-start">
@@ -138,6 +149,27 @@ export function ProfilePlan() {
                             userId={user?.id ?? 0}
                         />
                     </VStack>
+                </Box>
+            )}
+            {!isLoading && user && user.plan === "free" && (
+                <Box className="pt-4">
+                    <HStack className="justify-between items-center">
+                        <VStack className="gap-0 items-start justify-start">
+                            <Heading size="xl">{user?.plan?.toUpperCase()}</Heading>
+                            <Text>Grátis</Text>
+                        </VStack>
+                        <Badge size="lg" className="bg-green-800">
+                            <BadgeText>Ativo</BadgeText>
+                        </Badge>
+                    </HStack>
+                    <Button
+                        variant="solid"
+                        action="primary"
+                        className="w-full mt-4"
+                        onPress={handleViewPlans}
+                    >
+                        <ButtonText>Ver planos</ButtonText>
+                    </Button>
                 </Box>
             )}
         </Card>
