@@ -6,6 +6,7 @@ import { AccountSection } from "@/src/components/account-section";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { PersonalDataSection } from "@/src/components/personal-data-section";
 import { ProfileGymCard } from "@/src/components/profile-gym-card";
+import { ProfilePlan } from "@/src/components/profile-plan";
 import { StudentPresenceSection } from "@/src/components/student-presence-section";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -19,7 +20,7 @@ export default function Profile() {
   const { getStudentsApprovalStatus } = useUsers();
   const { updateUserImage } = useAttachments();
   const { fetchLastMonthCheckins } = useCheckins();
-  const { isLowerRole } = useRoles();
+  const { isLowerRole, isHigherRole } = useRoles();
   const { user, gym, isLoading } = useProfileContext();
 
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
@@ -63,6 +64,7 @@ export default function Profile() {
               firstName={user?.first_name ?? ""}
               lastName={user?.last_name ?? ""}
             />
+            {isHigherRole() && <ProfilePlan />}
             {lastMonthCheckins && studentsApprovalStatus && isLowerRole() && (
               <StudentPresenceSection checkins={lastMonthCheckins} />
             )}

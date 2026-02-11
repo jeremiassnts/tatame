@@ -23,6 +23,31 @@ export interface CreateSubscriptionResponse {
   created: boolean;
 }
 
+export interface DeleteSubscriptionResponse {
+  data: { id: string };
+  deleted: boolean;
+}
+
+export interface FetchSubscriptionResponse {
+  data: {
+    id: string;
+    currency: string;
+    current_period_end: number;
+    current_period_start: number;
+    plan: {
+      id: string;
+      active: boolean;
+      amount: number;
+      currency: string;
+      interval: string;
+      interval_count: number;
+      product: string;
+    };
+    trial_end: number;
+    trial_start: number;
+  };
+}
+
 export interface CreatePaymentIntentResponse {
   data: { client_secret: string };
 }

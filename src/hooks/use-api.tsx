@@ -24,8 +24,19 @@ export function useApi() {
         return response.data;
     }
 
+    async function del<T>(url: string): Promise<T> {
+        const token = await getToken();
+        const response = await tatameClient.delete<T>(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    }
+
     return {
         get,
         post,
+        del,
     };
 }

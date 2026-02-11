@@ -6,11 +6,13 @@ import {
     CreatePaymentIntentResponse,
     CreateSetupIntentResponse,
     CreateSubscriptionResponse,
+    DeleteSubscriptionResponse,
     FetchProductsResponse,
+    FetchSubscriptionResponse,
 } from "./types";
 
 export function useStripeHook() {
-    const { get, post } = useApi();
+    const { get, post, del } = useApi();
 
     const products = {
         list: useQuery({
@@ -43,6 +45,16 @@ export function useStripeHook() {
     };
 
     const subscriptions = {
+        get: (subscriptionId: string) =>
+            useQuery({
+                queryKey: ["subscription-by-id"],
+                queryFn: async () => {
+                    const { data } = await get<FetchSubscriptionResponse>(
+                        `/stripe/subscriptions/${subscriptionId}`,
+                    );
+                    return data ?? null;
+                },
+            }),
         create: useMutation({
             mutationFn: async ({
                 customerId,
@@ -64,12 +76,20 @@ export function useStripeHook() {
             useQuery({
                 queryKey: ["subscription-by-customer-id"],
                 queryFn: async () => {
-                    const { data } = await get<CreateSubscriptionResponse>(
+                    const { data } = await get<FetchSubscriptionResponse>(
                         `/stripe/subscriptions/customer/${customerId}`,
                     );
                     return data ?? null;
                 },
             }),
+        delete: useMutation({
+            mutationFn: async ({ subscriptionId }: { subscriptionId: string }) => {
+                const { data } = await del<DeleteSubscriptionResponse>(
+                    `/stripe/subscriptions/${subscriptionId}`,
+                );
+                return data;
+            },
+        }),
     };
 
     const paymentIntents = {
