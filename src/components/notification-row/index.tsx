@@ -1,4 +1,4 @@
-import { Notification } from "@/src/api/use-notifications";
+import { Notification } from "@/src/api/notifications/use-notifications";
 import { queryClient } from "@/src/lib/react-query";
 import { formatInTimeZone } from 'date-fns-tz';
 import { SendIcon } from "lucide-react-native";

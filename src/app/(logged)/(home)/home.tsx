@@ -1,4 +1,4 @@
-import { useRoles } from "@/src/api/use-roles";
+import { useRoles } from "@/src/api/roles/use-roles";
 import { BirthdayAlert } from "@/src/components/birthday-alert";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { HomeGymHeader } from "@/src/components/home-gym/header";

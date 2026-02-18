@@ -1,4 +1,4 @@
-import { useNotifications } from "@/src/api/use-notifications";
+import { useNotifications } from "@/src/api/notifications/use-notifications";
 import { Box } from "@/src/components/ui/box";
 import { Icon } from "@/src/components/ui/icon";
 import { DrawerActions } from "@react-navigation/native";

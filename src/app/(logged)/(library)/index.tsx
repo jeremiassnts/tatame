@@ -1,5 +1,5 @@
-import { useAssets } from "@/src/api/use-assets";
-import { useRoles } from "@/src/api/use-roles";
+import { useAssets } from "@/src/api/assets/use-assets";
+import { useRoles } from "@/src/api/roles/use-roles";
 import { AddVideoToLibrary } from "@/src/components/add-video-to-library";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";

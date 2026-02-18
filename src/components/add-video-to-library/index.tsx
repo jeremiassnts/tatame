@@ -1,5 +1,5 @@
-import { useAssets } from "@/src/api/use-assets";
-import { useAttachments } from "@/src/api/use-attachments";
+import { useAssets } from "@/src/api/assets/use-assets";
+import { useAttachments } from "@/src/api/attachments/use-attachments";
 import { useToast } from "@/src/hooks/use-toast";
 import { queryClient } from "@/src/lib/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";

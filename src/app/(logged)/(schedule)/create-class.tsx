@@ -1,5 +1,5 @@
-import { useClass } from "@/src/api/use-class";
-import { useUsers } from "@/src/api/use-users";
+import { useClasses } from "@/src/api/classes/use-classes";
+import { useUsers } from "@/src/api/users/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
 import IosTimePicker from "@/src/components/ios-time-picker";
 import { TextInput } from "@/src/components/text-input";
@@ -43,7 +43,7 @@ const createClassFormSchema = z.object({
 
 export default function CreateClass() {
   const router = useRouter();
-  const { createClass } = useClass();
+  const { createClass } = useClasses();
   const { getUserByClerkUserId } = useUsers();
   const { user } = useUser();
   const [isCreatingClass, setIsCreatingClass] = useState(false);

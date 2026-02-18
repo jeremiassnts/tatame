@@ -1,6 +1,6 @@
-import { useAttachments } from "@/src/api/use-attachments";
-import { useGyms } from "@/src/api/use-gyms";
-import { useUsers } from "@/src/api/use-users";
+import { useAttachments } from "@/src/api/attachments/use-attachments";
+import { useGyms } from "@/src/api/gyms/use-gyms";
+import { useUsers } from "@/src/api/users/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
 import ImageViewer from "@/src/components/image-picker";
 import { TextInput } from "@/src/components/text-input";

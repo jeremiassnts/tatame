@@ -1,4 +1,4 @@
-import { useRoles } from '@/src/api/use-roles';
+import { useRoles } from '@/src/api/roles/use-roles';
 import { queryClient } from '@/src/lib/react-query';
 import { UseMutationResult } from '@tanstack/react-query';
 import { format } from 'date-fns';

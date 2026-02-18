@@ -1,4 +1,4 @@
-import { useGyms } from "@/src/api/use-gyms";
+import { useGyms } from "@/src/api/gyms/use-gyms";
 import { SelectInput } from "@/src/components/select-input";
 import {
   Button,

@@ -1,5 +1,5 @@
-import { useCheckins } from "@/src/api/use-checkins";
-import { useUsers } from "@/src/api/use-users";
+import { useCheckins } from "@/src/api/checkins/use-checkins";
+import { useUsers } from "@/src/api/users/use-users";
 import { queryClient } from "@/src/lib/react-query";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { useUser } from "@clerk/clerk-expo";

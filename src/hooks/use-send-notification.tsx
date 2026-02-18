@@ -1,11 +1,11 @@
-import Constants from 'expo-constants';
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
-import { queryClient } from '../lib/react-query';
+import Constants from "expo-constants";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
+import { queryClient } from "../lib/react-query";
 import { Database } from "../types/database.types";
 import { useToast } from "./use-toast";
-import { useSupabase } from './useSupabase';
+import { useSupabase } from "./useSupabase";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -24,10 +24,11 @@ export interface SendNotificationProps {
     recipients: string[];
 }
 
-export type Notification = Database["public"]["Tables"]["notifications"]["Row"] & {
-    status: string;
-    sent_at: string;
-}
+export type Notification =
+    Database["public"]["Tables"]["notifications"]["Row"] & {
+        status: string;
+        sent_at: string;
+    };
 
 export function useSendNotification() {
     const { showErrorToast } = useToast();
@@ -52,26 +53,31 @@ export function useSendNotification() {
         const { data, error } = await supabase
             .from("users")
             .select("expo_push_token")
-            .in("id", notification.recipients.map(recipient => parseInt(recipient)));
+            .in(
+                "id",
+                notification.recipients.map((recipient) => parseInt(recipient)),
+            );
         if (error) {
             throw error;
         }
-        const expoPushTokens = data.map(user => user.expo_push_token);
-        const messages = expoPushTokens.filter(token => !!token).map(token => ({
-            to: token,
-            sound: 'default',
-            title: notification.title,
-            body: notification.content,
-            data: {
-                notification_id: notification.id,
-            },
-        }));
-        await fetch('https://exp.host/--/api/v2/push/send', {
-            method: 'POST',
+        const expoPushTokens = data.map((user) => user.expo_push_token);
+        const messages = expoPushTokens
+            .filter((token) => !!token)
+            .map((token) => ({
+                to: token,
+                sound: "default",
+                title: notification.title,
+                body: notification.content,
+                data: {
+                    notification_id: notification.id,
+                },
+            }));
+        await fetch("https://exp.host/--/api/v2/push/send", {
+            method: "POST",
             headers: {
-                Accept: 'application/json',
-                'Accept-encoding': 'gzip, deflate',
-                'Content-Type': 'application/json',
+                Accept: "application/json",
+                "Accept-encoding": "gzip, deflate",
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(messages),
         });
@@ -79,30 +85,34 @@ export function useSendNotification() {
 
     async function registerForPushNotificationsAsync() {
         try {
-            if (Platform.OS === 'android') {
-                await Notifications.setNotificationChannelAsync('default', {
-                    name: 'default',
+            if (Platform.OS === "android") {
+                await Notifications.setNotificationChannelAsync("default", {
+                    name: "default",
                     importance: Notifications.AndroidImportance.MAX,
                     vibrationPattern: [0, 250, 250, 250],
-                    lightColor: '#FF231F7C',
+                    lightColor: "#FF231F7C",
                 });
             }
 
             if (Device.isDevice) {
-                const { status: existingStatus } = await Notifications.getPermissionsAsync();
+                const { status: existingStatus } =
+                    await Notifications.getPermissionsAsync();
                 let finalStatus = existingStatus;
-                if (existingStatus !== 'granted') {
+                if (existingStatus !== "granted") {
                     const { status } = await Notifications.requestPermissionsAsync();
                     finalStatus = status;
                 }
-                if (finalStatus !== 'granted') {
-                    throw new Error('Permission not granted to get push token for push notification!');
+                if (finalStatus !== "granted") {
+                    throw new Error(
+                        "Permission not granted to get push token for push notification!",
+                    );
                     return;
                 }
                 const projectId =
-                    Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+                    Constants?.expoConfig?.extra?.eas?.projectId ??
+                    Constants?.easConfig?.projectId;
                 if (!projectId) {
-                    throw new Error('Project ID not found');
+                    throw new Error("Project ID not found");
                 }
                 try {
                     const pushTokenString = (
@@ -115,10 +125,9 @@ export function useSendNotification() {
                     throw new Error(`${e}`);
                 }
             } else {
-                throw new Error('Must use physical device for push notifications');
+                throw new Error("Must use physical device for push notifications");
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
             showErrorToast("Erro", "Ocorreu um erro ao registrar para notificações");
         }
@@ -127,22 +136,25 @@ export function useSendNotification() {
     async function initializePushNotifications(userId: number) {
         registerForPushNotificationsAsync()
             .then(async (token) => {
-                await supabase.from("users").update({
-                    id: userId,
-                    expo_push_token: token ?? '',
-                }).eq("id", userId);
+                await supabase
+                    .from("users")
+                    .update({
+                        id: userId,
+                        expo_push_token: token ?? "",
+                    })
+                    .eq("id", userId);
                 queryClient.invalidateQueries({ queryKey: ["user-profile"] });
             })
             .catch((error: any) => {
                 console.error(error);
-                // showErrorToast("Erro", "Ocorreu um erro ao registrar para notificações");
             });
 
-        const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-        });
+        const notificationListener = Notifications.addNotificationReceivedListener(
+            (notification) => { },
+        );
 
-        const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-        });
+        const responseListener =
+            Notifications.addNotificationResponseReceivedListener((response) => { });
 
         return () => {
             notificationListener.remove();
@@ -153,5 +165,5 @@ export function useSendNotification() {
     return {
         sendNotification,
         initializePushNotifications,
-    }
+    };
 }

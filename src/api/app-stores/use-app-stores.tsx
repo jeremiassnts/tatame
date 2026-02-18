@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "../hooks/use-toast";
-import { useSupabase } from "../hooks/useSupabase";
+import { useToast } from "../../hooks/use-toast";
+import { useSupabase } from "../../hooks/useSupabase";
 
 export function useAppStores() {
     const supabase = useSupabase();

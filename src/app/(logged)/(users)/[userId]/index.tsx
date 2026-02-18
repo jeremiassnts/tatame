@@ -1,5 +1,5 @@
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import { BackButton } from "@/src/components/back-button";
 import { InfoRow } from "@/src/components/personal-data-section/info-row";
 import { StudentBelt } from "@/src/components/student-belt";

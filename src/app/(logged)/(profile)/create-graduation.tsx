@@ -1,5 +1,5 @@
-import useGraduation from "@/src/api/use-graduation";
-import { useUsers } from "@/src/api/use-users";
+import { useGraduations } from "@/src/api/graduations/use-graduations";
+import { useUsers } from "@/src/api/users/use-users";
 import { SelectInput } from "@/src/components/select-input";
 import {
   Button,
@@ -33,7 +33,7 @@ export default function CreateGraduation() {
   const { getUserByClerkUserId } = useUsers();
   const { user } = useUser();
   const [isCreatingGraduation, setIsCreatingGraduation] = useState(false);
-  const { createGraduation } = useGraduation();
+  const { createGraduation } = useGraduations();
   const { mutateAsync: createGraduationFn } = createGraduation;
   const [degrees, setDegrees] = useState<{ value: string; label: string }[]>([]);
   const {

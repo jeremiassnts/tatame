@@ -1,4 +1,4 @@
-import { useRoles } from "@/src/api/use-roles";
+import { useRoles } from "@/src/api/roles/use-roles";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { GraduationCard } from "../graduation-card";
 import { NextClass } from "../next-class";

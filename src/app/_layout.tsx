@@ -8,7 +8,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { Platform } from "react-native";
 import "react-native-reanimated";
-import { useVersions } from "../api/use-versions";
+import { useVersions } from "../api/versions/use-versions";
 import { VersionAlert } from "../components/version-alert";
 import { COLORS } from "../constants/colors";
 import { queryClient } from "../lib/react-query";

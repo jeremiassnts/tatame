@@ -1,5 +1,5 @@
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import { IconNotification } from "@/src/components/icon-notification";
 import {
   CalendarDaysIcon,

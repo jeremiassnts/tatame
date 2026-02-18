@@ -1,5 +1,5 @@
 import { useStripeHook } from "@/src/api/stripe/use-stripe-hook";
-import { useUsers } from "@/src/api/use-users";
+import { useUsers } from "@/src/api/users/use-users";
 import { queryClient } from "@/src/lib/react-query";
 import { useState } from "react";
 import { Button, ButtonSpinner, ButtonText } from "../ui/button";

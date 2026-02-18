@@ -1,11 +1,11 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { subDays } from "date-fns";
-import { useToast } from "../hooks/use-toast";
-import { useSupabase } from "../hooks/useSupabase";
-import { Database } from "../types/database.types";
-import { CheckinRow } from "../types/extendend-database.types";
-import { useUsers } from "./use-users";
+import { useToast } from "../../hooks/use-toast";
+import { useSupabase } from "../../hooks/useSupabase";
+import { Database } from "../../types/database.types";
+import { CheckinRow } from "../../types/extendend-database.types";
+import { useUsers } from "../users/use-users";
 
 export function useCheckins() {
   const supabase = useSupabase();

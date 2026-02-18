@@ -1,4 +1,4 @@
-import { useCheckins } from "@/src/api/use-checkins";
+import { useCheckins } from "@/src/api/checkins/use-checkins";
 import { DayOfWeek, Days } from "@/src/constants/date";
 import { addDays, eachWeekOfInterval, format, subWeeks } from "date-fns";
 import { useEffect, useState } from "react";

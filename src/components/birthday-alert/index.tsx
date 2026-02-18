@@ -1,4 +1,4 @@
-import { useUsers } from "@/src/api/use-users";
+import { useUsers } from "@/src/api/users/use-users";
 import { PartyPopper } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable } from "react-native";

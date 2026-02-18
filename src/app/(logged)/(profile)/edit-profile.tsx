@@ -1,4 +1,4 @@
-import { useUsers } from "@/src/api/use-users";
+import { useUsers } from "@/src/api/users/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
 import IosDateTimePicker from "@/src/components/ios-date-time-picker";
 import { SelectInput } from "@/src/components/select-input";

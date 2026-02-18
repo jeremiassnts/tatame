@@ -1,5 +1,5 @@
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import { SplashScreen } from "@/src/components/splash-screen";
 import { Box } from "@/src/components/ui/box";
 import { Button, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
@@ -35,7 +35,6 @@ export default function Home() {
       role: tempUserType as UserType,
     });
     setUserType(tempUserType as UserType);
-    // router.replace("/(logged)/(home)/user-approval-check");
     router.replace("/(logged)/(home)/home");
   }
 

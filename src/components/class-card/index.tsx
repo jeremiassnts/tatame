@@ -1,4 +1,4 @@
-import { useRoles } from "@/src/api/use-roles";
+import { useRoles } from "@/src/api/roles/use-roles";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { formatDay, formatTime } from "@/src/utils/class";

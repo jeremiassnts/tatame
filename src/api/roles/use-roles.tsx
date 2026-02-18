@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "../hooks/use-toast";
-import { useSupabase } from "../hooks/useSupabase";
+import { useToast } from "../../hooks/use-toast";
+import { useSupabase } from "../../hooks/useSupabase";
 
 export function useRoles() {
   const { user } = useUser();

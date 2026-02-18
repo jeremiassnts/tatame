@@ -1,6 +1,6 @@
-import { useAssets } from "@/src/api/use-assets";
-import { useClass } from "@/src/api/use-class";
-import { useRoles } from "@/src/api/use-roles";
+import { useAssets } from "@/src/api/assets/use-assets";
+import { useClasses } from "@/src/api/classes/use-classes";
+import { useRoles } from "@/src/api/roles/use-roles";
 import { AddContent } from "@/src/components/add-content";
 import { BackButton } from "@/src/components/back-button";
 import { CheckIn } from "@/src/components/class-card/check-in";
@@ -41,7 +41,7 @@ type ClassProps = {
 
 export default function Class() {
     const { classId, classDate } = useLocalSearchParams<ClassProps>();
-    const { fetchClassById, deleteClass } = useClass();
+    const { fetchClassById, deleteClass } = useClasses();
     const { user, isLoading: isLoadingProfile } = useProfileContext();
     const { data, isLoading, refetch, isFetching } = useQuery({
         queryKey: ["class", classId],

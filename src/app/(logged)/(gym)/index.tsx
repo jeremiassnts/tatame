@@ -1,6 +1,6 @@
-import { useAttachments } from "@/src/api/use-attachments";
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useAttachments } from "@/src/api/attachments/use-attachments";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import { StudentRow } from "@/src/components/student-row";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Skeleton } from "@/src/components/ui/skeleton";

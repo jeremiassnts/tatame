@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useToast } from "../hooks/use-toast";
-import { useSupabase } from "../hooks/useSupabase";
-import { Database } from "../types/database.types";
+import { useToast } from "../../hooks/use-toast";
+import { useSupabase } from "../../hooks/useSupabase";
+import { Database } from "../../types/database.types";
 
 export function useAssets() {
     const supabase = useSupabase();

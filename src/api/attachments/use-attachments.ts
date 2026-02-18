@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { useToast } from "../hooks/use-toast";
-import { useSupabase } from "../hooks/useSupabase";
-import axiosClient from "../lib/axios";
+import { useToast } from "../../hooks/use-toast";
+import { useSupabase } from "../../hooks/useSupabase";
+import axiosClient from "../../lib/axios";
 
 export function useAttachments() {
   const supabase = useSupabase();

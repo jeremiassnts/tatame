@@ -1,5 +1,5 @@
 import { useStripeHook } from "@/src/api/stripe/use-stripe-hook";
-import { useUsers } from "@/src/api/use-users";
+import { useUsers } from "@/src/api/users/use-users";
 import ManagerPlan from "@/src/components/manager-plan";
 import { SplashScreen } from "@/src/components/splash-screen";
 import { Button, ButtonSpinner, ButtonText } from "@/src/components/ui/button";

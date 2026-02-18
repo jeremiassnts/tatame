@@ -1,4 +1,4 @@
-import useGraduation from "@/src/api/use-graduation";
+import { useGraduations } from "@/src/api/graduations/use-graduations";
 import { BELT_COLORS } from "@/src/constants/belts";
 import { useRouter } from "expo-router";
 import { Box } from "../ui/box";
@@ -13,7 +13,7 @@ interface GraduationCardProps {
 }
 
 export function GraduationCard({ showBelt }: GraduationCardProps) {
-  const { getGraduation } = useGraduation();
+  const { getGraduation } = useGraduations();
   const { data: graduation, isLoading: isLoadingGraduation } = getGraduation;
   const router = useRouter();
 

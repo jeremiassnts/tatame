@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { useGyms } from "../api/use-gyms";
-import { useUsers } from "../api/use-users";
+import { useGyms } from "../api/gyms/use-gyms";
+import { useUsers } from "../api/users/use-users";
 import { Database } from "../types/database.types";
 
 interface ProfileContextType {

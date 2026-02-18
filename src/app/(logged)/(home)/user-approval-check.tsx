@@ -1,5 +1,5 @@
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import { SplashScreen } from "@/src/components/splash-screen";
 import { Button, ButtonText } from "@/src/components/ui/button";
 import { Heading } from "@/src/components/ui/heading";

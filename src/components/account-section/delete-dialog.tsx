@@ -1,4 +1,4 @@
-import { useUsers } from "@/src/api/use-users";
+import { useUsers } from "@/src/api/users/use-users";
 import { useUserTypeCache } from "@/src/hooks/use-user-type-cache";
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";

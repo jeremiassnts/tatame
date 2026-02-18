@@ -1,5 +1,5 @@
-import useGraduation from "@/src/api/use-graduation";
-import { useUsers } from "@/src/api/use-users";
+import { useGraduations } from "@/src/api/graduations/use-graduations";
+import { useUsers } from "@/src/api/users/use-users";
 import { BELT_COLORS } from "@/src/constants/belts";
 import { Database } from "@/src/types/database.types";
 import { useUser } from "@clerk/clerk-expo";
@@ -16,7 +16,7 @@ interface HomeGymHeaderProps {
 
 export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
   const { user } = useUser();
-  const { getGraduation } = useGraduation();
+  const { getGraduation } = useGraduations();
   const { data: graduation } = getGraduation;
   const { getStudentsApprovalStatus } = useUsers();
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus

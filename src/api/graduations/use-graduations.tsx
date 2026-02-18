@@ -1,11 +1,11 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useToast } from "../hooks/use-toast";
-import { useSupabase } from "../hooks/useSupabase";
-import { Database } from "../types/database.types";
-import { useUsers } from "./use-users";
+import { useToast } from "../../hooks/use-toast";
+import { useSupabase } from "../../hooks/useSupabase";
+import { Database } from "../../types/database.types";
+import { useUsers } from "../users/use-users";
 
-export default function useGraduation() {
+export function useGraduations() {
   const { user } = useUser();
   const supabase = useSupabase();
   const { getUserByClerkUserId } = useUsers();

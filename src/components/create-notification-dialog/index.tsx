@@ -1,5 +1,5 @@
-import { useCreateNotification } from "@/src/api/use-create-notification";
-import { useUsers } from "@/src/api/use-users";
+import { useCreateNotification } from "@/src/api/notifications/use-create-notification";
+import { useUsers } from "@/src/api/users/use-users";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";

@@ -1,5 +1,5 @@
-import { useRoles } from "@/src/api/use-roles";
-import { Student, useUsers } from "@/src/api/use-users";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { Student, useUsers } from "@/src/api/users/use-users";
 import { BELT_COLORS, BELTS } from "@/src/constants/belts";
 import { DEGREES } from "@/src/constants/degrees";
 import { queryClient } from "@/src/lib/react-query";

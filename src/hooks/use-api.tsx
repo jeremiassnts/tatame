@@ -34,9 +34,20 @@ export function useApi() {
         return response.data;
     }
 
+    async function put<T>(url: string, data: any): Promise<T> {
+        const token = await getToken();
+        const response = await tatameClient.put<T>(url, data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    }
+
     return {
         get,
         post,
         del,
+        put,
     };
 }

@@ -1,7 +1,7 @@
-import { useAttachments } from "@/src/api/use-attachments";
-import { useCheckins } from "@/src/api/use-checkins";
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useAttachments } from "@/src/api/attachments/use-attachments";
+import { useCheckins } from "@/src/api/checkins/use-checkins";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import { AccountSection } from "@/src/components/account-section";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { PersonalDataSection } from "@/src/components/personal-data-section";

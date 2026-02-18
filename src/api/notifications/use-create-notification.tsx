@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { useSendNotification } from "../hooks/use-send-notification";
-import { useToast } from "../hooks/use-toast";
-import { useSupabase } from "../hooks/useSupabase";
-import { queryClient } from "../lib/react-query";
-import { Database } from "../types/database.types";
+import { useSendNotification } from "../../hooks/use-send-notification";
+import { useToast } from "../../hooks/use-toast";
+import { useSupabase } from "../../hooks/useSupabase";
+import { queryClient } from "../../lib/react-query";
+import { Database } from "../../types/database.types";
 
 export function useCreateNotification() {
     const supabase = useSupabase();

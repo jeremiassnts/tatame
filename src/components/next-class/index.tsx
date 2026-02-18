@@ -1,6 +1,6 @@
-import { useClass } from "@/src/api/use-class";
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useClasses } from "@/src/api/classes/use-classes";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { Database } from "@/src/types/database.types";
 import { useRouter } from "expo-router";
@@ -22,7 +22,7 @@ interface NextClassProps {
 
 export function NextClass({ gym, isLoadingGym }: NextClassProps) {
   const router = useRouter();
-  const { fetchNextClass } = useClass();
+  const { fetchNextClass } = useClasses();
   const { data: nextClass, isLoading: isLoadingNextClass } = fetchNextClass;
   const { getStudentsApprovalStatus } = useUsers();
   const { user, isLoading: isLoadingUser } = useProfileContext();

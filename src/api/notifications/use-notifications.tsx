@@ -1,12 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useProfileContext } from "../hooks/use-profile-context";
-import { useSendNotification } from "../hooks/use-send-notification";
-import { useToast } from "../hooks/use-toast";
-import { useSupabase } from "../hooks/useSupabase";
-import { queryClient } from "../lib/react-query";
-import { Database } from "../types/database.types";
-import { useRoles } from "./use-roles";
-import { useUsers } from "./use-users";
+import { useProfileContext } from "../../hooks/use-profile-context";
+import { useSendNotification } from "../../hooks/use-send-notification";
+import { useToast } from "../../hooks/use-toast";
+import { useSupabase } from "../../hooks/useSupabase";
+import { queryClient } from "../../lib/react-query";
+import { Database } from "../../types/database.types";
+import { useRoles } from "../roles/use-roles";
 
 export type Notification =
     Database["public"]["Tables"]["notifications"]["Row"] & {
@@ -15,7 +14,6 @@ export type Notification =
     };
 export function useNotifications() {
     const supabase = useSupabase();
-    const { getCurrentUser } = useUsers();
     const { sendNotification } = useSendNotification();
     const { showErrorToast } = useToast();
     const { isHigherRole } = useRoles();
@@ -55,9 +53,8 @@ export function useNotifications() {
     const listUnread = useQuery({
         queryKey: ["notifications-unread"],
         queryFn: async () => {
-            const currentUser = await getCurrentUser();
-            const userId = currentUser?.id.toString() ?? "";
-            if (!isHigherRole() && !currentUser?.approved_at) {
+            const userId = user?.id.toString() ?? "";
+            if (!isHigherRole() && !user?.approved_at) {
                 return [];
             }
 

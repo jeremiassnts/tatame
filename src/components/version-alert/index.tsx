@@ -1,4 +1,4 @@
-import { useAppStores } from "@/src/api/use-app-stores";
+import { useAppStores } from "@/src/api/app-stores/use-app-stores";
 import { useToast } from "@/src/hooks/use-toast";
 import * as Application from "expo-application";
 import * as Linking from "expo-linking";

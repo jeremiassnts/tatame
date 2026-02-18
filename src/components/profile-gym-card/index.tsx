@@ -1,5 +1,5 @@
-import { useAttachments } from "@/src/api/use-attachments";
-import { useRoles } from "@/src/api/use-roles";
+import { useAttachments } from "@/src/api/attachments/use-attachments";
+import { useRoles } from "@/src/api/roles/use-roles";
 import { queryClient } from "@/src/lib/react-query";
 import { Database } from "@/src/types/database.types";
 import { useUser } from "@clerk/clerk-expo";

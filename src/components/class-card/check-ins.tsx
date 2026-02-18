@@ -1,4 +1,4 @@
-import { useCheckins } from "@/src/api/use-checkins";
+import { useCheckins } from "@/src/api/checkins/use-checkins";
 import { Avatar, AvatarFallbackText, AvatarImage } from "../ui/avatar";
 import { HStack } from "../ui/hstack";
 import { Skeleton } from "../ui/skeleton";

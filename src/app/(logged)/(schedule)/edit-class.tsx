@@ -1,6 +1,6 @@
-import { useClass } from "@/src/api/use-class";
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useClasses } from "@/src/api/classes/use-classes";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
 import IosTimePicker from "@/src/components/ios-time-picker";
 import { SelectInput } from "@/src/components/select-input";
@@ -57,7 +57,7 @@ export default function EditClass() {
   const { getInstructorsByGymId } = useUsers();
   const { data: instructors, isLoading: isLoadingInstructors } =
     getInstructorsByGymId(parseInt(gymId));
-  const { fetchClassById, editClass } = useClass();
+  const { fetchClassById, editClass } = useClasses();
   const [isLoading, setIsLoading] = useState(true);
   const [classData, setClassData] = useState<ClassRow | null>(null);
   const { mutateAsync: editClassFn, isPending: isEditingClass } = editClass;

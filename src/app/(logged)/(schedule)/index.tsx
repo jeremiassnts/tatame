@@ -1,7 +1,7 @@
-import { useCheckins } from "@/src/api/use-checkins";
-import { useClass } from "@/src/api/use-class";
-import { useRoles } from "@/src/api/use-roles";
-import { useUsers } from "@/src/api/use-users";
+import { useCheckins } from "@/src/api/checkins/use-checkins";
+import { useClasses } from "@/src/api/classes/use-classes";
+import { useRoles } from "@/src/api/roles/use-roles";
+import { useUsers } from "@/src/api/users/use-users";
 import { ClassCard } from "@/src/components/class-card";
 import { Box } from "@/src/components/ui/box";
 import { Button, ButtonIcon } from "@/src/components/ui/button";
@@ -34,7 +34,7 @@ export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<WeekDay | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { fetchClasses, findClassToCheckIn } = useClass();
+  const { fetchClasses, findClassToCheckIn } = useClasses();
   const { create } = useCheckins();
   const { mutateAsync: createCheckinFn } = create;
   const { data: classes, isLoading: isLoadingClasses, refetch: refetchClasses, isFetching: isFetchingClasses } = fetchClasses;

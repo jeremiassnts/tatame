@@ -1,4 +1,4 @@
-import { useClass } from "@/src/api/use-class";
+import { useClasses } from "@/src/api/classes/use-classes";
 import { queryClient } from "@/src/lib/react-query";
 import { ClassRow } from "@/src/types/extendend-database.types";
 import { useRouter } from "expo-router";
@@ -25,7 +25,7 @@ interface ActionsProps {
 export function Actions({ topBadgeText, isHigherRole, data, classDate }: ActionsProps) {
   const router = useRouter();
   const [showOptions, setShowOptions] = useState(false);
-  const { deleteClass } = useClass();
+  const { deleteClass } = useClasses();
   const { mutateAsync: deleteClassFn } = deleteClass;
 
   function handleClose() {
