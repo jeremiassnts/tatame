@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { UserType } from "../../constants/user-type";
 import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
+import { useCreateNotification } from "../notifications/use-create-notification";
 import { useRoles } from "../roles/use-roles";
 
 export interface CreateUserProps {
@@ -29,6 +30,7 @@ export function useUsers() {
   const { showErrorToast } = useToast();
   const { isHigherRole } = useRoles();
   const { get, post, put, del } = useApi();
+  const { mutateAsync: createNotification } = useCreateNotification().create;
 
   const getUser = useQuery({
     queryKey: ["user", clerkUser?.id],
@@ -111,6 +113,14 @@ export function useUsers() {
         await post<any>(`/users/approve`, {
           userId,
         });
+        await createNotification({
+          title: "Parabéns! Seu cadastro foi aprovado",
+          content: `Aproveite, agora você pode acessar todos os recursos da plataforma!`,
+          recipients: [userId.toString()],
+          channel: "push",
+          status: "pending",
+          viewed_by: [],
+        });
       } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao aprovar o aluno");
         throw error;
@@ -123,6 +133,14 @@ export function useUsers() {
       try {
         await post<any>(`/users/deny`, {
           userId,
+        });
+        await createNotification({
+          title: "Que pena! Seu cadastro foi negado",
+          content: `Por favor, contate o suporte para mais informações`,
+          recipients: [userId.toString()],
+          channel: "push",
+          status: "pending",
+          viewed_by: [],
         });
       } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao negar o aluno");

@@ -4,7 +4,6 @@ import { useToast } from "../../hooks/use-toast";
 import { Database } from "../../types/database.types";
 import { ClassRow } from "../../types/extendend-database.types";
 import { useCreateNotification } from "../notifications/use-create-notification";
-import { useUsers } from "../users/use-users";
 
 function mapToClassRow(item: any): ClassRow {
   const instructor = item?.instructor
@@ -21,7 +20,6 @@ function mapToClassRow(item: any): ClassRow {
 export function useClasses() {
   const { get, post, put, del } = useApi();
   const { showErrorToast } = useToast();
-  const { getUserByClerkUserId } = useUsers();
   const { mutateAsync: createNotification } = useCreateNotification().create;
 
   const fetchNextClass = (userId: number) =>
@@ -80,24 +78,22 @@ export function useClasses() {
     },
   });
 
-  const fetchClasses = useQuery({
-    queryKey: ["classes", user?.id],
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    queryFn: async () => {
-      if (!user?.id) return [];
-      const sp_user = await getUserByClerkUserId(user.id);
-      if (!sp_user?.gym_id) return [];
-      try {
-        const { data } = await get<any>(`/class/gym/${sp_user.gym_id}`);
-        const list = Array.isArray(data) ? data : (data ?? []);
-        return list.map(mapToClassRow);
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao buscar as aulas");
-        throw error;
-      }
-    },
-  });
+  const fetchClasses = (gymId: number) =>
+    useQuery({
+      queryKey: ["classes", gymId],
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      queryFn: async () => {
+        try {
+          const { data } = await get<any>(`/class/gym/${gymId}`);
+          const list = Array.isArray(data) ? data : (data ?? []);
+          return list.map(mapToClassRow);
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao buscar as aulas");
+          throw error;
+        }
+      },
+    });
 
   async function fetchClassById(classId: number) {
     try {

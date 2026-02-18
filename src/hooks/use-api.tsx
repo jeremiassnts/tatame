@@ -14,11 +14,16 @@ export function useApi() {
         return response.data;
     }
 
-    async function post<T>(url: string, data: any): Promise<T> {
+    async function post<T>(
+        url: string,
+        data: any,
+        headers: Record<string, string> = {},
+    ): Promise<T> {
         const token = await getToken();
         const response = await tatameClient.post<T>(url, data, {
             headers: {
                 Authorization: `Bearer ${token}`,
+                ...headers,
             },
         });
         return response.data;
