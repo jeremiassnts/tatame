@@ -19,15 +19,16 @@ export const ProfileContext = createContext<ProfileContextType>({
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
     const { getUser } = useUsers();
     const { fetchByUser } = useGyms();
+    const gymQuery = fetchByUser(getUser.data?.id);
 
     return (
         <ProfileContext.Provider
             value={{
                 user: getUser.data,
-                gym: fetchByUser.data,
-                isLoading: getUser.isLoading || fetchByUser.isLoading,
+                gym: gymQuery.data,
+                isLoading: getUser.isLoading || gymQuery.isLoading,
                 refetch: async () => {
-                    await Promise.all([getUser.refetch(), fetchByUser.refetch()]);
+                    await Promise.all([getUser.refetch(), gymQuery.refetch()]);
                 },
             }}
         >

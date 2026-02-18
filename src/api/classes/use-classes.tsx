@@ -1,221 +1,139 @@
-import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { addDays, format, isBefore, set } from "date-fns";
+import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
-import { useSupabase } from "../../hooks/useSupabase";
 import { Database } from "../../types/database.types";
 import { ClassRow } from "../../types/extendend-database.types";
 import { useCreateNotification } from "../notifications/use-create-notification";
 import { useUsers } from "../users/use-users";
 
+function mapToClassRow(item: any): ClassRow {
+  const instructor = item?.instructor
+    ? [item.instructor.first_name ?? "", item.instructor.last_name ?? ""]
+      .join(" ")
+      .trim()
+    : "";
+  return {
+    ...item,
+    instructor_name: instructor,
+  } as ClassRow;
+}
+
 export function useClasses() {
-  const supabase = useSupabase();
+  const { get, post, put, del } = useApi();
   const { showErrorToast } = useToast();
   const { getUserByClerkUserId } = useUsers();
-  const { user } = useUser();
-  const { create } = useCreateNotification();
-  const { mutateAsync: createNotification } = create;
+  const { mutateAsync: createNotification } = useCreateNotification().create;
 
-  const fetchNextClass = useQuery({
-    queryKey: ["next-class"],
-    queryFn: async () => {
-      if (user?.id) {
-        const sp_user = await getUserByClerkUserId(user.id);
-        if (sp_user && sp_user.gym_id) {
-          const { data, error } = await supabase
-            .from("class")
-            .select(
-              `
-                  *,
-                  gym:gyms!gym_id(name),
-                  instructor:users!instructor_id(first_name, last_name),
-                  assets:assets!class_id(id, content, type, valid_until, created_at, title)
-                  `,
-            )
-            .filter("gym_id", "eq", sp_user.gym_id)
-            .filter("deleted_at", "is", null)
-            .order("start", { ascending: true });
-
-          if (error) {
-            showErrorToast("Erro", "Ocorreu um erro ao buscar a próxima aula");
-            throw error;
-          }
-          if (data.length === 0) {
-            return null;
-          }
-          let today = new Date();
-          let nextClass = null;
-          while (!nextClass) {
-            const dayOfTheWeek = format(today, "EEEE").toUpperCase();
-            for (const item of data) {
-              const classTime = set(new Date(), {
-                hours: item.start.split(":")[0],
-                minutes: item.start.split(":")[1],
-                seconds: 0,
-                milliseconds: 0,
-              });
-              if (
-                item.day === dayOfTheWeek &&
-                isBefore(new Date(), classTime)
-              ) {
-                nextClass = item;
-                break;
-              }
-            }
-            today = addDays(today, 1);
-          }
-          const instructor = (
-            (nextClass?.instructor?.first_name ?? "") +
-            " " +
-            (nextClass?.instructor?.last_name ?? "")
-          ).trim();
-
-          return {
-            ...nextClass,
-            instructor_name: instructor,
-          } as ClassRow;
+  const fetchNextClass = (userId: number) =>
+    useQuery({
+      queryKey: ["next-class", userId],
+      queryFn: async () => {
+        try {
+          const { data } = await get<any>(`/class/next/${userId}`);
+          if (!data) return null;
+          const raw = Array.isArray(data) ? data[0] : data;
+          return raw ? mapToClassRow(raw) : null;
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao buscar a próxima aula");
+          throw error;
         }
-      }
-      return null;
-    },
-  });
+      },
+    });
 
   const createClass = useMutation({
     mutationFn: async (
       classData: Database["public"]["Tables"]["class"]["Insert"],
     ) => {
-      const { data, error } = await supabase
-        .from("class")
-        .insert(classData)
-        .select();
-      if (error) {
+      try {
+        const { data } = await post<any>("/class", {
+          gym_id: classData.gym_id,
+          instructor_id: classData.instructor_id,
+          created_by: classData.created_by,
+          day: classData.day,
+          start: classData.start,
+          end: classData.end,
+          description: classData.description,
+        });
+        const created = Array.isArray(data) ? data[0] : data;
+
+        const { data: students } = await get<any>(
+          `/users/gym/${classData.gym_id}/students`,
+        );
+        const list = Array.isArray(students) ? students : (students ?? []);
+        const approved = list.filter((s: any) => s.approved_at != null);
+
+        await createNotification({
+          title: "Nova aula criada",
+          content: "Seu professor cadastrou uma nova aula, venha conferir!",
+          recipients: approved.map((s: any) => s.id.toString()),
+          channel: "push",
+          sent_by: classData.created_by ?? 0,
+          status: "pending",
+          viewed_by: [(classData.created_by ?? "").toString()],
+        });
+
+        return created;
+      } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar a aula");
         throw error;
       }
-
-      const { data: students } = await supabase
-        .from("users")
-        .select("*")
-        .eq("gym_id", classData.gym_id)
-        .eq("role", "STUDENT")
-        .not("approved_at", "is", null);
-
-      await createNotification({
-        title: "Nova aula criada",
-        content: `Seu professor cadastrou uma nova aula, venha conferir!`,
-        recipients: students?.map((student) => student.id.toString()) ?? [],
-        channel: "push",
-        sent_by: classData.created_by,
-        status: "pending",
-        viewed_by: [classData.created_by?.toString() ?? ""],
-      });
-
-      return data[0];
     },
   });
 
   const fetchClasses = useQuery({
-    queryKey: ["classes"],
+    queryKey: ["classes", user?.id],
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: async () => {
       if (!user?.id) return [];
       const sp_user = await getUserByClerkUserId(user.id);
       if (!sp_user?.gym_id) return [];
-      const { data, error } = await supabase
-        .from("class")
-        .select(
-          `
-        *,
-        gym:gyms!gym_id(name),
-        instructor:users!instructor_id(first_name, last_name),
-        assets:assets!class_id(id, content, type, valid_until, created_at, title)
-        `,
-        )
-        .filter("gym_id", "eq", sp_user.gym_id)
-        .filter("deleted_at", "is", null)
-        .order("start", { ascending: true });
-
-      if (error) {
+      try {
+        const { data } = await get<any>(`/class/gym/${sp_user.gym_id}`);
+        const list = Array.isArray(data) ? data : (data ?? []);
+        return list.map(mapToClassRow);
+      } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao buscar as aulas");
         throw error;
       }
-      //fetching instructors
-      return data.map((item) => {
-        const instructor = (
-          (item.instructor?.first_name ?? "") +
-          " " +
-          (item.instructor?.last_name ?? "")
-        ).trim();
-        return {
-          ...item,
-          instructor_name: instructor,
-        } as ClassRow;
-      });
     },
   });
 
   async function fetchClassById(classId: number) {
-    const { data, error } = await supabase
-      .from("class")
-      .select(
-        `
-        *,
-        instructor:users!instructor_id(first_name, last_name),
-        gym:gyms!gym_id(name, address),
-        assets:assets!class_id(id, content, type, valid_until, created_at, title)
-        `,
-      )
-      .filter("id", "eq", classId);
-
-    if (error) {
+    try {
+      const { data } = await get<any>(`/class/${classId}`);
+      const raw = Array.isArray(data) ? data[0] : data;
+      if (!raw) return null;
+      return mapToClassRow(raw);
+    } catch (error) {
       showErrorToast("Erro", "Ocorreu um erro ao buscar a próxima aula");
       throw error;
     }
-    if (data.length === 0) {
-      return null;
-    }
-    const instructor = (
-      (data[0]?.instructor?.first_name ?? "") +
-      " " +
-      (data[0]?.instructor?.last_name ?? "")
-    ).trim();
-    return {
-      ...data[0],
-      instructor_name: instructor,
-    } as ClassRow;
   }
 
   const editClass = useMutation({
     mutationFn: async (
-      data: Database["public"]["Tables"]["class"]["Update"],
+      payload: Database["public"]["Tables"]["class"]["Update"],
     ) => {
-      if (!data.id) {
+      if (!payload.id) {
         showErrorToast("Erro", "O ID da aula é obrigatório");
         throw new Error("O ID da aula é obrigatório");
       }
-      const { error } = await supabase
-        .from("class")
-        .update(data)
-        .eq("id", data.id);
-      if (error) {
+      try {
+        await put(`/class/${payload.id}`, payload);
+        return payload;
+      } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao editar a aula");
         throw error;
       }
-      return data;
     },
   });
 
   const deleteClass = useMutation({
     mutationFn: async (classId: number) => {
-      const { error } = await supabase
-        .from("class")
-        .update({
-          deleted_at: new Date().toISOString(),
-        })
-        .eq("id", classId);
-
-      if (error) {
+      try {
+        await del(`/class/${classId}`);
+      } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao deletar a aula");
         throw error;
       }
@@ -227,20 +145,16 @@ export function useClasses() {
     time: string,
     day: string,
   ) => {
-    const { data, error } = await supabase
-      .from("class")
-      .select("*")
-      .eq("gym_id", gymId)
-      .eq("day", day)
-      .lte("start", time)
-      .gte("end", time);
-
-    if (error) {
+    try {
+      const { data } = await get<any>(
+        `/class/check-in/available?gymId=${gymId}&time=${encodeURIComponent(time)}&day=${encodeURIComponent(day)}`,
+      );
+      const raw = Array.isArray(data) ? data[0] : data;
+      return raw ? mapToClassRow(raw) : null;
+    } catch (error) {
       console.error(error);
       return null;
     }
-
-    return data[0] as ClassRow;
   };
 
   return {

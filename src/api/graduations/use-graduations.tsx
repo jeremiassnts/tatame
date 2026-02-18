@@ -1,59 +1,57 @@
-import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
-import { useSupabase } from "../../hooks/useSupabase";
 import { Database } from "../../types/database.types";
-import { useUsers } from "../users/use-users";
 
 export function useGraduations() {
-  const { user } = useUser();
-  const supabase = useSupabase();
-  const { getUserByClerkUserId } = useUsers();
+  const { get, post, put } = useApi();
   const { showErrorToast } = useToast();
 
-  const getGraduation = useQuery({
-    queryKey: ["graduation"],
-    queryFn: async () => {
-      const sp_user = await getUserByClerkUserId(user?.id!);
-      if (sp_user) {
-        const { data, error } = await supabase
-          .from("graduations")
-          .select("*")
-          .eq("userId", sp_user.id);
-
-        if (error) {
+  const getGraduation = (userId: number) =>
+    useQuery({
+      queryKey: ["graduation", userId],
+      queryFn: async () => {
+        try {
+          const { data } = await get<any>(`/graduations/user/${userId}`);
+          if (!data) return null;
+          return Array.isArray(data) ? (data[0] ?? null) : data;
+        } catch (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar a graduação");
           throw error;
         }
-        if (data.length == 0) {
-          return null;
-        }
-
-        return data[0];
-      }
-    },
-  });
+      },
+    });
 
   const createGraduation = useMutation({
     mutationFn: async (
-      graduation: Database["public"]["Tables"]["graduations"]["Insert"]
+      graduation: Database["public"]["Tables"]["graduations"]["Insert"],
     ) => {
-      const { data, error } = await supabase
-        .from("graduations")
-        .insert(graduation)
-        .select();
-      if (error) {
+      try {
+        const { data } = await post<any>("/graduations", {
+          userId: graduation.userId,
+          belt: graduation.belt,
+          degree: graduation.degree,
+          modality: graduation.modality,
+        });
+        return Array.isArray(data) ? data[0] : data;
+      } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar a graduação");
         throw error;
       }
-      return data[0];
     },
   });
 
   const updateGraduation = useMutation({
-    mutationFn: async (graduation: Database["public"]["Tables"]["graduations"]["Update"]) => {
-      const { error } = await supabase.from("graduations").update(graduation).eq("id", graduation.id);
-      if (error) {
+    mutationFn: async (
+      graduation: Database["public"]["Tables"]["graduations"]["Update"],
+    ) => {
+      if (!graduation.id) {
+        showErrorToast("Erro", "ID da graduação é obrigatório");
+        throw new Error("ID da graduação é obrigatório");
+      }
+      try {
+        await put(`/graduations/${graduation.id}`, graduation);
+      } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao atualizar a graduação");
         throw error;
       }

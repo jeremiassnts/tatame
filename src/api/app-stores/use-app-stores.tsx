@@ -1,28 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "../../hooks/use-toast";
-import { useSupabase } from "../../hooks/useSupabase";
+import { useApi } from "../../hooks/use-api";
 
 export function useAppStores() {
-    const supabase = useSupabase();
-    const { showErrorToast } = useToast();
+  const { get } = useApi();
+  const { showErrorToast } = useToast();
 
-    const getStoreUrls = useQuery({
-        queryKey: ["store-urls"],
-        queryFn: async () => {
-            const { data, error } = await supabase
-                .from("app_stores")
-                .select("*")
-                .is("disabled_at", null);
+  const getStoreUrls = useQuery({
+    queryKey: ["store-urls"],
+    queryFn: async () => {
+      try {
+        const { data } = await get<any>("/app-stores");
+        return data ?? [];
+      } catch (error) {
+        showErrorToast("Erro", "Ocorreu um erro ao buscar as URLs das lojas");
+        throw error;
+      }
+    },
+  });
 
-            if (error) {
-                showErrorToast("Erro", "Ocorreu um erro ao buscar as URLs das lojas");
-                throw error;
-            }
-            return data;
-        },
-    });
-
-    return {
-        getStoreUrls,
-    };
+  return {
+    getStoreUrls,
+  };
 }

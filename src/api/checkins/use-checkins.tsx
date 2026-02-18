@@ -1,33 +1,29 @@
-import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { subDays } from "date-fns";
+import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
-import { useSupabase } from "../../hooks/useSupabase";
-import { Database } from "../../types/database.types";
 import { CheckinRow } from "../../types/extendend-database.types";
 import { useUsers } from "../users/use-users";
+import { CreateCheckinProps } from "./types";
 
 export function useCheckins() {
-  const supabase = useSupabase();
+  const { get, post, del } = useApi();
   const { showErrorToast } = useToast();
-  const { user } = useUser();
-  const { } = useUsers();
+  const { getUserByClerkUserId } = useUsers();
 
   const create = useMutation({
-    mutationFn: async (
-      checkin: Database["public"]["Tables"]["checkins"]["Insert"],
-    ) => {
-      //verify if the user has already checked in for this class
-      const { data: checkinData } = await supabase
-        .from("checkins")
-        .select("*")
-        .eq("classId", checkin.classId)
-        .eq("userId", checkin.userId);
-      if (checkinData && checkinData.length > 0) {
-        return;
-      }
-      const { error } = await supabase.from("checkins").insert(checkin);
-      if (error) {
+    mutationFn: async (checkin: CreateCheckinProps) => {
+      try {
+        const { data: existing } = await get<any>(
+          `/checkins/class/${checkin.classId}/user/${checkin.userId}`,
+        );
+        const list = Array.isArray(existing) ? existing : (existing ?? []);
+        if (list.length > 0) return;
+        await post("/checkins", {
+          userId: checkin.userId,
+          classId: checkin.classId,
+          date: checkin.date ?? new Date().toISOString(),
+        });
+      } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar o checkin");
         throw error;
       }
@@ -36,138 +32,99 @@ export function useCheckins() {
 
   const remove = useMutation({
     mutationFn: async (checkinId: number) => {
-      const { data, error } = await supabase
-        .from("checkins")
-        .delete()
-        .eq("id", checkinId);
-      if (error) {
+      try {
+        const { data } = await del<any>(`/checkins/${checkinId}`);
+        return data;
+      } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao apagar o checkin");
         throw error;
       }
-      return data;
     },
   });
 
-  const fetchAll = useQuery({
-    queryKey: ["checkins"],
-    queryFn: async () => {
-      if (!user?.id) return [];
-
-      const { data, error } = await supabase
-        .from("checkins")
-        .select("*, users!inner(clerk_user_id)")
-        .eq("users.clerk_user_id", user?.id!)
-        .eq("date", new Date().toISOString());
-
-      if (error) {
-        console.error(error);
-        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
-        throw error;
-      }
-
-      return data;
-    },
-  });
-
-  const fetchAllByClassId = (classId: number) =>
-    useQuery({
-      queryKey: ["just-checkins-by-class-id", classId],
+  const fetchAll = (userId: number) => {
+    return useQuery({
+      queryKey: ["checkins", userId],
       queryFn: async () => {
-        if (!user?.id) return [];
-
-        const { data, error } = await supabase
-          .from("checkins")
-          .select("*, users!inner(clerk_user_id)")
-          .eq("users.clerk_user_id", user?.id!)
-          .eq("date", new Date().toISOString())
-          .eq("classId", classId);
-
-        if (error) {
-          console.error(error);
+        try {
+          const { data } = await get<any>(`/checkins/user/${userId}`);
+          const list = Array.isArray(data) ? data : (data ?? []);
+          const today = new Date().toISOString().split("T")[0];
+          return list.filter(
+            (c: { date?: string }) => c?.date?.split?.("T")?.[0] === today,
+          );
+        } catch (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
           throw error;
         }
+      },
+    });
+  };
 
-        return data;
+  const fetchAllByClassId = (classId: number, userId: number) =>
+    useQuery({
+      queryKey: ["just-checkins-by-class-id", classId, userId],
+      queryFn: async () => {
+        try {
+          const { data } = await get<any>(
+            `/checkins/class/${classId}/user/${userId}`,
+          );
+          const list = Array.isArray(data) ? data : (data ?? []);
+          const today = new Date().toISOString().split("T")[0];
+          return list.filter(
+            (c: { date?: string }) => c?.date?.split?.("T")?.[0] === today,
+          );
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+          throw error;
+        }
       },
     });
 
-  const fetchLastCheckins = useQuery({
-    queryKey: ["last-checkins"],
-    queryFn: async () => {
-      if (!user?.id) return [];
-
-      const { data, error } = await supabase
-        .from("checkins")
-        .select("*, users!inner(clerk_user_id)")
-        .eq("users.clerk_user_id", user?.id!)
-        .gte("date", subDays(new Date(), 15).toISOString())
-        .lte("date", new Date().toISOString());
-
-      if (error) {
-        console.error(error);
-        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
-        throw error;
-      }
-
-      return data;
-    },
-  });
+  const fetchLastCheckins = (userId: number) =>
+    useQuery({
+      queryKey: ["last-checkins", userId],
+      queryFn: async () => {
+        try {
+          const { data } = await get<any>(`/checkins/user/${userId}/last`);
+          return Array.isArray(data) ? data : (data ?? []);
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+          throw error;
+        }
+      },
+    });
 
   const fetchByClassId = (classId: number) => {
     return useQuery({
       queryKey: ["checkins-by-class-id", classId],
       queryFn: async () => {
-        const { data, error } = await supabase
-          .from("checkins")
-          .select("*, users(first_name, last_name, profile_picture)")
-          .eq("classId", classId)
-          .eq("date", new Date().toISOString());
-        if (error) {
-          console.error(error);
+        try {
+          const { data } = await get<any>(`/checkins/class/${classId}`);
+          return data;
+        } catch (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
           throw error;
         }
-
-        return data.map((checkin) => {
-          return {
-            ...checkin,
-            name: (
-              (checkin.users?.first_name ?? "") +
-              " " +
-              (checkin.users?.last_name ?? "")
-            ).trim(),
-            imageUrl: checkin.users?.profile_picture ?? "",
-          };
-        });
       },
     });
   };
 
-  const fetchLastMonthCheckins = useQuery({
-    queryKey: ["last-month-checkins"],
-    queryFn: async () => {
-      if (!user?.id) return [];
-
-      const { data, error } = await supabase
-        .from("checkins")
-        .select(
-          "*, users!inner(clerk_user_id), class!inner(id, start, end, day)",
-        )
-        .eq("users.clerk_user_id", user?.id!)
-        .gte("date", subDays(new Date(), 30).toISOString())
-        .lte("date", new Date().toISOString())
-        .order("date", { ascending: false });
-
-      if (error) {
-        console.error(error);
-        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
-        throw error;
-      }
-
-      return data as CheckinRow[];
-    },
-  });
+  const fetchLastMonthCheckins = (userId: number) =>
+    useQuery({
+      queryKey: ["last-month-checkins", userId],
+      queryFn: async () => {
+        try {
+          const { data } = await get<any>(
+            `/checkins/user/${userId}/last-month`,
+          );
+          return (Array.isArray(data) ? data : (data ?? [])) as CheckinRow[];
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+          throw error;
+        }
+      },
+    });
 
   return {
     create,

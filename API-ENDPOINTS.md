@@ -3,7 +3,7 @@
 Reference for migrating the frontend from Supabase to the backend REST API.
 
 - **Base URL:** `/api`
-- **Auth:** All routes (except **Webhooks** and **Versions**) require a Clerk JWT in the `Authorization` header:  
+- **Auth:** All routes (except **Webhooks**, **Versions**, and **App Stores**) require a Clerk JWT in the `Authorization` header:  
   `Authorization: Bearer <clerk_jwt_token>`
 - **Content-Type:** `application/json` for JSON bodies.
 
@@ -95,6 +95,14 @@ Reference for migrating the frontend from Supabase to the backend REST API.
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/api/versions` | Get current app version (public, no auth). |
+
+---
+
+## App Stores — `/api/app-stores` (no auth)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/app-stores` | List app store entries (e.g. iOS/Android links). Returns only non-disabled entries. Public, no auth. |
 
 ---
 

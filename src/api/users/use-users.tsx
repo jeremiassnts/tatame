@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { UserType } from "../../constants/user-type";
@@ -24,9 +25,24 @@ export interface ProfileInfo {
 }
 
 export function useUsers() {
+  const { user: clerkUser } = useUser();
   const { showErrorToast } = useToast();
   const { isHigherRole } = useRoles();
   const { get, post, put, del } = useApi();
+
+  const getUser = useQuery({
+    queryKey: ["user", clerkUser?.id],
+    queryFn: async () => {
+      if (!clerkUser?.id) return null;
+      try {
+        const { data } = await get<any>(`/users/clerk/${clerkUser.id}`);
+        return data;
+      } catch (error) {
+        return null;
+      }
+    },
+    enabled: !!clerkUser?.id,
+  });
 
   const createUser = useMutation({
     mutationFn: async ({
@@ -40,7 +56,7 @@ export function useUsers() {
       const { data } = await post<any>("/users", {
         clerk_user_id: clerkUserId,
         role: role,
-        approved_at: isHigherRole() ? new Date().toISOString() : null,
+        approved_at: isHigherRole(role) ? new Date().toISOString() : null,
         email: email,
         firstName: firstName,
         lastName: lastName,
@@ -193,6 +209,7 @@ export function useUsers() {
   };
 
   return {
+    getUser,
     createUser,
     getUserByClerkUserId,
     getUserById,
