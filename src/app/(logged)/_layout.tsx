@@ -14,7 +14,6 @@ import {
 import { COLORS } from "@/src/constants/colors";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useSendNotification } from "@/src/hooks/use-send-notification";
-import { queryClient } from "@/src/lib/react-query";
 import { useSegments } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { BellIcon } from "lucide-react-native";
@@ -23,8 +22,7 @@ import { useEffect } from "react";
 export default function Layout() {
   const segments = useSegments();
   const pathname = segments[segments.length - 1].replace(/[^a-zA-Z]/g, "");
-  const { getStudentsApprovalStatus, migrateUser } = useUsers();
-  const { mutateAsync: migrateUserFn } = migrateUser;
+  const { getStudentsApprovalStatus } = useUsers();
   const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
   const { initializePushNotifications } = useSendNotification();
   const { isHigherRole } = useRoles();
@@ -32,16 +30,9 @@ export default function Layout() {
 
   const isApproved = isHigherRole() || studentsApprovalStatus;
 
-  async function checkUserMigration() {
-    if (user?.migrated_at) return;
-    await migrateUserFn();
-    queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-  }
-
   useEffect(() => {
     if (user) {
       initializePushNotifications(user?.id);
-      checkUserMigration();
     }
   }, [user]);
 

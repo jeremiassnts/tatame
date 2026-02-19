@@ -1,15 +1,21 @@
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 
 export function useRoles() {
-  const isHigherRole = (role: string) => {
-    return role === "MANAGER";
+  const { user } = useProfileContext();
+
+  const isHigherRole = (role?: string) => {
+    const _role = role ?? user?.role;
+    return _role === "MANAGER";
   };
 
-  const isMediumRole = (role: string) => {
-    return role === "INSTRUCTOR" || role === "MANAGER";
+  const isMediumRole = (role?: string) => {
+    const _role = role ?? user?.role;
+    return _role === "INSTRUCTOR" || _role === "MANAGER";
   };
 
-  const isLowerRole = (role: string) => {
-    return role === "STUDENT";
+  const isLowerRole = (role?: string) => {
+    const _role = role ?? user?.role;
+    return _role === "STUDENT";
   };
 
   return {

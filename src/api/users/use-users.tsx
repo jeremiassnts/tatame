@@ -1,3 +1,4 @@
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -5,7 +6,6 @@ import { UserType } from "../../constants/user-type";
 import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
 import { useCreateNotification } from "../notifications/use-create-notification";
-import { useRoles } from "../roles/use-roles";
 
 export interface CreateUserProps {
   clerkUserId: string;
@@ -28,23 +28,9 @@ export interface ProfileInfo {
 export function useUsers() {
   const { user: clerkUser } = useUser();
   const { showErrorToast } = useToast();
-  const { isHigherRole } = useRoles();
   const { get, post, put, del } = useApi();
   const { mutateAsync: createNotification } = useCreateNotification().create;
-
-  const getUser = useQuery({
-    queryKey: ["user", clerkUser?.id],
-    queryFn: async () => {
-      if (!clerkUser?.id) return null;
-      try {
-        const { data } = await get<any>(`/users/clerk/${clerkUser.id}`);
-        return data;
-      } catch (error) {
-        return null;
-      }
-    },
-    enabled: !!clerkUser?.id,
-  });
+  const { user } = useProfileContext();
 
   const createUser = useMutation({
     mutationFn: async ({
@@ -58,7 +44,7 @@ export function useUsers() {
       const { data } = await post<any>("/users", {
         clerk_user_id: clerkUserId,
         role: role,
-        approved_at: isHigherRole(role) ? new Date().toISOString() : null,
+        approved_at: user?.role === "MANAGER" ? new Date().toISOString() : null,
         email: email,
         firstName: firstName,
         lastName: lastName,
@@ -149,23 +135,22 @@ export function useUsers() {
     },
   });
 
-  const getStudentsApprovalStatus = (userId: number) =>
-    useQuery({
-      queryKey: ["students-approval-status", userId],
-      queryFn: async () => {
-        try {
-          const { data } = await get<any>(`/users/${userId}/approval-status`);
-          console.log(data);
-          return data;
-        } catch (error) {
-          showErrorToast(
-            "Erro",
-            "Ocorreu um erro ao buscar o status de aprovação dos alunos",
-          );
-          throw error;
-        }
-      },
-    });
+  const getStudentsApprovalStatus = useQuery({
+    queryKey: ["students-approval-status", user?.id],
+    queryFn: async () => {
+      try {
+        if (!user?.id) return false;
+        const { data } = await get<any>(`/users/${user?.id}/approval-status`);
+        return data;
+      } catch (error) {
+        showErrorToast(
+          "Erro",
+          "Ocorreu um erro ao buscar o status de aprovação dos alunos",
+        );
+        throw error;
+      }
+    },
+  });
 
   const update = useMutation({
     mutationFn: async (data: any) => {
@@ -227,7 +212,6 @@ export function useUsers() {
   };
 
   return {
-    getUser,
     createUser,
     getUserByClerkUserId,
     getUserById,

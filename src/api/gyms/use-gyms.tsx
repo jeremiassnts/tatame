@@ -33,23 +33,6 @@ export function useGyms() {
     },
   });
 
-  const fetchByUser = (userId: number | undefined) => {
-    return useQuery({
-      queryKey: ["gym-by-user", userId],
-      queryFn: async () => {
-        if (userId == null || userId === 0) return null;
-        try {
-          const { data } = await get<any>(`/gyms/user/${userId}`);
-          return data;
-        } catch (error) {
-          showErrorToast("Erro", "Ocorreu um erro ao buscar a academia");
-          throw error;
-        }
-      },
-      enabled: !!userId,
-    });
-  };
-
   const fetchAll = useQuery({
     queryKey: ["gyms"],
     queryFn: async () => {
@@ -105,7 +88,6 @@ export function useGyms() {
 
   return {
     createGym,
-    fetchByUser,
     fetchAll,
     associateGym,
   };

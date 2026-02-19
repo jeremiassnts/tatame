@@ -51,7 +51,9 @@ export default function SelectGym() {
         queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
         queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-        queryClient.invalidateQueries({ queryKey: ["students-approval-status", user?.id] });
+        queryClient.invalidateQueries({
+          queryKey: ["students-approval-status", user?.id],
+        });
         reset();
         router.replace("/(logged)/(home)/user-approval-check");
       })
