@@ -11,7 +11,7 @@ import { VStack } from "../ui/vstack";
 export function BirthdayAlert() {
     const [isOpen, setIsOpen] = useState(true);
     const { getBirthdayUsers } = useUsers();
-    const { data: birthdayUsers } = getBirthdayUsers;
+    const { data: birthdayUsers } = getBirthdayUsers();
 
     if (!birthdayUsers || birthdayUsers.length === 0) return null;
 
@@ -20,11 +20,17 @@ export function BirthdayAlert() {
     }
 
     return (
-        <Card className="w-full bg-neutral-800" style={{ display: isOpen ? "flex" : "none" }}>
+        <Card
+            className="w-full bg-neutral-800"
+            style={{ display: isOpen ? "flex" : "none" }}
+        >
             <HStack className="items-center gap-4">
                 <Icon as={PartyPopper} size="md" />
                 <VStack className="max-w-[80%]">
-                    <Text>Hoje é aniversário de: {birthdayUsers.map((user) => user.name).join(", ")}</Text>
+                    <Text>
+                        Hoje é aniversário de:{" "}
+                        {birthdayUsers.map((user) => user.name).join(", ")}
+                    </Text>
                     <Text>Aproveite para desejar parabéns!</Text>
                 </VStack>
                 <Pressable onPress={handleClose} className="ml-auto mb-auto">
@@ -32,5 +38,5 @@ export function BirthdayAlert() {
                 </Pressable>
             </HStack>
         </Card>
-    )
+    );
 }

@@ -47,7 +47,7 @@ export default function CreateNotificationDialog() {
     const { user, gym } = useProfileContext();
     const { create } = useCreateNotification();
     const { mutateAsync: createNotification, isPending: isCreatingNotification } =
-        create;
+        create();
     const { data: tempStudents, isLoading: isLoadingStudents } =
         getStudentsByGymId(gym?.id ?? 0);
     const students = tempStudents?.filter((student) => student.id !== user?.id);

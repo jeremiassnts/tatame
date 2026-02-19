@@ -1,8 +1,8 @@
 import { useGraduations } from "@/src/api/graduations/use-graduations";
 import { useUsers } from "@/src/api/users/use-users";
 import { BELT_COLORS } from "@/src/constants/belts";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { Database } from "@/src/types/database.types";
-import { useUser } from "@clerk/clerk-expo";
 import { useMemo } from "react";
 import AvatarWithDialog from "../ui/avatar/avatar-with-dialog";
 import { Box } from "../ui/box";
@@ -15,11 +15,11 @@ interface HomeGymHeaderProps {
 }
 
 export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
-  const { user } = useUser();
+  const { user } = useProfileContext();
   const { getGraduation } = useGraduations();
-  const { data: graduation } = getGraduation;
+  const { data: graduation } = getGraduation(user?.id ?? 0);
   const { getStudentsApprovalStatus } = useUsers();
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
 
   const shift = useMemo(() => {
     const now = new Date();
@@ -31,6 +31,8 @@ export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
 
   // @ts-ignore
   const beltColor = graduation ? BELT_COLORS[graduation.belt] : "#FFFFFF";
+
+  const fullName = (user?.first_name + " " + (user?.last_name ?? "")).trim();
 
   return (
     <HStack className="gap-3 items-center">
@@ -46,16 +48,23 @@ export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
         )}
         <VStack className="items-center">
           <AvatarWithDialog
-            fullName={user?.fullName ?? ""}
-            imageUrl={user?.imageUrl ?? ""}
+            fullName={fullName}
+            imageUrl={user?.profile_picture ?? ""}
             size="lg"
             className="bg-neutral-800"
             avatarImageClassName="border-2 border-neutral-900"
           />
-          {graduation && (<HStack className="items-center justify-center border-[1px] border-neutral-600 mt-[-8px] h-3">
-            <Box className="w-6 h-full" style={{ backgroundColor: beltColor }} />
-            <Box className={`w-2 h-full ${graduation.belt === "black" ? "bg-red-800" : "bg-neutral-900"}`} />
-          </HStack>)}
+          {graduation && (
+            <HStack className="items-center justify-center border-[1px] border-neutral-600 mt-[-8px] h-3">
+              <Box
+                className="w-6 h-full"
+                style={{ backgroundColor: beltColor }}
+              />
+              <Box
+                className={`w-2 h-full ${graduation.belt === "black" ? "bg-red-800" : "bg-neutral-900"}`}
+              />
+            </HStack>
+          )}
         </VStack>
       </HStack>
       <VStack>
@@ -63,7 +72,7 @@ export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
           {shift},
         </Text>
         <Text className="text-xl font-black text-white uppercase">
-          {user?.fullName}
+          {fullName}
         </Text>
       </VStack>
     </HStack>

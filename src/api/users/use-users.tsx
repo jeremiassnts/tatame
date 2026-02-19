@@ -1,5 +1,4 @@
 import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { UserType } from "../../constants/user-type";
@@ -26,10 +25,9 @@ export interface ProfileInfo {
 }
 
 export function useUsers() {
-  const { user: clerkUser } = useUser();
   const { showErrorToast } = useToast();
   const { get, post, put, del } = useApi();
-  const { mutateAsync: createNotification } = useCreateNotification().create;
+  const { mutateAsync: createNotification } = useCreateNotification().create();
   const { user } = useProfileContext();
 
   const createUser = () => {

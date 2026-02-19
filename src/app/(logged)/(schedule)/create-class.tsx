@@ -1,5 +1,4 @@
 import { useClasses } from "@/src/api/classes/use-classes";
-import { useUsers } from "@/src/api/users/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
 import IosTimePicker from "@/src/components/ios-time-picker";
 import { TextInput } from "@/src/components/text-input";
@@ -23,8 +22,8 @@ import { AddIcon, CheckIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { Days } from "@/src/constants/date";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
-import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
@@ -44,11 +43,8 @@ const createClassFormSchema = z.object({
 export default function CreateClass() {
   const router = useRouter();
   const { createClass } = useClasses();
-  const { getUserByClerkUserId } = useUsers();
-  const { user } = useUser();
   const [isCreatingClass, setIsCreatingClass] = useState(false);
-  const { mutateAsync: createClassFn } =
-    createClass;
+  const { mutateAsync: createClassFn } = createClass();
   const {
     watch,
     setValue,
@@ -65,13 +61,13 @@ export default function CreateClass() {
       days: [],
     },
   });
+  const { user } = useProfileContext();
 
   async function handleCreateClass(
-    data: z.infer<typeof createClassFormSchema>
+    data: z.infer<typeof createClassFormSchema>,
   ) {
     if (!user?.id) return;
     setIsCreatingClass(true);
-    const sp_user = await getUserByClerkUserId(user.id);
 
     const promises = data.days.map((day) =>
       createClassFn({
@@ -79,11 +75,11 @@ export default function CreateClass() {
         start: data.start,
         end: data.end,
         day: day,
-        gym_id: sp_user?.gym_id,
-        instructor_id: sp_user?.id,
+        gym_id: user?.gym_id ?? 0,
+        instructor_id: user?.id ?? 0,
         modality: "jiu-jitsu",
-        created_by: sp_user?.id,
-      })
+        created_by: user?.id ?? 0,
+      }),
     );
 
     await Promise.all(promises)
@@ -126,52 +122,56 @@ export default function CreateClass() {
             {...register("description")}
             returnKeyType="next"
           />
-          <TextInput
-            value={"Modalidade: Jiu-Jitsu"}
-            readOnly
-            isDisabled
-          />
+          <TextInput value={"Modalidade: Jiu-Jitsu"} readOnly isDisabled />
           <HStack className="gap-2 items-center justify-center">
-            {Platform.OS === "ios" ? <IosTimePicker
-              setNewDate={(date: Date | undefined) => {
-                if (date) {
-                  setValue("start", format(date, "HH:mm"));
-                }
-              }}
-              placeholder="Início"
-              error={errors?.start?.message}
-              className="w-[49%]"
-            /> : <DateTimePicker
-              setNewDate={(date: Date | undefined) => {
-                if (date) {
-                  setValue("start", format(date, "HH:mm"));
-                }
-              }}
-              placeholder="Início"
-              error={errors?.start?.message}
-              mode="time"
-              className="w-[49%]"
-            />}
-            {Platform.OS == "ios" ? <IosTimePicker
-              setNewDate={(date: Date | undefined) => {
-                if (date) {
-                  setValue("end", format(date, "HH:mm"));
-                }
-              }}
-              placeholder="Término"
-              error={errors?.end?.message}
-              className="w-[49%]"
-            /> : <DateTimePicker
-              setNewDate={(date: Date | undefined) => {
-                if (date) {
-                  setValue("end", format(date, "HH:mm"));
-                }
-              }}
-              placeholder="Término"
-              error={errors?.end?.message}
-              mode="time"
-              className="w-[49%]"
-            />}
+            {Platform.OS === "ios" ? (
+              <IosTimePicker
+                setNewDate={(date: Date | undefined) => {
+                  if (date) {
+                    setValue("start", format(date, "HH:mm"));
+                  }
+                }}
+                placeholder="Início"
+                error={errors?.start?.message}
+                className="w-[49%]"
+              />
+            ) : (
+              <DateTimePicker
+                setNewDate={(date: Date | undefined) => {
+                  if (date) {
+                    setValue("start", format(date, "HH:mm"));
+                  }
+                }}
+                placeholder="Início"
+                error={errors?.start?.message}
+                mode="time"
+                className="w-[49%]"
+              />
+            )}
+            {Platform.OS == "ios" ? (
+              <IosTimePicker
+                setNewDate={(date: Date | undefined) => {
+                  if (date) {
+                    setValue("end", format(date, "HH:mm"));
+                  }
+                }}
+                placeholder="Término"
+                error={errors?.end?.message}
+                className="w-[49%]"
+              />
+            ) : (
+              <DateTimePicker
+                setNewDate={(date: Date | undefined) => {
+                  if (date) {
+                    setValue("end", format(date, "HH:mm"));
+                  }
+                }}
+                placeholder="Término"
+                error={errors?.end?.message}
+                mode="time"
+                className="w-[49%]"
+              />
+            )}
           </HStack>
           <TextInput
             value={"Instrutor: " + (user?.fullName ?? "")}

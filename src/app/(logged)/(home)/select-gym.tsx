@@ -11,8 +11,8 @@ import { HStack } from "@/src/components/ui/hstack";
 import { AddIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
-import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
@@ -27,11 +27,11 @@ type SelectGymFormSchema = z.infer<typeof selectGymFormSchema>;
 
 export default function SelectGym() {
   const { fetchAll, associateGym } = useGyms();
-  const { data: gyms, isLoading: isLoadingGyms } = fetchAll;
+  const { data: gyms, isLoading: isLoadingGyms } = fetchAll();
   const { mutateAsync: associateGymFn, isPending: isAssociatingGym } =
-    associateGym;
+    associateGym();
+  const { user } = useProfileContext();
   const router = useRouter();
-  const { user } = useUser();
   const {
     formState: { errors },
     handleSubmit,
@@ -46,7 +46,10 @@ export default function SelectGym() {
 
   async function handleSelectGym(data: SelectGymFormSchema) {
     if (!user?.id) return;
-    associateGymFn(data.gymId)
+    associateGymFn({
+      gymId: data.gymId,
+      userId: user?.id ?? 0,
+    })
       .then(() => {
         queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
         queryClient.invalidateQueries({ queryKey: ["next-class"] });

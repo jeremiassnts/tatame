@@ -3,7 +3,12 @@ import DateTimePicker from "@/src/components/date-time-picker";
 import IosDateTimePicker from "@/src/components/ios-date-time-picker";
 import { SelectInput } from "@/src/components/select-input";
 import { TextInput } from "@/src/components/text-input";
-import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
+import {
+    Button,
+    ButtonIcon,
+    ButtonSpinner,
+    ButtonText,
+} from "@/src/components/ui/button";
 import { HStack } from "@/src/components/ui/hstack";
 import { AtSignIcon, EditIcon } from "@/src/components/ui/icon";
 import { VStack } from "@/src/components/ui/vstack";
@@ -26,7 +31,7 @@ type EditProfileParams = {
     phone: string;
     gender: string;
     birth: string;
-}
+};
 const editProfileFormSchema = z.object({
     firstName: z.string().min(1, "O nome é obrigatório"),
     lastName: z.string().min(1, "O sobrenome é obrigatório"),
@@ -40,10 +45,11 @@ type EditProfileFormType = z.infer<typeof editProfileFormSchema>;
 export default function EditProfile() {
     const { user } = useUser();
     const router = useRouter();
-    const { edit } = useUsers();
+    const { update } = useUsers();
     const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const { mutateAsync: editUser } = edit;
-    const { id, firstName, lastName, instagram, phone, gender, birth } = useLocalSearchParams<EditProfileParams>();
+    const { mutateAsync: editUser } = update();
+    const { id, firstName, lastName, instagram, phone, gender, birth } =
+        useLocalSearchParams<EditProfileParams>();
     const {
         watch,
         setValue,
@@ -77,7 +83,7 @@ export default function EditProfile() {
             await user?.update({
                 firstName: data.firstName,
                 lastName: data.lastName,
-            })
+            });
 
             await editUser({
                 id: Number(id),
@@ -88,9 +94,9 @@ export default function EditProfile() {
                 birth_day: formatBirthDay(data.birth),
                 first_name: data.firstName,
                 last_name: data.lastName,
-            })
+            });
             setIsEditingProfile(false);
-            reset()
+            reset();
             queryClient.invalidateQueries({ queryKey: ["user-profile"] });
             router.navigate("/(logged)/(profile)");
         } catch {
@@ -99,9 +105,11 @@ export default function EditProfile() {
     }
 
     function formatBirth(birth: string) {
-        if (!birth) return undefined
+        if (!birth) return undefined;
         const birthDate = new Date(birth);
-        return new Date(birthDate.valueOf() + birthDate.getTimezoneOffset() * 60 * 1000);
+        return new Date(
+            birthDate.valueOf() + birthDate.getTimezoneOffset() * 60 * 1000,
+        );
     }
 
     return (
@@ -130,7 +138,9 @@ export default function EditProfile() {
                         error={errors.lastName?.message}
                         {...register("lastName")}
                         returnKeyType="next"
-                        onSubmitEditing={() => setFocus("instagram", { shouldSelect: true })}
+                        onSubmitEditing={() =>
+                            setFocus("instagram", { shouldSelect: true })
+                        }
                     />
                     <TextInput
                         icon={AtSignIcon}
@@ -171,27 +181,31 @@ export default function EditProfile() {
                         label="Gênero"
                     />
 
-                    {Platform.OS === "ios" ? <IosDateTimePicker
-                        value={formatBirth(birth)}
-                        setNewDate={(date: Date | undefined) => {
-                            if (date) {
-                                setValue("birth", date.toISOString());
-                            }
-                        }}
-                        placeholder="Selecione a data de nascimento"
-                        error={errors?.birth?.message}
-                        label="Data de nascimento"
-                    /> : <DateTimePicker
-                        value={formatBirth(birth)}
-                        setNewDate={(date: Date | undefined) => {
-                            if (date) {
-                                setValue("birth", date.toISOString());
-                            }
-                        }}
-                        placeholder="Selecione a data de nascimento"
-                        error={errors?.birth?.message}
-                        label="Data de nascimento"
-                    />}
+                    {Platform.OS === "ios" ? (
+                        <IosDateTimePicker
+                            value={formatBirth(birth)}
+                            setNewDate={(date: Date | undefined) => {
+                                if (date) {
+                                    setValue("birth", date.toISOString());
+                                }
+                            }}
+                            placeholder="Selecione a data de nascimento"
+                            error={errors?.birth?.message}
+                            label="Data de nascimento"
+                        />
+                    ) : (
+                        <DateTimePicker
+                            value={formatBirth(birth)}
+                            setNewDate={(date: Date | undefined) => {
+                                if (date) {
+                                    setValue("birth", date.toISOString());
+                                }
+                            }}
+                            placeholder="Selecione a data de nascimento"
+                            error={errors?.birth?.message}
+                            label="Data de nascimento"
+                        />
+                    )}
                     <HStack className="gap-2 w-full items-center justify-center mt-4">
                         <Button
                             action="secondary"
@@ -219,5 +233,5 @@ export default function EditProfile() {
                 </VStack>
             </ScrollView>
         </SafeAreaView>
-    )
+    );
 }

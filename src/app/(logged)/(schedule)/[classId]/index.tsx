@@ -49,10 +49,10 @@ export default function Class() {
     });
     const { isHigherRole, isLowerRole, isMediumRole } = useRoles();
     const router = useRouter();
-    const { mutateAsync: deleteClassFn } = deleteClass;
+    const { mutateAsync: deleteClassFn } = deleteClass();
     const { deleteAsset } = useAssets();
     const { mutateAsync: deleteAssetFn, isPending: isDeletingAsset } =
-        deleteAsset;
+        deleteAsset();
     const startOfWeekDate = startOfWeek(new Date(classDate));
 
     async function handleDeleteAsset(assetId: number) {

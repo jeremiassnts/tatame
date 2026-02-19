@@ -4,8 +4,12 @@ import { createContext } from "react";
 import { useApi } from "../hooks/use-api";
 import { Database } from "../types/database.types";
 
+type UserInfo = {
+    fullName: string;
+} & Database["public"]["Tables"]["users"]["Row"];
+
 interface ProfileContextType {
-    user: Database["public"]["Tables"]["users"]["Row"] | undefined | null;
+    user: UserInfo | undefined | null;
     gym: Database["public"]["Tables"]["gyms"]["Row"] | undefined | null;
     refetch: (() => Promise<void>) | null;
     isLoading: boolean;
@@ -27,7 +31,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
             if (!signedInUser?.id) return null;
             try {
                 const { data } = await get<any>(`/users/clerk/${signedInUser.id}`);
-                return data;
+                return {
+                    fullName: `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim(),
+                    ...data,
+                };
             } catch (error) {
                 return null;
             }

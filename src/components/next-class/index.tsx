@@ -23,10 +23,12 @@ interface NextClassProps {
 export function NextClass({ gym, isLoadingGym }: NextClassProps) {
   const router = useRouter();
   const { fetchNextClass } = useClasses();
-  const { data: nextClass, isLoading: isLoadingNextClass } = fetchNextClass;
-  const { getStudentsApprovalStatus } = useUsers();
   const { user, isLoading: isLoadingUser } = useProfileContext();
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
+  const { data: nextClass, isLoading: isLoadingNextClass } = fetchNextClass(
+    user?.id ?? 0,
+  );
+  const { getStudentsApprovalStatus } = useUsers();
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus();
   const { isHigherRole, isMediumRole, isLowerRole } = useRoles();
 
   if (gym && !studentsApprovalStatus && !isHigherRole()) {

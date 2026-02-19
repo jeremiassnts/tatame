@@ -36,13 +36,15 @@ export function ProfilePlan() {
             }
             setIsUpdatingPayment(true);
             // Criar Setup Intent para o customer existente
-            const { client_secret: setupIntentSecret } =
-                await stripeApi.setupIntents.create.mutateAsync({
+            const { client_secret: setupIntentSecret } = await stripeApi.setupIntents
+                .create()
+                .mutateAsync({
                     customerId: user.customer_id,
                 });
             // Criar Ephemeral Key
-            const { secret: ephemeralKey } =
-                await stripeApi.ephemeralKeys.create.mutateAsync({
+            const { secret: ephemeralKey } = await stripeApi.ephemeralKeys
+                .create()
+                .mutateAsync({
                     customerId: user.customer_id,
                 });
             // Inicializar Payment Sheet

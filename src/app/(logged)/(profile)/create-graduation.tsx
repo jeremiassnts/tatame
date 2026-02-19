@@ -12,9 +12,9 @@ import { AddIcon, ArrowLeftIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { BELTS } from "@/src/constants/belts";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
 import { getBeltDegrees } from "@/src/utils/belt";
-import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -25,17 +25,22 @@ import z from "zod";
 
 const createGraduationFormSchema = z.object({
   belt: z.string().min(1, "A faixa é obrigatória"),
-  degree: z.number().min(0, "O grau é obrigatório").max(10, "O grau é obrigatório"),
+  degree: z
+    .number()
+    .min(0, "O grau é obrigatório")
+    .max(10, "O grau é obrigatório"),
 });
 
 export default function CreateGraduation() {
   const router = useRouter();
   const { getUserByClerkUserId } = useUsers();
-  const { user } = useUser();
   const [isCreatingGraduation, setIsCreatingGraduation] = useState(false);
   const { createGraduation } = useGraduations();
-  const { mutateAsync: createGraduationFn } = createGraduation;
-  const [degrees, setDegrees] = useState<{ value: string; label: string }[]>([]);
+  const { mutateAsync: createGraduationFn } = createGraduation();
+  const [degrees, setDegrees] = useState<{ value: string; label: string }[]>(
+    [],
+  );
+  const { user } = useProfileContext();
   const {
     watch,
     setValue,
@@ -48,18 +53,17 @@ export default function CreateGraduation() {
     resolver: zodResolver(createGraduationFormSchema),
     defaultValues: {
       belt: "",
-      degree: undefined
+      degree: undefined,
     },
   });
 
   async function handleCreateGraduation(
-    data: z.infer<typeof createGraduationFormSchema>
+    data: z.infer<typeof createGraduationFormSchema>,
   ) {
     if (!user?.id) return;
     setIsCreatingGraduation(true);
-    const sp_user = await getUserByClerkUserId(user.id);
     createGraduationFn({
-      userId: sp_user?.id,
+      userId: user?.id ?? 0,
       belt: data.belt,
       degree: data.degree,
       modality: "jiu-jitsu",
@@ -67,7 +71,7 @@ export default function CreateGraduation() {
       .then(() => {
         reset();
         queryClient.invalidateQueries({ queryKey: ["graduation"] });
-        router.replace("/(logged)/(profile)")
+        router.replace("/(logged)/(profile)");
       })
       .catch(() => {
         setIsCreatingGraduation(false);
@@ -106,9 +110,9 @@ export default function CreateGraduation() {
             selectedValue={belt}
             placeholder="Selecione a faixa"
             onValueChange={(value) => {
-              setValue("belt", value)
-              const beltDegrees = getBeltDegrees(value)
-              setDegrees(beltDegrees)
+              setValue("belt", value);
+              const beltDegrees = getBeltDegrees(value);
+              setDegrees(beltDegrees);
             }}
             error={errors.belt?.message}
           />

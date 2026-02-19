@@ -23,21 +23,27 @@ import z from "zod";
 
 const updateGraduationFormSchema = z.object({
     belt: z.string().min(1, "A faixa é obrigatória"),
-    degree: z.number().min(0, "O grau é obrigatório").max(10, "O grau é obrigatório"),
+    degree: z
+        .number()
+        .min(0, "O grau é obrigatório")
+        .max(10, "O grau é obrigatório"),
 });
 
 type UpdateGraduationParams = {
     id: string;
     belt: string;
     degree: string;
-}
+};
 
 export default function UpdateGraduation() {
     const { id, belt, degree } = useLocalSearchParams<UpdateGraduationParams>();
     const router = useRouter();
     const { updateGraduation } = useGraduations();
-    const { mutateAsync: updateGraduationFn, isPending: isUpdatingGraduation } = updateGraduation;
-    const [degrees, setDegrees] = useState<{ value: string; label: string }[]>(getBeltDegrees(belt));
+    const { mutateAsync: updateGraduationFn, isPending: isUpdatingGraduation } =
+        updateGraduation();
+    const [degrees, setDegrees] = useState<{ value: string; label: string }[]>(
+        getBeltDegrees(belt),
+    );
     const {
         watch,
         setValue,
@@ -48,23 +54,22 @@ export default function UpdateGraduation() {
         resolver: zodResolver(updateGraduationFormSchema),
         defaultValues: {
             belt: belt ?? "",
-            degree: degree ? Number(degree) : undefined
+            degree: degree ? Number(degree) : undefined,
         },
     });
 
     async function handleUpdateGraduation(
-        data: z.infer<typeof updateGraduationFormSchema>
+        data: z.infer<typeof updateGraduationFormSchema>,
     ) {
         updateGraduationFn({
             id: Number(id),
             belt: data.belt,
             degree: data.degree,
-        })
-            .then(() => {
-                reset();
-                queryClient.invalidateQueries({ queryKey: ["graduation"] });
-                router.replace("/(logged)/(profile)")
-            })
+        }).then(() => {
+            reset();
+            queryClient.invalidateQueries({ queryKey: ["graduation"] });
+            router.replace("/(logged)/(profile)");
+        });
     }
 
     const tempBelt = watch("belt");
@@ -96,9 +101,9 @@ export default function UpdateGraduation() {
                         selectedValue={tempBelt}
                         placeholder="Selecione a faixa"
                         onValueChange={(value) => {
-                            setValue("belt", value)
-                            const beltDegrees = getBeltDegrees(value)
-                            setDegrees(beltDegrees)
+                            setValue("belt", value);
+                            const beltDegrees = getBeltDegrees(value);
+                            setDegrees(beltDegrees);
                         }}
                         error={errors.belt?.message}
                     />

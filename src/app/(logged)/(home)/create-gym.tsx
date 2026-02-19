@@ -1,6 +1,5 @@
 import { useAttachments } from "@/src/api/attachments/use-attachments";
 import { useGyms } from "@/src/api/gyms/use-gyms";
-import { useUsers } from "@/src/api/users/use-users";
 import DateTimePicker from "@/src/components/date-time-picker";
 import ImageViewer from "@/src/components/image-picker";
 import { TextInput } from "@/src/components/text-input";
@@ -14,9 +13,9 @@ import { Heading } from "@/src/components/ui/heading";
 import { AddIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { queryClient } from "@/src/lib/react-query";
-import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -42,13 +41,12 @@ const createGymFormSchema = z.object({
 export default function CreateGym() {
   const router = useRouter();
   const { createGym } = useGyms();
-  const { getUserByClerkUserId } = useUsers();
-  const { user } = useUser();
   const { uploadImage } = useAttachments();
-  const { mutateAsync: createGymFn } = createGym;
+  const { mutateAsync: createGymFn } = createGym();
   const [isCreatingGym, setIsCreatingGym] = useState(false);
-  const { mutateAsync: uploadImageFn } = uploadImage;
+  const { mutateAsync: uploadImageFn } = uploadImage();
   const { showErrorToast } = useToast();
+  const { user } = useProfileContext();
   const {
     watch,
     setValue,
@@ -96,16 +94,20 @@ export default function CreateGym() {
       }
     }
     if (!imageUrl) {
-      showErrorToast("Erro", "Erro ao enviar a logo da academia, tentando novamente...");
+      showErrorToast(
+        "Erro",
+        "Erro ao enviar a logo da academia, tentando novamente...",
+      );
       return;
     }
-    const sp_user = await getUserByClerkUserId(user.id);
     createGymFn({
-      name: data.name,
-      address: `${data.address.street}, ${data.address.number} - ${data.address.neighborhood}, ${data.address.city} - ${data.address.state}`,
-      managerId: sp_user?.id,
-      since: data.since.toISOString(),
-      logo: imageUrl,
+      gym: {
+        name: data.name,
+        address: `${data.address.street}, ${data.address.number} - ${data.address.neighborhood}, ${data.address.city} - ${data.address.state}`,
+        since: data.since.toISOString(),
+        logo: imageUrl,
+      },
+      userId: user?.id ?? 0,
     })
       .then(() => {
         reset();

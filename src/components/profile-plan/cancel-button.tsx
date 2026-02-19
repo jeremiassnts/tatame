@@ -31,12 +31,16 @@ export function CancelButton({
     const stripeApi = useStripeHook();
     const { update } = useUsers();
     const deleteSubscription = stripeApi.subscriptions.delete;
+    const {
+        mutateAsync: deleteSubscriptionFn,
+        isPending: isDeletingSubscription,
+    } = deleteSubscription();
 
     async function handleDeleteSubscription() {
-        await deleteSubscription.mutateAsync({
+        await deleteSubscriptionFn({
             subscriptionId,
         });
-        await update.mutateAsync({
+        await update().mutateAsync({
             id: userId,
             subscription_id: null,
             customer_id: null,
@@ -85,10 +89,10 @@ export function CancelButton({
                             variant="solid"
                             size="md"
                             onPress={handleDeleteSubscription}
-                            disabled={deleteSubscription.isPending}
-                            className={`${deleteSubscription.isPending ? "opacity-50" : "opacity-100"}`}
+                            disabled={isDeletingSubscription}
+                            className={`${isDeletingSubscription ? "opacity-50" : "opacity-100"}`}
                         >
-                            {deleteSubscription.isPending ? (
+                            {isDeletingSubscription ? (
                                 <ButtonSpinner />
                             ) : (
                                 <ButtonText>Sim, cancelar plano</ButtonText>

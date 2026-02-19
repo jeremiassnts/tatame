@@ -23,8 +23,8 @@ export default function Profile() {
   const { isLowerRole, isHigherRole } = useRoles();
   const { user, gym, isLoading } = useProfileContext();
 
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
-  const { data: lastMonthCheckins } = fetchLastMonthCheckins;
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus();
+  const { data: lastMonthCheckins } = fetchLastMonthCheckins(user?.id ?? 0);
 
   const fullName = (user?.first_name + " " + (user?.last_name ?? "")).trim();
 
@@ -48,7 +48,7 @@ export default function Profile() {
               imageUrl={user?.profile_picture ?? ""}
               size="xl"
               updateImageFn={async (image) => {
-                await updateUserImage.mutateAsync({
+                await updateUserImage().mutateAsync({
                   image,
                   userId: user.clerk_user_id,
                 });

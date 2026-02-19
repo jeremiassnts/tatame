@@ -5,23 +5,20 @@ import NotificationRow from "@/src/components/notification-row";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Notifications() {
+    const { user } = useProfileContext();
     const { list, resend, view } = useNotifications();
     const { isMediumRole } = useRoles();
-    const { data, isLoading, isFetching, refetch } = list;
+    const { data, isLoading, isFetching, refetch } = list(user?.id ?? 0);
     const {
         mutateAsync: resendNotification,
         isPending: isResendingNotification,
-    } = resend;
-    const { getCurrentUser } = useUsers();
-    const { data: user } = useQuery({
-        queryKey: ["current-user"],
-        queryFn: () => getCurrentUser(),
-    });
-    const { mutateAsync: viewNotification } = view;
+    } = resend();
+    const { mutateAsync: viewNotification } = view();
 
     return (
         <SafeAreaView className="flex-1 pl-5 pr-5 pb-10">

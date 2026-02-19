@@ -22,11 +22,16 @@ interface ActionsProps {
   classDate?: string;
 }
 
-export function Actions({ topBadgeText, isHigherRole, data, classDate }: ActionsProps) {
+export function Actions({
+  topBadgeText,
+  isHigherRole,
+  data,
+  classDate,
+}: ActionsProps) {
   const router = useRouter();
   const [showOptions, setShowOptions] = useState(false);
   const { deleteClass } = useClasses();
-  const { mutateAsync: deleteClassFn } = deleteClass;
+  const { mutateAsync: deleteClassFn } = deleteClass();
 
   function handleClose() {
     setShowOptions(false);
@@ -77,11 +82,13 @@ export function Actions({ topBadgeText, isHigherRole, data, classDate }: Actions
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
-          {classDate && <ActionsheetItem onPress={handleDetailsClass}>
-            <ActionsheetItemText className="text-white text-md">
-              Detalhes
-            </ActionsheetItemText>
-          </ActionsheetItem>}
+          {classDate && (
+            <ActionsheetItem onPress={handleDetailsClass}>
+              <ActionsheetItemText className="text-white text-md">
+                Detalhes
+              </ActionsheetItemText>
+            </ActionsheetItem>
+          )}
           <ActionsheetItem onPress={handleEditClass}>
             <ActionsheetItemText className="text-white text-md">
               Editar aula

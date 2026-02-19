@@ -1,5 +1,5 @@
 import { useRoles } from "@/src/api/roles/use-roles";
-import { Student, useUsers } from "@/src/api/users/use-users";
+import { useUsers } from "@/src/api/users/use-users";
 import { BELT_COLORS, BELTS } from "@/src/constants/belts";
 import { DEGREES } from "@/src/constants/degrees";
 import { queryClient } from "@/src/lib/react-query";
@@ -16,26 +16,32 @@ import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
 interface StudentRowProps {
-    student: Student;
+    student: any;
 }
 
 export function StudentRow({ student }: StudentRowProps) {
-    const { approveStudent, denyStudent } = useUsers()
-    const { isHigherRole } = useRoles()
-    const router = useRouter()
+    const { approveStudent, denyStudent } = useUsers();
+    const { isHigherRole } = useRoles();
+    const router = useRouter();
 
     function handleApproveStudent() {
-        approveStudent.mutateAsync(student.id)
+        approveStudent()
+            .mutateAsync(student.id)
             .then(() => {
-                queryClient.invalidateQueries({ queryKey: ["students-by-gym-id", student.gym_id] })
-            })
+                queryClient.invalidateQueries({
+                    queryKey: ["students-by-gym-id", student.gym_id],
+                });
+            });
     }
 
     function handleDenyStudent() {
-        denyStudent.mutateAsync(student.id)
+        denyStudent()
+            .mutateAsync(student.id)
             .then(() => {
-                queryClient.invalidateQueries({ queryKey: ["students-by-gym-id", student.gym_id] })
-            })
+                queryClient.invalidateQueries({
+                    queryKey: ["students-by-gym-id", student.gym_id],
+                });
+            });
     }
 
     function handleViewUser() {
@@ -59,7 +65,7 @@ export function StudentRow({ student }: StudentRowProps) {
                 gender: student.gender,
                 birth: student.birth,
             },
-        })
+        });
     }
 
     const isWaitingApproval = !student.approved_at && !student.denied_at;
@@ -72,29 +78,66 @@ export function StudentRow({ student }: StudentRowProps) {
     const beltDegree = DEGREES[student.belt][student.degree];
     return (
         <Pressable onPress={handleViewUser}>
-            <Card className={`bg-neutral-800 w-full rounded-md mb-4 pl-0 ${isDenied ? 'opacity-60' : ''}`}>
+            <Card
+                className={`bg-neutral-800 w-full rounded-md mb-4 pl-0 ${isDenied ? "opacity-60" : ""}`}
+            >
                 <HStack className="items-center gap-3 border-[${beltColor}]">
-                    <Box className={`w-2 h-full`} style={{ backgroundColor: beltColor }} />
-                    <AvatarWithDialog fullName={student.name} imageUrl={student.imageUrl} size="sm" />
+                    <Box
+                        className={`w-2 h-full`}
+                        style={{ backgroundColor: beltColor }}
+                    />
+                    <AvatarWithDialog
+                        fullName={student.name}
+                        imageUrl={student.imageUrl}
+                        size="sm"
+                    />
                     <VStack>
                         <Heading size="sm">{student.name}</Heading>
-                        <Text size="sm" className="text-neutral-400">Faixa {beltLabel}, {beltDegree}</Text>
+                        <Text size="sm" className="text-neutral-400">
+                            Faixa {beltLabel}, {beltDegree}
+                        </Text>
                     </VStack>
-                    {isHigherRole() && isWaitingApproval && <HStack className="gap-2 ml-auto">
-                        <Button className="rounded-md border-neutral-600" variant="outline" onPress={handleApproveStudent}>
+                    {isHigherRole() && isWaitingApproval && (
+                        <HStack className="gap-2 ml-auto">
+                            <Button
+                                className="rounded-md border-neutral-600"
+                                variant="outline"
+                                onPress={handleApproveStudent}
+                            >
+                                <ButtonIcon
+                                    as={CheckIcon}
+                                    size="sm"
+                                    className="text-green-500"
+                                />
+                            </Button>
+                            <Button
+                                className="rounded-md border-neutral-600"
+                                variant="outline"
+                                onPress={handleDenyStudent}
+                            >
+                                <ButtonIcon as={CloseIcon} size="sm" className="text-red-500" />
+                            </Button>
+                        </HStack>
+                    )}
+                    {isHigherRole() && isApproved && (
+                        <Icon
+                            as={CheckCircleIcon}
+                            size="md"
+                            className="text-green-500 ml-auto"
+                        />
+                    )}
+                    {isHigherRole() && isDenied && (
+                        <Button
+                            className="rounded-md border-neutral-600 ml-auto"
+                            variant="outline"
+                            onPress={handleApproveStudent}
+                        >
                             <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
+                            <ButtonText>Reativar</ButtonText>
                         </Button>
-                        <Button className="rounded-md border-neutral-600" variant="outline" onPress={handleDenyStudent}>
-                            <ButtonIcon as={CloseIcon} size="sm" className="text-red-500" />
-                        </Button>
-                    </HStack>}
-                    {isHigherRole() && isApproved && <Icon as={CheckCircleIcon} size="md" className="text-green-500 ml-auto" />}
-                    {isHigherRole() && isDenied && <Button className="rounded-md border-neutral-600 ml-auto" variant="outline" onPress={handleApproveStudent}>
-                        <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
-                        <ButtonText>Reativar</ButtonText>
-                    </Button>}
+                    )}
                 </HStack>
             </Card>
         </Pressable>
-    )
+    );
 }

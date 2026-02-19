@@ -23,7 +23,7 @@ export default function Layout() {
   const segments = useSegments();
   const pathname = segments[segments.length - 1].replace(/[^a-zA-Z]/g, "");
   const { getStudentsApprovalStatus } = useUsers();
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus();
   const { initializePushNotifications } = useSendNotification();
   const { isHigherRole } = useRoles();
   const { user } = useProfileContext();

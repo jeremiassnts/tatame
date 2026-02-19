@@ -12,32 +12,44 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function UserApprovalCheck() {
     const router = useRouter();
     const { getStudentsApprovalStatus } = useUsers();
-    const { data: studentsApprovalStatus,
+    const {
+        data: studentsApprovalStatus,
         isLoading: isLoadingStudentsApprovalStatus,
-        refetch: refetchStudentsApprovalStatus
-    } = getStudentsApprovalStatus
+        refetch: refetchStudentsApprovalStatus,
+    } = getStudentsApprovalStatus();
     const { isLowerRole } = useRoles();
 
     if (isLoadingStudentsApprovalStatus) {
-        return <SplashScreen />
+        return <SplashScreen />;
     }
     if (studentsApprovalStatus) {
-        return <Redirect href="/(logged)/(home)/home" />
+        return <Redirect href="/(logged)/(home)/home" />;
     }
 
     return (
         <SafeAreaView className="flex-1 pt-[100px]">
-            <ScrollView className="pl-10 pr-10"
-                refreshControl={<RefreshControl refreshing={isLoadingStudentsApprovalStatus} onRefresh={refetchStudentsApprovalStatus} />}>
+            <ScrollView
+                className="pl-10 pr-10"
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isLoadingStudentsApprovalStatus}
+                        onRefresh={refetchStudentsApprovalStatus}
+                    />
+                }
+            >
                 <Image
                     source={require("@/assets/images/logo.png")}
                     className="w-[200px] mt-[-10px] mb-[-5px] mx-auto"
                     resizeMode="contain"
                     alt="Tatame Logo"
                 />
-                <Heading size="xl" className="text-center mt-6 mb-2">Falta pouco! Você selecionou sua academia com sucesso!</Heading>
+                <Heading size="xl" className="text-center mt-6 mb-2">
+                    Falta pouco! Você selecionou sua academia com sucesso!
+                </Heading>
                 <Text className="text-center text-neutral-200">
-                    Agora é só aguardar a aprovação do seu {isLowerRole() ? 'professor' : 'gestor'} para usar todas as funcionalidades da plataforma.
+                    Agora é só aguardar a aprovação do seu{" "}
+                    {isLowerRole() ? "professor" : "gestor"} para usar todas as
+                    funcionalidades da plataforma.
                 </Text>
                 <Button
                     action="primary"
@@ -48,5 +60,5 @@ export default function UserApprovalCheck() {
                 </Button>
             </ScrollView>
         </SafeAreaView>
-    )
+    );
 }

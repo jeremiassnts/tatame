@@ -8,16 +8,14 @@ import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
-import { useUser } from "@clerk/clerk-expo";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Gym() {
     const { isHigherRole } = useRoles();
     const { updateGymLogo, uploadImage } = useAttachments();
-    const { user } = useUser();
     const { getStudentsByGymId } = useUsers();
-    const { gym } = useProfileContext();
+    const { user, gym } = useProfileContext();
     const {
         data: students,
         isLoading: isLoadingStudents,
@@ -29,9 +27,9 @@ export default function Gym() {
         //tries to upload the logo 4 times
         for (let i = 0; i < 4; i++) {
             try {
-                const imageUrl = await uploadImage.mutateAsync(logo);
+                const imageUrl = await uploadImage().mutateAsync(logo);
                 if (!imageUrl) continue;
-                await updateGymLogo.mutateAsync({ logo: imageUrl, gymId: gym.id });
+                await updateGymLogo().mutateAsync({ logo: imageUrl, gymId: gym.id });
                 queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
                 break;
             } catch (error) {

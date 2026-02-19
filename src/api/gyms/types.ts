@@ -3,5 +3,4 @@ export interface CreateGymProps {
   address: string;
   since: string;
   logo: string;
-  userId: number;
 }

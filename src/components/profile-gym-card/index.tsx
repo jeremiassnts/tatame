@@ -1,8 +1,8 @@
 import { useAttachments } from "@/src/api/attachments/use-attachments";
 import { useRoles } from "@/src/api/roles/use-roles";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
 import { Database } from "@/src/types/database.types";
-import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { Pressable } from "react-native";
 import AvatarWithDialog from "../ui/avatar/avatar-with-dialog";
@@ -22,16 +22,16 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
   const { isHigherRole } = useRoles();
   const router = useRouter();
   const { updateGymLogo, uploadImage } = useAttachments();
-  const { user } = useUser();
+  const { user } = useProfileContext();
 
   async function updateGymImage(logo: string) {
     if (!gym?.id) return;
     //tries to upload the logo 4 times
     for (let i = 0; i < 4; i++) {
       try {
-        const imageUrl = await uploadImage.mutateAsync(logo);
+        const imageUrl = await uploadImage().mutateAsync(logo);
         if (!imageUrl) continue;
-        await updateGymLogo.mutateAsync({ logo: imageUrl, gymId: gym.id });
+        await updateGymLogo().mutateAsync({ logo: imageUrl, gymId: gym.id });
         queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
         break;
       } catch (error) {
@@ -55,10 +55,17 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
   return (
     <Card className="w-full border-2 border-neutral-800 mt-4 bg-neutral-900">
       <HStack className="justify-between items-center">
-        <Heading size="xs" className="text-neutral-400">Academia</Heading>
+        <Heading size="xs" className="text-neutral-400">
+          Academia
+        </Heading>
       </HStack>
       <HStack className="w-full p-2 mt-4 rounded-md gap-4 items-center justify-center">
-        <AvatarWithDialog fullName={gym.name} imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`} size="lg" updateImageFn={isHigherRole() ? updateGymImage : undefined} />
+        <AvatarWithDialog
+          fullName={gym.name}
+          imageUrl={`${process.env.EXPO_PUBLIC_R2_URL}${gym.logo}`}
+          size="lg"
+          updateImageFn={isHigherRole() ? updateGymImage : undefined}
+        />
         <Pressable onPress={() => router.push(`/(logged)/(gym)`)}>
           <VStack className="justify-center items-start max-w-[80%]">
             <Text className="text-white text-lg font-bold">{gym.name}</Text>

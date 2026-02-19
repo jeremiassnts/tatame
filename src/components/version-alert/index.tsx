@@ -15,7 +15,7 @@ interface VersionAlertProps {
 }
 export function VersionAlert({ lastVersion }: VersionAlertProps) {
     const { getStoreUrls } = useAppStores();
-    const { data: storeUrls } = getStoreUrls;
+    const { data: storeUrls } = getStoreUrls();
     const { showErrorToast } = useToast();
 
     function handleUpdateVersion() {

@@ -1,5 +1,6 @@
 import { useGraduations } from "@/src/api/graduations/use-graduations";
 import { BELT_COLORS } from "@/src/constants/belts";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useRouter } from "expo-router";
 import { Box } from "../ui/box";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
@@ -14,7 +15,10 @@ interface GraduationCardProps {
 
 export function GraduationCard({ showBelt }: GraduationCardProps) {
   const { getGraduation } = useGraduations();
-  const { data: graduation, isLoading: isLoadingGraduation } = getGraduation;
+  const { user } = useProfileContext();
+  const { data: graduation, isLoading: isLoadingGraduation } = getGraduation(
+    user?.id ?? 0,
+  );
   const router = useRouter();
 
   function handleCreateGraduation() {
@@ -29,7 +33,7 @@ export function GraduationCard({ showBelt }: GraduationCardProps) {
         belt: graduation?.belt,
         degree: graduation?.degree,
       },
-    })
+    });
   }
 
   // @ts-ignore
@@ -43,9 +47,7 @@ export function GraduationCard({ showBelt }: GraduationCardProps) {
       ></Skeleton>
       {!isLoadingGraduation && !graduation && (
         <Box className="w-full bg-neutral-800 rounded-md h-[70px] items-center justify-center mt-4">
-          <Button
-            onPress={handleCreateGraduation}
-          >
+          <Button onPress={handleCreateGraduation}>
             <ButtonIcon as={AddIcon} />
             <ButtonText>Cadastrar graduação</ButtonText>
           </Button>
@@ -59,14 +61,18 @@ export function GraduationCard({ showBelt }: GraduationCardProps) {
               className={`w-[25%] justify-evenly ${graduation.belt === "black" ? "bg-red-800" : "bg-neutral-900"
                 }`}
             >
-              {Array.from({ length: graduation.degree ?? 0 }).map((_, index) => (
-                <Box key={index} className="w-[4px] h-full bg-white" />
-              ))}
+              {Array.from({ length: graduation.degree ?? 0 }).map(
+                (_, index) => (
+                  <Box key={index} className="w-[4px] h-full bg-white" />
+                ),
+              )}
             </HStack>
             <Box className="w-[5%]" style={{ backgroundColor: beltColor }} />
           </HStack>
           <Button variant="link" onPress={handleUpdateGraduation}>
-            <ButtonText className="text-neutral-400 text-md font-normal">Atualizar graduação</ButtonText>
+            <ButtonText className="text-neutral-400 text-md font-normal">
+              Atualizar graduação
+            </ButtonText>
           </Button>
         </VStack>
       )}
