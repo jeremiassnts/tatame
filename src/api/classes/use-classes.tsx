@@ -20,10 +20,10 @@ function mapToClassRow(item: any): ClassRow {
 export function useClasses() {
   const { get, post, put, del } = useApi();
   const { showErrorToast } = useToast();
-  const { mutateAsync: createNotification } = useCreateNotification().create;
+  const { mutateAsync: createNotification } = useCreateNotification().create();
 
-  const fetchNextClass = (userId: number) =>
-    useQuery({
+  const fetchNextClass = (userId: number) => {
+    return useQuery({
       queryKey: ["next-class", userId],
       queryFn: async () => {
         try {
@@ -37,49 +37,52 @@ export function useClasses() {
         }
       },
     });
+  };
 
-  const createClass = useMutation({
-    mutationFn: async (
-      classData: Database["public"]["Tables"]["class"]["Insert"],
-    ) => {
-      try {
-        const { data } = await post<any>("/class", {
-          gym_id: classData.gym_id,
-          instructor_id: classData.instructor_id,
-          created_by: classData.created_by,
-          day: classData.day,
-          start: classData.start,
-          end: classData.end,
-          description: classData.description,
-        });
-        const created = Array.isArray(data) ? data[0] : data;
+  const createClass = () => {
+    return useMutation({
+      mutationFn: async (
+        classData: Database["public"]["Tables"]["class"]["Insert"],
+      ) => {
+        try {
+          const { data } = await post<any>("/class", {
+            gym_id: classData.gym_id,
+            instructor_id: classData.instructor_id,
+            created_by: classData.created_by,
+            day: classData.day,
+            start: classData.start,
+            end: classData.end,
+            description: classData.description,
+          });
+          const created = Array.isArray(data) ? data[0] : data;
 
-        const { data: students } = await get<any>(
-          `/users/gym/${classData.gym_id}/students`,
-        );
-        const list = Array.isArray(students) ? students : (students ?? []);
-        const approved = list.filter((s: any) => s.approved_at != null);
+          const { data: students } = await get<any>(
+            `/users/gym/${classData.gym_id}/students`,
+          );
+          const list = Array.isArray(students) ? students : (students ?? []);
+          const approved = list.filter((s: any) => s.approved_at != null);
 
-        await createNotification({
-          title: "Nova aula criada",
-          content: "Seu professor cadastrou uma nova aula, venha conferir!",
-          recipients: approved.map((s: any) => s.id.toString()),
-          channel: "push",
-          sent_by: classData.created_by ?? 0,
-          status: "pending",
-          viewed_by: [(classData.created_by ?? "").toString()],
-        });
+          await createNotification({
+            title: "Nova aula criada",
+            content: "Seu professor cadastrou uma nova aula, venha conferir!",
+            recipients: approved.map((s: any) => s.id.toString()),
+            channel: "push",
+            sent_by: classData.created_by ?? 0,
+            status: "pending",
+            viewed_by: [(classData.created_by ?? "").toString()],
+          });
 
-        return created;
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao criar a aula");
-        throw error;
-      }
-    },
-  });
+          return created;
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao criar a aula");
+          throw error;
+        }
+      },
+    });
+  };
 
-  const fetchClasses = (gymId: number) =>
-    useQuery({
+  const fetchClasses = (gymId: number) => {
+    return useQuery({
       queryKey: ["classes", gymId],
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
@@ -94,6 +97,7 @@ export function useClasses() {
         }
       },
     });
+  };
 
   async function fetchClassById(classId: number) {
     try {
@@ -107,34 +111,38 @@ export function useClasses() {
     }
   }
 
-  const editClass = useMutation({
-    mutationFn: async (
-      payload: Database["public"]["Tables"]["class"]["Update"],
-    ) => {
-      if (!payload.id) {
-        showErrorToast("Erro", "O ID da aula é obrigatório");
-        throw new Error("O ID da aula é obrigatório");
-      }
-      try {
-        await put(`/class/${payload.id}`, payload);
-        return payload;
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao editar a aula");
-        throw error;
-      }
-    },
-  });
+  const editClass = () => {
+    return useMutation({
+      mutationFn: async (
+        payload: Database["public"]["Tables"]["class"]["Update"],
+      ) => {
+        if (!payload.id) {
+          showErrorToast("Erro", "O ID da aula é obrigatório");
+          throw new Error("O ID da aula é obrigatório");
+        }
+        try {
+          await put(`/class/${payload.id}`, payload);
+          return payload;
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao editar a aula");
+          throw error;
+        }
+      },
+    });
+  };
 
-  const deleteClass = useMutation({
-    mutationFn: async (classId: number) => {
-      try {
-        await del(`/class/${classId}`);
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao deletar a aula");
-        throw error;
-      }
-    },
-  });
+  const deleteClass = () => {
+    return useMutation({
+      mutationFn: async (classId: number) => {
+        try {
+          await del(`/class/${classId}`);
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao deletar a aula");
+          throw error;
+        }
+      },
+    });
+  };
 
   const findClassToCheckIn = async (
     gymId: number,

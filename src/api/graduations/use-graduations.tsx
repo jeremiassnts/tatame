@@ -7,8 +7,8 @@ export function useGraduations() {
   const { get, post, put } = useApi();
   const { showErrorToast } = useToast();
 
-  const getGraduation = (userId: number) =>
-    useQuery({
+  const getGraduation = (userId: number) => {
+    return useQuery({
       queryKey: ["graduation", userId],
       queryFn: async () => {
         try {
@@ -21,42 +21,47 @@ export function useGraduations() {
         }
       },
     });
+  };
 
-  const createGraduation = useMutation({
-    mutationFn: async (
-      graduation: Database["public"]["Tables"]["graduations"]["Insert"],
-    ) => {
-      try {
-        const { data } = await post<any>("/graduations", {
-          userId: graduation.userId,
-          belt: graduation.belt,
-          degree: graduation.degree,
-          modality: graduation.modality,
-        });
-        return Array.isArray(data) ? data[0] : data;
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao criar a graduação");
-        throw error;
-      }
-    },
-  });
+  const createGraduation = () => {
+    return useMutation({
+      mutationFn: async (
+        graduation: Database["public"]["Tables"]["graduations"]["Insert"],
+      ) => {
+        try {
+          const { data } = await post<any>("/graduations", {
+            userId: graduation.userId,
+            belt: graduation.belt,
+            degree: graduation.degree,
+            modality: graduation.modality,
+          });
+          return Array.isArray(data) ? data[0] : data;
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao criar a graduação");
+          throw error;
+        }
+      },
+    });
+  };
 
-  const updateGraduation = useMutation({
-    mutationFn: async (
-      graduation: Database["public"]["Tables"]["graduations"]["Update"],
-    ) => {
-      if (!graduation.id) {
-        showErrorToast("Erro", "ID da graduação é obrigatório");
-        throw new Error("ID da graduação é obrigatório");
-      }
-      try {
-        await put(`/graduations/${graduation.id}`, graduation);
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao atualizar a graduação");
-        throw error;
-      }
-    },
-  });
+  const updateGraduation = () => {
+    return useMutation({
+      mutationFn: async (
+        graduation: Database["public"]["Tables"]["graduations"]["Update"],
+      ) => {
+        if (!graduation.id) {
+          showErrorToast("Erro", "ID da graduação é obrigatório");
+          throw new Error("ID da graduação é obrigatório");
+        }
+        try {
+          await put(`/graduations/${graduation.id}`, graduation);
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao atualizar a graduação");
+          throw error;
+        }
+      },
+    });
+  };
 
   return {
     getGraduation,

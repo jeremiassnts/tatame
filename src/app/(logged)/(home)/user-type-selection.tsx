@@ -11,7 +11,7 @@ import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { USER_TYPES, UserType } from "@/src/constants/user-type";
 import { useUserTypeCache } from "@/src/hooks/use-user-type-cache";
-import { useAuth } from "@clerk/clerk-expo";
+import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ImageBackground, Pressable } from "react-native";
@@ -22,8 +22,8 @@ export default function Home() {
   const [isUserTypeLoaded, setIsUserTypeLoaded] = useState(false);
   const router = useRouter();
   const { getUserByClerkUserId, createUser } = useUsers();
-  const { userId } = useAuth();
-  const { mutateAsync: createUserFn, isPending: isLoading } = createUser;
+  const { user } = useUser();
+  const { mutateAsync: createUserFn, isPending: isLoading } = createUser();
   const [tempUserType, setTempUserType] = useState<UserType | null>(null);
   const { isHigherRole } = useRoles();
 
@@ -31,8 +31,12 @@ export default function Home() {
     if (!tempUserType) return;
 
     await createUserFn({
-      clerkUserId: userId ?? "",
+      clerkUserId: user?.id ?? "",
       role: tempUserType as UserType,
+      email: user?.emailAddresses[0].emailAddress ?? "",
+      firstName: user?.firstName ?? "",
+      lastName: user?.lastName ?? "",
+      profilePicture: user?.imageUrl ?? "",
     });
     setUserType(tempUserType as UserType);
     router.replace("/(logged)/(home)/home");
@@ -42,10 +46,10 @@ export default function Home() {
     const fetchUserType = async () => {
       const userType = await getUserType();
       if (!userType) {
-        const user = await getUserByClerkUserId(userId ?? "");
-        if (user && user.role) {
-          setUserType(user.role as UserType);
-          if (isHigherRole(user.role)) {
+        const userData = await getUserByClerkUserId(user?.id ?? "");
+        if (userData && userData.role) {
+          setUserType(userData.role as UserType);
+          if (isHigherRole(userData.role)) {
             router.replace("/(logged)/(home)/manager-plan-selection");
           } else {
             router.replace("/(logged)/(home)/home");

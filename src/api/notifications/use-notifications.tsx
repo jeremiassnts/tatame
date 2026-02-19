@@ -16,8 +16,8 @@ export function useNotifications() {
   const { sendNotification } = useSendNotification();
   const { showErrorToast } = useToast();
 
-  const list = (userId: number) =>
-    useQuery({
+  const list = (userId: number) => {
+    return useQuery({
       queryKey: ["notifications", userId],
       queryFn: async () => {
         try {
@@ -29,9 +29,10 @@ export function useNotifications() {
         }
       },
     });
+  };
 
-  const listUnread = (userId: number) =>
-    useQuery({
+  const listUnread = (userId: number) => {
+    return useQuery({
       queryKey: ["notifications-unread", userId],
       queryFn: async () => {
         try {
@@ -48,74 +49,79 @@ export function useNotifications() {
         }
       },
     });
+  };
+  const update = () => {
+    return useMutation({
+      mutationFn: async (
+        notification: Database["public"]["Tables"]["notifications"]["Update"],
+      ) => {
+        if (!notification.id) throw new Error("Notification id required");
+        try {
+          const { data } = await put<any>(
+            `/notifications/${notification.id}`,
+            notification,
+          );
+          return data;
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao atualizar a notificação");
+          throw error;
+        }
+      },
+    });
+  };
 
-  const update = useMutation({
-    mutationFn: async (
-      notification: Database["public"]["Tables"]["notifications"]["Update"],
-    ) => {
-      if (!notification.id) throw new Error("Notification id required");
-      try {
-        const { data } = await put<any>(
-          `/notifications/${notification.id}`,
-          notification,
-        );
-        return data;
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao atualizar a notificação");
-        throw error;
-      }
-    },
-  });
+  const resend = () => {
+    return useMutation({
+      mutationFn: async ({
+        notificationId,
+        userId,
+      }: {
+        notificationId: number;
+        userId: number;
+      }) => {
+        try {
+          const { data } = await get<any>(`/notifications/user/${userId}`);
+          const list = Array.isArray(data) ? data : (data ?? []);
+          const notification = list.find((n: any) => n.id === notificationId);
+          if (!notification) throw new Error("Notification not found");
 
-  const resend = useMutation({
-    mutationFn: async ({
-      notificationId,
-      userId,
-    }: {
-      notificationId: number;
-      userId: number;
-    }) => {
-      try {
-        const { data } = await get<any>(`/notifications/user/${userId}`);
-        const list = Array.isArray(data) ? data : (data ?? []);
-        const notification = list.find((n: any) => n.id === notificationId);
-        if (!notification) throw new Error("Notification not found");
-
-        await sendNotification({
-          id: notification.id,
-          channel: "push",
-          title: notification.title ?? "",
-          content: notification.content ?? "",
-          recipients: notification.recipients ?? [],
-        });
-        await update.mutateAsync({
-          id: notification.id,
-          status: "sent",
-          sent_at: new Date().toISOString(),
-        });
-        queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao enviar a notificação");
-        await update.mutateAsync({
-          id: notificationId,
-          status: "failed",
-        });
-        queryClient.invalidateQueries({ queryKey: ["notifications"] });
-        throw error;
-      }
-    },
-  });
-
-  const view = useMutation({
-    mutationFn: async ({ id, userId }: { id: number; userId: string }) => {
-      try {
-        await post(`/notifications/${id}/view`, { userId });
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao visualizar a notificação");
-        throw error;
-      }
-    },
-  });
+          await sendNotification({
+            id: notification.id,
+            channel: "push",
+            title: notification.title ?? "",
+            content: notification.content ?? "",
+            recipients: notification.recipients ?? [],
+          });
+          await update().mutateAsync({
+            id: notification.id,
+            status: "sent",
+            sent_at: new Date().toISOString(),
+          });
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao enviar a notificação");
+          await update().mutateAsync({
+            id: notificationId,
+            status: "failed",
+          });
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          throw error;
+        }
+      },
+    });
+  };
+  const view = () => {
+    return useMutation({
+      mutationFn: async ({ id, userId }: { id: number; userId: string }) => {
+        try {
+          await post(`/notifications/${id}/view`, { userId });
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao visualizar a notificação");
+          throw error;
+        }
+      },
+    });
+  };
 
   return {
     list,

@@ -6,30 +6,34 @@ export function useAttachments() {
   const { showErrorToast } = useToast();
   const { post, put } = useApi();
 
-  const uploadImage = useMutation({
-    mutationFn: async (image: string) => {
-      if (!image) return;
-      const formData = new FormData();
-      const filename = image.split("/").pop();
-      const match = /\.(\w+)$/.exec(filename ?? "");
-      const ext = match?.[1];
-      const mimeType = ext ? `image/${ext}` : `image`;
-      formData.append("file", {
-        uri: image,
-        name: filename,
-        type: mimeType,
-      } as any);
-      const response = await post<{ data?: { url: string }; url?: string }>(
-        "/attachments/image",
-        formData,
-        {
-          "Content-Type": "multipart/form-data",
-        },
-      );
-      const body = response.data as any;
-      return body?.data?.url ?? body?.url ?? body;
-    },
-  });
+  const uploadImage = () => {
+    return useMutation({
+      mutationFn: async (image: string) => {
+        if (!image) return;
+        const formData = new FormData();
+        const filename = image.split("/").pop();
+        const match = /\.(\w+)$/.exec(filename ?? "");
+        const ext = match?.[1];
+        const mimeType = ext ? `image/${ext}` : `image`;
+        formData.append("file", {
+          uri: image,
+          name: filename,
+          type: mimeType,
+        } as any);
+        const response = await post<{ data?: { url: string }; url?: string }>(
+          "/attachments/image",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
+        const body = response.data as any;
+        return body?.data?.url ?? body?.url ?? body;
+      },
+    });
+  };
 
   // const uploadVideo = useMutation({
   //   mutationFn: async (video: string) => {
@@ -58,44 +62,50 @@ export function useAttachments() {
   //   },
   // });
 
-  const updateUserImage = useMutation({
-    mutationFn: async (props: { image: string; userId: string }) => {
-      const { image, userId } = props;
-      if (!image) return;
-      const formData = new FormData();
-      const filename = image.split("/").pop();
-      const match = /\.(\w+)$/.exec(filename ?? "");
-      const ext = match?.[1];
-      const mimeType = ext ? `image/${ext}` : `image`;
-      formData.append("file", {
-        uri: image,
-        name: filename,
-        type: mimeType,
-      } as any);
-      const response = await post<{
-        data?: { image_url?: string };
-        image_url?: string;
-      }>(`/users/clerk/${userId}/profile-image`, formData, {
-        "Content-Type": "multipart/form-data",
-      });
-      const body = response.data as any;
-      return body?.data ?? body;
-    },
-  });
+  const updateUserImage = () => {
+    return useMutation({
+      mutationFn: async (props: { image: string; userId: string }) => {
+        const { image, userId } = props;
+        if (!image) return;
+        const formData = new FormData();
+        const filename = image.split("/").pop();
+        const match = /\.(\w+)$/.exec(filename ?? "");
+        const ext = match?.[1];
+        const mimeType = ext ? `image/${ext}` : `image`;
+        formData.append("file", {
+          uri: image,
+          name: filename,
+          type: mimeType,
+        } as any);
+        const response = await post<{
+          data?: { image_url?: string };
+          image_url?: string;
+        }>(`/users/clerk/${userId}/profile-image`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        const body = response.data as any;
+        return body?.data ?? body;
+      },
+    });
+  };
 
-  const updateGymLogo = useMutation({
-    mutationFn: async ({ logo, gymId }: { logo: string; gymId: number }) => {
-      try {
-        await put<any>(`/gyms/${gymId}`, { logo });
-      } catch (error) {
-        showErrorToast(
-          "Erro",
-          "Ocorreu um erro ao atualizar a logo da academia",
-        );
-        throw error;
-      }
-    },
-  });
+  const updateGymLogo = () => {
+    return useMutation({
+      mutationFn: async ({ logo, gymId }: { logo: string; gymId: number }) => {
+        try {
+          await put<any>(`/gyms/${gymId}`, { logo });
+        } catch (error) {
+          showErrorToast(
+            "Erro",
+            "Ocorreu um erro ao atualizar a logo da academia",
+          );
+          throw error;
+        }
+      },
+    });
+  };
 
   return {
     uploadImage,

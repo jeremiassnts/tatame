@@ -15,38 +15,42 @@ export function useStripeHook() {
     const { get, post, del } = useApi();
 
     const products = {
-        list: useQuery({
-            queryKey: ["products"],
-            queryFn: async () => {
-                const { data } = await get<FetchProductsResponse>("/stripe/products");
-                return data;
-            },
-        }),
+        list: () => {
+            return useQuery({
+                queryKey: ["products"],
+                queryFn: async () => {
+                    const { data } = await get<FetchProductsResponse>("/stripe/products");
+                    return data;
+                },
+            });
+        },
     };
 
     const customers = {
-        create: useMutation({
-            mutationFn: async ({
-                name,
-                email,
-                userId,
-            }: {
-                name: string;
-                email: string;
-                userId: number;
-            }) => {
-                const { data } = await post<CreateCustomerResponse>(
-                    "/stripe/customers",
-                    { name, email, userId },
-                );
-                return data;
-            },
-        }),
+        create: () => {
+            return useMutation({
+                mutationFn: async ({
+                    name,
+                    email,
+                    userId,
+                }: {
+                    name: string;
+                    email: string;
+                    userId: number;
+                }) => {
+                    const { data } = await post<CreateCustomerResponse>(
+                        "/stripe/customers",
+                        { name, email, userId },
+                    );
+                    return data;
+                },
+            });
+        },
     };
 
     const subscriptions = {
-        get: (subscriptionId: string) =>
-            useQuery({
+        get: (subscriptionId: string) => {
+            return useQuery({
                 queryKey: ["subscription-by-id"],
                 queryFn: async () => {
                     const { data } = await get<FetchSubscriptionResponse>(
@@ -54,26 +58,29 @@ export function useStripeHook() {
                     );
                     return data ?? null;
                 },
-            }),
-        create: useMutation({
-            mutationFn: async ({
-                customerId,
-                priceId,
-                userId,
-            }: {
-                customerId: string;
-                priceId: string;
-                userId: number;
-            }) => {
-                const { data } = await post<CreateSubscriptionResponse>(
-                    "/stripe/subscriptions",
-                    { customerId, priceId, userId },
-                );
-                return data;
-            },
-        }),
-        getByCustomerId: (customerId: string) =>
-            useQuery({
+            });
+        },
+        create: () => {
+            return useMutation({
+                mutationFn: async ({
+                    customerId,
+                    priceId,
+                    userId,
+                }: {
+                    customerId: string;
+                    priceId: string;
+                    userId: number;
+                }) => {
+                    const { data } = await post<CreateSubscriptionResponse>(
+                        "/stripe/subscriptions",
+                        { customerId, priceId, userId },
+                    );
+                    return data;
+                },
+            });
+        },
+        getByCustomerId: (customerId: string) => {
+            return useQuery({
                 queryKey: ["subscription-by-customer-id"],
                 queryFn: async () => {
                     const { data } = await get<FetchSubscriptionResponse>(
@@ -81,59 +88,68 @@ export function useStripeHook() {
                     );
                     return data ?? null;
                 },
-            }),
-        delete: useMutation({
-            mutationFn: async ({ subscriptionId }: { subscriptionId: string }) => {
-                const { data } = await del<DeleteSubscriptionResponse>(
-                    `/stripe/subscriptions/${subscriptionId}`,
-                );
-                return data;
-            },
-        }),
+            });
+        },
+        delete: () => {
+            return useMutation({
+                mutationFn: async ({ subscriptionId }: { subscriptionId: string }) => {
+                    const { data } = await del<DeleteSubscriptionResponse>(
+                        `/stripe/subscriptions/${subscriptionId}`,
+                    );
+                    return data;
+                },
+            });
+        },
     };
 
     const paymentIntents = {
-        create: useMutation({
-            mutationFn: async ({
-                customerId,
-                amount,
-                currency,
-            }: {
-                customerId: string;
-                amount: number;
-                currency: string;
-            }) => {
-                const { data } = await post<CreatePaymentIntentResponse>(
-                    "/stripe/payment-intents",
-                    { customerId, amount, currency },
-                );
-                return data;
-            },
-        }),
+        create: () => {
+            return useMutation({
+                mutationFn: async ({
+                    customerId,
+                    amount,
+                    currency,
+                }: {
+                    customerId: string;
+                    amount: number;
+                    currency: string;
+                }) => {
+                    const { data } = await post<CreatePaymentIntentResponse>(
+                        "/stripe/payment-intents",
+                        { customerId, amount, currency },
+                    );
+                    return data;
+                },
+            });
+        },
     };
 
     const setupIntents = {
-        create: useMutation({
-            mutationFn: async ({ customerId }: { customerId: string }) => {
-                const { data } = await post<CreateSetupIntentResponse>(
-                    "/stripe/setup-intents",
-                    { customerId },
-                );
-                return data;
-            },
-        }),
+        create: () => {
+            return useMutation({
+                mutationFn: async ({ customerId }: { customerId: string }) => {
+                    const { data } = await post<CreateSetupIntentResponse>(
+                        "/stripe/setup-intents",
+                        { customerId },
+                    );
+                    return data;
+                },
+            });
+        },
     };
 
     const ephemeralKeys = {
-        create: useMutation({
-            mutationFn: async ({ customerId }: { customerId: string }) => {
-                const { data } = await post<CreateEphemeralKeyResponse>(
-                    "/stripe/ephemeral-keys",
-                    { customerId },
-                );
-                return data;
-            },
-        }),
+        create: () => {
+            return useMutation({
+                mutationFn: async ({ customerId }: { customerId: string }) => {
+                    const { data } = await post<CreateEphemeralKeyResponse>(
+                        "/stripe/ephemeral-keys",
+                        { customerId },
+                    );
+                    return data;
+                },
+            });
+        },
     };
 
     return {

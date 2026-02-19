@@ -23,7 +23,7 @@ export default function ManagerPlanSelection() {
     const { plan } = useLocalSearchParams<ManagerPlanSelectionParams>();
     const stripeApi = useStripeHook();
     const { data: products, isLoading: isLoadingProducts } =
-        stripeApi.products.list;
+        stripeApi.products.list();
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +43,7 @@ export default function ManagerPlanSelection() {
             setIsLoading(true);
             const product = products?.find((product) => product.id === selectedPlan);
             if (product?.default_price.unit_amount! <= 0) {
-                await update.mutateAsync({
+                await update().mutateAsync({
                     id: user?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
                     subscription_id: null,
@@ -56,19 +56,20 @@ export default function ManagerPlanSelection() {
                 return;
             } else {
                 //create customer
-                const customer = await stripeApi.customers.create.mutateAsync({
+                const customer = await stripeApi.customers.create().mutateAsync({
                     name: (user?.first_name + " " + (user?.last_name ?? "")).trim(),
                     email: user?.email ?? "",
                     userId: user?.id ?? 0,
                 });
                 //create payment intent
                 const { client_secret: setupIntentSecret } =
-                    await stripeApi.setupIntents.create.mutateAsync({
+                    await stripeApi.setupIntents.create().mutateAsync({
                         customerId: customer.id,
                     });
                 //create ephemeral key
-                const { secret: ephemeralKey } =
-                    await stripeApi.ephemeralKeys.create.mutateAsync({
+                const { secret: ephemeralKey } = await stripeApi.ephemeralKeys
+                    .create()
+                    .mutateAsync({
                         customerId: customer.id,
                     });
                 //initialize payment sheet
@@ -78,13 +79,13 @@ export default function ManagerPlanSelection() {
                     throw error;
                 }
                 //create subscription
-                await stripeApi.subscriptions.create.mutateAsync({
+                await stripeApi.subscriptions.create().mutateAsync({
                     customerId: customer.id,
                     priceId: product?.default_price.id ?? "",
                     userId: user?.id ?? 0,
                 });
                 //save plan
-                await update.mutateAsync({
+                await update().mutateAsync({
                     id: user?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
                 });

@@ -32,36 +32,40 @@ export function useUsers() {
   const { mutateAsync: createNotification } = useCreateNotification().create;
   const { user } = useProfileContext();
 
-  const createUser = useMutation({
-    mutationFn: async ({
-      clerkUserId,
-      role,
-      email,
-      firstName,
-      lastName,
-      profilePicture,
-    }: CreateUserProps) => {
-      const { data } = await post<any>("/users", {
-        clerk_user_id: clerkUserId,
-        role: role,
-        approved_at: user?.role === "MANAGER" ? new Date().toISOString() : null,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        profilePicture: profilePicture ?? "",
-      });
-      console.log(data);
-      return data;
-    },
-  });
+  const createUser = () => {
+    return useMutation({
+      mutationFn: async ({
+        clerkUserId,
+        role,
+        email,
+        firstName,
+        lastName,
+        profilePicture,
+      }: CreateUserProps) => {
+        const { data } = await post<any>("/users", {
+          clerkUserId: clerkUserId,
+          role: role,
+          approved_at:
+            user?.role === "MANAGER" ? new Date().toISOString() : null,
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          profilePicture: profilePicture ?? "",
+        });
+        return data;
+      },
+    });
+  };
 
   const getUserByClerkUserId = async (clerkUserId: string) => {
     try {
       const { data } = await get<any>(`/users/clerk/${clerkUserId}`);
-      console.log(data);
       return data;
     } catch (error) {
-      showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
+      showErrorToast(
+        "Erro",
+        "Ocorreu um erro ao buscar o usuário com o Clerk ID",
+      );
       throw error;
     }
   };
@@ -69,7 +73,6 @@ export function useUsers() {
   const getUserById = async (userId: number) => {
     try {
       const { data } = await get<any>(`/users/${userId}`);
-      console.log(data);
       return data;
     } catch (error) {
       showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
@@ -83,7 +86,6 @@ export function useUsers() {
       queryFn: async () => {
         try {
           const { data } = await get<any>(`/users/gym/${gymId}/students`);
-          console.log(data);
           return data;
         } catch (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os alunos");
@@ -93,107 +95,116 @@ export function useUsers() {
     });
   };
 
-  const approveStudent = useMutation({
-    mutationFn: async (userId: number) => {
-      try {
-        await post<any>(`/users/approve`, {
-          userId,
-        });
-        await createNotification({
-          title: "Parabéns! Seu cadastro foi aprovado",
-          content: `Aproveite, agora você pode acessar todos os recursos da plataforma!`,
-          recipients: [userId.toString()],
-          channel: "push",
-          status: "pending",
-          viewed_by: [],
-        });
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao aprovar o aluno");
-        throw error;
-      }
-    },
-  });
+  const approveStudent = () => {
+    return useMutation({
+      mutationFn: async (userId: number) => {
+        try {
+          await post<any>(`/users/approve`, {
+            userId,
+          });
+          await createNotification({
+            title: "Parabéns! Seu cadastro foi aprovado",
+            content: `Aproveite, agora você pode acessar todos os recursos da plataforma!`,
+            recipients: [userId.toString()],
+            channel: "push",
+            status: "pending",
+            viewed_by: [],
+          });
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao aprovar o aluno");
+          throw error;
+        }
+      },
+    });
+  };
 
-  const denyStudent = useMutation({
-    mutationFn: async (userId: number) => {
-      try {
-        await post<any>(`/users/deny`, {
-          userId,
-        });
-        await createNotification({
-          title: "Que pena! Seu cadastro foi negado",
-          content: `Por favor, contate o suporte para mais informações`,
-          recipients: [userId.toString()],
-          channel: "push",
-          status: "pending",
-          viewed_by: [],
-        });
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao negar o aluno");
-        throw error;
-      }
-    },
-  });
+  const denyStudent = () => {
+    return useMutation({
+      mutationFn: async (userId: number) => {
+        try {
+          await post<any>(`/users/deny`, {
+            userId,
+          });
+          await createNotification({
+            title: "Que pena! Seu cadastro foi negado",
+            content: `Por favor, contate o suporte para mais informações`,
+            recipients: [userId.toString()],
+            channel: "push",
+            status: "pending",
+            viewed_by: [],
+          });
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao negar o aluno");
+          throw error;
+        }
+      },
+    });
+  };
 
-  const getStudentsApprovalStatus = useQuery({
-    queryKey: ["students-approval-status", user?.id],
-    queryFn: async () => {
-      try {
-        if (!user?.id) return false;
-        const { data } = await get<any>(`/users/${user?.id}/approval-status`);
-        return data;
-      } catch (error) {
-        showErrorToast(
-          "Erro",
-          "Ocorreu um erro ao buscar o status de aprovação dos alunos",
-        );
-        throw error;
-      }
-    },
-  });
+  const getStudentsApprovalStatus = () => {
+    return useQuery({
+      queryKey: ["students-approval-status", user?.id],
+      queryFn: async () => {
+        try {
+          if (!user?.id) return false;
+          const { data } = await get<any>(`/users/${user?.id}/approval-status`);
+          return data;
+        } catch (error) {
+          showErrorToast(
+            "Erro",
+            "Ocorreu um erro ao buscar o status de aprovação dos alunos",
+          );
+          throw error;
+        }
+      },
+    });
+  };
 
-  const update = useMutation({
-    mutationFn: async (data: any) => {
-      try {
-        const response = await put<any>(`/users/${data.id}`, data);
-        console.log(response);
-        return response.data;
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao atualizar o usuário");
-        throw error;
-      }
-    },
-  });
+  const update = () => {
+    return useMutation({
+      mutationFn: async (data: any) => {
+        try {
+          const response = await put<any>(`/users/${data.id}`, data);
+          return response.data;
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao atualizar o usuário");
+          throw error;
+        }
+      },
+    });
+  };
 
-  const deleteUser = useMutation({
-    mutationFn: async (userId: string) => {
-      try {
-        const { data } = await del<any>(`/users/${userId}`);
-        console.log(data);
-        return data;
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao deletar o usuário");
-        throw error;
-      }
-    },
-  });
+  const deleteUser = () => {
+    return useMutation({
+      mutationFn: async (userId: string) => {
+        try {
+          const { data } = await del<any>(`/users/${userId}`);
+          return data;
+        } catch (error) {
+          showErrorToast("Erro", "Ocorreu um erro ao deletar o usuário");
+          throw error;
+        }
+      },
+    });
+  };
 
-  const getBirthdayUsers = useQuery({
-    queryKey: ["birthday-users", format(new Date(), "MM-dd")],
-    queryFn: async () => {
-      try {
-        const { data } = await get<any>(`/users/birthdays/today`);
-        console.log(data);
-        return data;
-      } catch (error) {
-        showErrorToast(
-          "Erro",
-          "Ocorreu um erro ao buscar os usuários de aniversário",
-        );
-        throw error;
-      }
-    },
-  });
+  const getBirthdayUsers = () => {
+    return useQuery({
+      queryKey: ["birthday-users", format(new Date(), "MM-dd")],
+      queryFn: async () => {
+        try {
+          const { data } = await get<any>(`/users/birthdays/today`);
+          return data;
+        } catch (error) {
+          showErrorToast(
+            "Erro",
+            "Ocorreu um erro ao buscar os usuários de aniversário",
+          );
+          throw error;
+        }
+      },
+    });
+  };
 
   const getInstructorsByGymId = (gymId: number) => {
     return useQuery({
@@ -201,7 +212,6 @@ export function useUsers() {
       queryFn: async () => {
         try {
           const { data } = await get<any>(`/users/gym/${gymId}/instructors`);
-          console.log(data);
           return data;
         } catch (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os instrutores");
