@@ -19,7 +19,7 @@ export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
   const { getGraduation } = useGraduations();
   const { data: graduation } = getGraduation(user?.id ?? 0);
   const { getStudentsApprovalStatus } = useUsers();
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus;
+  const { data: studentsApprovalStatus } = getStudentsApprovalStatus();
 
   const shift = useMemo(() => {
     const now = new Date();
@@ -31,8 +31,6 @@ export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
 
   // @ts-ignore
   const beltColor = graduation ? BELT_COLORS[graduation.belt] : "#FFFFFF";
-
-  const fullName = (user?.first_name + " " + (user?.last_name ?? "")).trim();
 
   return (
     <HStack className="gap-3 items-center">
@@ -48,8 +46,8 @@ export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
         )}
         <VStack className="items-center">
           <AvatarWithDialog
-            fullName={fullName}
-            imageUrl={user?.profile_picture ?? ""}
+            fullName={user?.fullName ?? ""}
+            imageUrl={user?.profilePicture ?? ""}
             size="lg"
             className="bg-neutral-800"
             avatarImageClassName="border-2 border-neutral-900"
@@ -72,7 +70,7 @@ export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
           {shift},
         </Text>
         <Text className="text-xl font-black text-white uppercase">
-          {fullName}
+          {user?.fullName ?? ""}
         </Text>
       </VStack>
     </HStack>

@@ -6,7 +6,16 @@ import { Database } from "../types/database.types";
 
 type UserInfo = {
     fullName: string;
-} & Database["public"]["Tables"]["users"]["Row"];
+    profilePicture: string;
+    email: string;
+    role: string;
+    plan: string;
+    subscriptionId: string;
+    customerId: string;
+    clerkUserId: string;
+    id: number;
+    gymId: number;
+};
 
 interface ProfileContextType {
     user: UserInfo | undefined | null;
@@ -32,7 +41,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
             try {
                 const { data } = await get<any>(`/users/clerk/${signedInUser.id}`);
                 return {
-                    fullName: `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim(),
+                    fullName: `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim(),
                     ...data,
                 };
             } catch (error) {
