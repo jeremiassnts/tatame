@@ -97,8 +97,9 @@ export function useUsers() {
     return useMutation({
       mutationFn: async (userId: number) => {
         try {
-          await post<any>(`/users/approve`, {
-            userId,
+          await put<any>(`/users/${userId}`, {
+            approved_at: new Date().toISOString(),
+            denied_at: null,
           });
           await createNotification({
             title: "Parabéns! Seu cadastro foi aprovado",
@@ -120,8 +121,9 @@ export function useUsers() {
     return useMutation({
       mutationFn: async (userId: number) => {
         try {
-          await post<any>(`/users/deny`, {
-            userId,
+          await put<any>(`/users/${userId}`, {
+            approved_at: null,
+            denied_at: new Date().toISOString(),
           });
           await createNotification({
             title: "Que pena! Seu cadastro foi negado",
@@ -165,6 +167,7 @@ export function useUsers() {
           const response = await put<any>(`/users/${data.id}`, data);
           return response.data;
         } catch (error) {
+          console.error(error);
           showErrorToast("Erro", "Ocorreu um erro ao atualizar o usuário");
           throw error;
         }

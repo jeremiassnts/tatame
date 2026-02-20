@@ -28,6 +28,11 @@ export default function ManagerPlanSelection() {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [isLoading, setIsLoading] = useState(false);
     const { update } = useUsers();
+    const { mutateAsync: updateUser } = update();
+    const { mutateAsync: createCustomer } = stripeApi.customers.create();
+    const { mutateAsync: createSetupIntent } = stripeApi.setupIntents.create();
+    const { mutateAsync: createSubscription } = stripeApi.subscriptions.create();
+    const { mutateAsync: createEphemeralKey } = stripeApi.ephemeralKeys.create();
     const { user, isLoading: isLoadingUser } = useProfileContext();
     const { showErrorToast } = useToast();
     const router = useRouter();
@@ -43,11 +48,11 @@ export default function ManagerPlanSelection() {
             setIsLoading(true);
             const product = products?.find((product) => product.id === selectedPlan);
             if (product?.default_price.unit_amount! <= 0) {
-                await update().mutateAsync({
+                await updateUser({
                     id: user?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
-                    subscription_id: null,
-                    customer_id: null,
+                    subscriptionId: null,
+                    customerId: null,
                 });
                 queryClient.invalidateQueries({
                     queryKey: ["user-profile"],
@@ -56,22 +61,19 @@ export default function ManagerPlanSelection() {
                 return;
             } else {
                 //create customer
-                const customer = await stripeApi.customers.create().mutateAsync({
+                const customer = await createCustomer({
                     name: (user?.first_name + " " + (user?.last_name ?? "")).trim(),
                     email: user?.email ?? "",
                     userId: user?.id ?? 0,
                 });
                 //create payment intent
-                const { client_secret: setupIntentSecret } =
-                    await stripeApi.setupIntents.create().mutateAsync({
-                        customerId: customer.id,
-                    });
+                const { client_secret: setupIntentSecret } = await createSetupIntent({
+                    customerId: customer.id,
+                });
                 //create ephemeral key
-                const { secret: ephemeralKey } = await stripeApi.ephemeralKeys
-                    .create()
-                    .mutateAsync({
-                        customerId: customer.id,
-                    });
+                const { secret: ephemeralKey } = await createEphemeralKey({
+                    customerId: customer.id,
+                });
                 //initialize payment sheet
                 await setup(customer.id, ephemeralKey, setupIntentSecret);
                 const { error } = await presentPaymentSheet();
@@ -79,13 +81,13 @@ export default function ManagerPlanSelection() {
                     throw error;
                 }
                 //create subscription
-                await stripeApi.subscriptions.create().mutateAsync({
+                await createSubscription({
                     customerId: customer.id,
                     priceId: product?.default_price.id ?? "",
                     userId: user?.id ?? 0,
                 });
                 //save plan
-                await update().mutateAsync({
+                await updateUser({
                     id: user?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
                 });
@@ -95,19 +97,13 @@ export default function ManagerPlanSelection() {
                 router.navigate("/(logged)/(home)/home");
             }
         } catch (error) {
-            console.log(JSON.stringify(error, null, 2));
+            console.error(error);
             showErrorToast(
                 "Erro na plataforma de pagamento",
                 "Ocorreu um erro ao iniciar o pagamento, tente novamente.",
             );
         }
         setIsLoading(false);
-    }
-
-    if (isLoadingUser) {
-        return <SplashScreen />;
-    } else if (user?.plan && !mustSelectPlan) {
-        return <Redirect href="/(logged)/(home)/home" />;
     }
 
     const setup = async (
@@ -136,6 +132,12 @@ export default function ManagerPlanSelection() {
             }
         }
     }, [plan, products]);
+
+    if (isLoadingUser) {
+        return <SplashScreen />;
+    } else if (user?.plan && !mustSelectPlan) {
+        return <Redirect href="/(logged)/(home)/home" />;
+    }
 
     return (
         <SafeAreaView

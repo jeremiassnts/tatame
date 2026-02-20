@@ -26,7 +26,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     const { get } = useApi();
 
     const user = useQuery({
-        queryKey: ["user", signedInUser?.id],
+        queryKey: ["user-profile", signedInUser?.id],
         queryFn: async () => {
             if (!signedInUser?.id) return null;
             try {
