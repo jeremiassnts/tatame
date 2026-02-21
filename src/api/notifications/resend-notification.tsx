@@ -5,7 +5,7 @@ import { queryClient } from "@/src/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { update } from "./update-notification";
 
-export function resend() {
+export function resendNotification() {
   const { get } = useApi();
   const { sendNotification } = useSendNotification();
   const { showErrorToast } = useToast();

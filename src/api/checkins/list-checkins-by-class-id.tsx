@@ -2,18 +2,18 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
-export function listNotifications(userId: number) {
+export function listCheckinsByClassId(classId: number) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
   return useQuery({
-    queryKey: ["notifications", userId],
+    queryKey: ["checkins-by-class-id", classId],
     queryFn: async () => {
       try {
-        const { data } = await get<any>(`/notifications/user/${userId}`);
+        const { data } = await get<any>(`/checkins/class/${classId}`);
         return data;
       } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao buscar as notificações");
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
         throw error;
       }
     },

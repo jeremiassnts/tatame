@@ -1,23 +1,23 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
+import { mapToClassRow } from "./map-class";
 
-export function fetchAll(userId: number) {
+export function listClasses(gymId: number) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
   return useQuery({
-    queryKey: ["checkins", userId],
+    queryKey: ["classes", gymId],
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     queryFn: async () => {
       try {
-        const { data } = await get<any>(`/checkins/user/${userId}`);
+        const { data } = await get<any>(`/class/gym/${gymId}`);
         const list = Array.isArray(data) ? data : (data ?? []);
-        const today = new Date().toISOString().split("T")[0];
-        return list.filter(
-          (c: { date?: string }) => c?.date?.split?.("T")?.[0] === today,
-        );
+        return list.map(mapToClassRow);
       } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+        showErrorToast("Erro", "Ocorreu um erro ao buscar as aulas");
         throw error;
       }
     },

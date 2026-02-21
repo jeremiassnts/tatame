@@ -3,7 +3,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { CreateCheckinProps } from "./types";
 
-export function create() {
+export function createCheckin() {
   const { get, post } = useApi();
   const { showErrorToast } = useToast();
 

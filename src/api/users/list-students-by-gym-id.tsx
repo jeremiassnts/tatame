@@ -2,19 +2,18 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
-export function getGraduation(userId: number) {
+export function listStudentsByGymId(gymId: number) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
   return useQuery({
-    queryKey: ["graduation", userId],
+    queryKey: ["students-by-gym-id", gymId],
     queryFn: async () => {
       try {
-        const { data } = await get<any>(`/graduations/user/${userId}`);
-        if (!data) return null;
-        return Array.isArray(data) ? (data[0] ?? null) : data;
+        const { data } = await get<any>(`/users/gym/${gymId}/students`);
+        return data;
       } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao buscar a graduação");
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os alunos");
         throw error;
       }
     },

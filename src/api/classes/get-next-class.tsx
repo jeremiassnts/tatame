@@ -3,21 +3,20 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { mapToClassRow } from "./map-class";
 
-export function fetchClasses(gymId: number) {
+export function getNextClass(userId: number) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
   return useQuery({
-    queryKey: ["classes", gymId],
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    queryKey: ["next-class", userId],
     queryFn: async () => {
       try {
-        const { data } = await get<any>(`/class/gym/${gymId}`);
-        const list = Array.isArray(data) ? data : (data ?? []);
-        return list.map(mapToClassRow);
+        const { data } = await get<any>(`/class/next/${userId}`);
+        if (!data) return null;
+        const raw = Array.isArray(data) ? data[0] : data;
+        return raw ? mapToClassRow(raw) : null;
       } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao buscar as aulas");
+        showErrorToast("Erro", "Ocorreu um erro ao buscar a próxima aula");
         throw error;
       }
     },

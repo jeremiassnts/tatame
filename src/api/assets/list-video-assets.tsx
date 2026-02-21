@@ -2,7 +2,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useSupabase } from "@/src/hooks/useSupabase";
 import { useQuery } from "@tanstack/react-query";
 
-export function fetchVideos() {
+export function listVideoAssets() {
     const supabase = useSupabase();
     const { showErrorToast } = useToast();
 

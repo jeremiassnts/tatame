@@ -1,22 +1,24 @@
 import { useApi } from "@/src/hooks/use-api";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 
-export function getBirthdayUsers() {
+export function listStudentsApprovalStatus() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
+  const { user } = useProfileContext();
 
   return useQuery({
-    queryKey: ["birthday-users", format(new Date(), "MM-dd")],
+    queryKey: ["students-approval-status", user?.id],
     queryFn: async () => {
       try {
-        const { data } = await get<any>(`/users/birthdays/today`);
+        if (!user?.id) return false;
+        const { data } = await get<any>(`/users/${user?.id}/approval-status`);
         return data;
       } catch (error) {
         showErrorToast(
           "Erro",
-          "Ocorreu um erro ao buscar os usuários de aniversário",
+          "Ocorreu um erro ao buscar o status de aprovação dos alunos",
         );
         throw error;
       }

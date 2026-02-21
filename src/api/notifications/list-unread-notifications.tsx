@@ -2,7 +2,7 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
-export function listUnread(userId: number) {
+export function listUnreadNotifications(userId: number) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
@@ -10,9 +10,7 @@ export function listUnread(userId: number) {
     queryKey: ["notifications-unread", userId],
     queryFn: async () => {
       try {
-        const { data } = await get<any>(
-          `/notifications/user/${userId}/unread`,
-        );
+        const { data } = await get<any>(`/notifications/user/${userId}/unread`);
         return data;
       } catch (error) {
         showErrorToast(

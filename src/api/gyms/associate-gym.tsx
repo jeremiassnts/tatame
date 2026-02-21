@@ -5,7 +5,7 @@ import { useCreateNotification } from "../notifications/use-create-notification"
 import { useGetGymById } from "./get-by-id";
 
 export function associateGym() {
-  const { get, post } = useApi();
+  const { post } = useApi();
   const { showErrorToast } = useToast();
   const getGymById = useGetGymById();
   const { mutateAsync: createNotification } = useCreateNotification().create();

@@ -1,20 +1,26 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
-import { Checkin } from "@/src/types/models";
 import { useQuery } from "@tanstack/react-query";
 
-export function fetchLastMonthCheckins(userId: number) {
+export function listCheckinsByClassIdAndUserId(
+  classId: number,
+  userId: number,
+) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
   return useQuery({
-    queryKey: ["last-month-checkins", userId],
+    queryKey: ["just-checkins-by-class-id", classId, userId],
     queryFn: async () => {
       try {
         const { data } = await get<any>(
-          `/checkins/user/${userId}/last-month`,
+          `/checkins/class/${classId}/user/${userId}`,
         );
-        return (Array.isArray(data) ? data : (data ?? [])) as Checkin[];
+        const list = Array.isArray(data) ? data : (data ?? []);
+        const today = new Date().toISOString().split("T")[0];
+        return list.filter(
+          (c: { date?: string }) => c?.date?.split?.("T")?.[0] === today,
+        );
       } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
         throw error;

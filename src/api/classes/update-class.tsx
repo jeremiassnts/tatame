@@ -3,7 +3,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { Class } from "@/src/types/models";
 import { useMutation } from "@tanstack/react-query";
 
-export function editClass() {
+export function updateClass() {
   const { put } = useApi();
   const { showErrorToast } = useToast();
 

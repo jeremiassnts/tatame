@@ -2,18 +2,18 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
-export function fetchLastCheckins(userId: number) {
+export function listInstructorsByGymId(gymId: number) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
   return useQuery({
-    queryKey: ["last-checkins", userId],
+    queryKey: ["instructors-by-gym-id", gymId],
     queryFn: async () => {
       try {
-        const { data } = await get<any>(`/checkins/user/${userId}/last`);
-        return Array.isArray(data) ? data : (data ?? []);
+        const { data } = await get<any>(`/users/gym/${gymId}/instructors`);
+        return data;
       } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
+        showErrorToast("Erro", "Ocorreu um erro ao buscar os instrutores");
         throw error;
       }
     },
