@@ -2,7 +2,7 @@ import { useGraduations } from "@/src/api/graduations/use-graduations";
 import { useUsers } from "@/src/api/users/use-users";
 import { BELT_COLORS } from "@/src/constants/belts";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { Database } from "@/src/types/database.types";
+import { Gym } from "@/src/types/models";
 import { useMemo } from "react";
 import AvatarWithDialog from "../ui/avatar/avatar-with-dialog";
 import { Box } from "../ui/box";
@@ -11,7 +11,7 @@ import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
 interface HomeGymHeaderProps {
-  gym: Database["public"]["Tables"]["gyms"]["Row"] | undefined | null;
+  gym: Gym | undefined | null;
 }
 
 export function HomeGymHeader({ gym }: HomeGymHeaderProps) {

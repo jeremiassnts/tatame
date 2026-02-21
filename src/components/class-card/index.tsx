@@ -1,6 +1,6 @@
 import { useRoles } from "@/src/api/roles/use-roles";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { ClassRow } from "@/src/types/extendend-database.types";
+import { Class } from "@/src/types/models";
 import { formatDay, formatTime } from "@/src/utils/class";
 import { isAfter, startOfWeek } from "date-fns";
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
@@ -15,7 +15,7 @@ import { CheckIn } from "./check-in";
 import { CheckIns } from "./check-ins";
 
 interface ClassCardProps {
-  data: ClassRow;
+  data: Class;
   topBadgeText?: string;
   currentClass: boolean;
   classDate?: string;

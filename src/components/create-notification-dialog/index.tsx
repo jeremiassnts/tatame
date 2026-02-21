@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Pressable } from "react-native";
-import z from "zod";
+import { z } from "zod";
 import TextAreaInput from "../text-area-input";
 import { TextInput } from "../text-input";
 import { Avatar, AvatarFallbackText, AvatarImage } from "../ui/avatar";

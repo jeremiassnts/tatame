@@ -3,7 +3,7 @@ import { useApi } from "../../hooks/use-api";
 import { useSendNotification } from "../../hooks/use-send-notification";
 import { useToast } from "../../hooks/use-toast";
 import { queryClient } from "../../lib/react-query";
-import { Database } from "../../types/database.types";
+import { Notification } from "../../types/models";
 
 export function useCreateNotification() {
   const { post, put } = useApi();
@@ -13,7 +13,7 @@ export function useCreateNotification() {
   const create = () => {
     return useMutation({
       mutationFn: async (
-        notification: Database["public"]["Tables"]["notifications"]["Insert"],
+        notification: Notification,
       ) => {
         try {
           const { data } = await post<any>("/notifications", {

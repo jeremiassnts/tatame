@@ -32,7 +32,7 @@ export default function ManagerPlan({
             <Badge size="lg" className="absolute top-0 right-0 bg-violet-500">
                 <BadgeText>{title}</BadgeText>
             </Badge>
-            {price == 0 && (
+            {price === 0 && (
                 <Heading size="2xl" className="text-neutral-200">
                     GRÁTIS
                 </Heading>

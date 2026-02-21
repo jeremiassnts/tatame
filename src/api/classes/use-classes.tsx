@@ -1,11 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
-import { Database } from "../../types/database.types";
-import { ClassRow } from "../../types/extendend-database.types";
+import { Class } from "../../types/models";
 import { useCreateNotification } from "../notifications/use-create-notification";
 
-function mapToClassRow(item: any): ClassRow {
+function mapToClassRow(item: any): Class {
   const instructor = item?.instructor
     ? [item.instructor.first_name ?? "", item.instructor.last_name ?? ""]
       .join(" ")
@@ -14,7 +13,7 @@ function mapToClassRow(item: any): ClassRow {
   return {
     ...item,
     instructor_name: instructor,
-  } as ClassRow;
+  } as Class;
 }
 
 export function useClasses() {
@@ -42,7 +41,7 @@ export function useClasses() {
   const createClass = () => {
     return useMutation({
       mutationFn: async (
-        classData: Database["public"]["Tables"]["class"]["Insert"],
+        classData: Class,
       ) => {
         try {
           const { data } = await post<any>("/class", {
@@ -114,7 +113,7 @@ export function useClasses() {
   const editClass = () => {
     return useMutation({
       mutationFn: async (
-        payload: Database["public"]["Tables"]["class"]["Update"],
+        payload: Partial<Class>,
       ) => {
         if (!payload.id) {
           showErrorToast("Erro", "O ID da aula é obrigatório");

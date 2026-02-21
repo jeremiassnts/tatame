@@ -29,7 +29,7 @@ import { Days } from "@/src/constants/date";
 import { Modalities } from "@/src/constants/modalities";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
-import { ClassRow } from "@/src/types/extendend-database.types";
+import { Class } from "@/src/types/models";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parse } from "date-fns";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -59,7 +59,7 @@ export default function EditClass() {
     getInstructorsByGymId(parseInt(gymId));
   const { fetchClassById, editClass } = useClasses();
   const [isLoading, setIsLoading] = useState(true);
-  const [classData, setClassData] = useState<ClassRow | null>(null);
+  const [classData, setClassData] = useState<Class | null>(null);
   const { mutateAsync: editClassFn, isPending: isEditingClass } = editClass();
   const router = useRouter();
   const { user } = useProfileContext();

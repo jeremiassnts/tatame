@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
-import { Database } from "../../types/database.types";
+import { Graduation } from "../../types/models";
 
 export function useGraduations() {
   const { get, post, put } = useApi();
@@ -26,7 +26,7 @@ export function useGraduations() {
   const createGraduation = () => {
     return useMutation({
       mutationFn: async (
-        graduation: Database["public"]["Tables"]["graduations"]["Insert"],
+        graduation: Graduation,
       ) => {
         try {
           const { data } = await post<any>("/graduations", {
@@ -47,7 +47,7 @@ export function useGraduations() {
   const updateGraduation = () => {
     return useMutation({
       mutationFn: async (
-        graduation: Database["public"]["Tables"]["graduations"]["Update"],
+        graduation: Partial<Graduation>,
       ) => {
         if (!graduation.id) {
           showErrorToast("Erro", "ID da graduação é obrigatório");

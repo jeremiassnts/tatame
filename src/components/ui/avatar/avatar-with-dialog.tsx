@@ -16,12 +16,20 @@ interface AvatarWithDialogProps {
     fullName: string;
     imageUrl: string;
     children?: React.ReactNode;
-    size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    size: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
     className?: string;
     avatarImageClassName?: string;
     updateImageFn?: (image: string) => Promise<void>;
 }
-export default function AvatarWithDialog({ fullName, imageUrl, children, size, className, avatarImageClassName, updateImageFn }: AvatarWithDialogProps) {
+export default function AvatarWithDialog({
+    fullName,
+    imageUrl,
+    children,
+    size,
+    className,
+    avatarImageClassName,
+    updateImageFn,
+}: AvatarWithDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const { showErrorToast } = useToast();
@@ -39,14 +47,14 @@ export default function AvatarWithDialog({ fullName, imageUrl, children, size, c
 
             if (!result.canceled) {
                 setIsUpdating(true);
-                const image = result.assets[0].uri
+                const image = result.assets[0].uri;
                 await updateImageFn(image);
                 setIsUpdating(false);
                 setIsOpen(false);
                 queryClient.invalidateQueries({ queryKey: ["user-profile"] });
                 await user?.reload();
             }
-        } catch (error) {
+        } catch {
             showErrorToast("Erro", "Ocorreu um erro ao atualizar a imagem");
         } finally {
             setIsUpdating(false);
@@ -58,18 +66,24 @@ export default function AvatarWithDialog({ fullName, imageUrl, children, size, c
             <Pressable onPress={() => setIsOpen(true)}>
                 <Avatar size={size} className={className}>
                     <AvatarFallbackText>{fullName}</AvatarFallbackText>
-                    <AvatarImage source={{ uri: imageUrl }} className={avatarImageClassName} />
+                    <AvatarImage
+                        source={{ uri: imageUrl }}
+                        className={avatarImageClassName}
+                    />
                     {children}
                 </Avatar>
-                {updateImageFn &&
+                {updateImageFn && (
                     <Box className="bg-neutral-50 absolute bottom-1 right-1 rounded-full p-[5px]">
                         <Icon as={EditIcon} size="xs" color="black" />
-                    </Box>}
+                    </Box>
+                )}
             </Pressable>
-            <Modal isOpen={isOpen}
+            <Modal
+                isOpen={isOpen}
                 onClose={() => {
                     setIsOpen(false);
-                }}>
+                }}
+            >
                 <ModalBackdrop />
                 <ModalContent className="p-0 items-center justify-center border-0 bg-transparent">
                     <ModalBody>
@@ -81,15 +95,19 @@ export default function AvatarWithDialog({ fullName, imageUrl, children, size, c
                             size="2xl"
                             resizeMode="contain"
                         />
-                        {updateImageFn && <Button variant="solid" className="bg-neutral-200" onPress={pickImage}>
-                            {isUpdating && <ButtonSpinner />}
-                            {!isUpdating && <ButtonText>
-                                Atualizar imagem
-                            </ButtonText>}
-                        </Button>}
+                        {updateImageFn && (
+                            <Button
+                                variant="solid"
+                                className="bg-neutral-200"
+                                onPress={pickImage}
+                            >
+                                {isUpdating && <ButtonSpinner />}
+                                {!isUpdating && <ButtonText>Atualizar imagem</ButtonText>}
+                            </Button>
+                        )}
                     </ModalBody>
                 </ModalContent>
             </Modal>
         </VStack>
-    )
+    );
 }

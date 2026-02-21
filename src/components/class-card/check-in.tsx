@@ -1,7 +1,7 @@
 import { useCheckins } from "@/src/api/checkins/use-checkins";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
-import { ClassRow } from "@/src/types/extendend-database.types";
+import { Class } from "@/src/types/models";
 import { differenceInHours } from "date-fns";
 import { CheckCircleIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import { Button, ButtonIcon, ButtonSpinner, ButtonText } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
 
 interface CheckInProps {
-  class: ClassRow;
+  class: Class;
   classDate?: string;
 }
 

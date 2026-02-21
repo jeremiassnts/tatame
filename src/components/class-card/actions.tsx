@@ -1,6 +1,6 @@
 import { useClasses } from "@/src/api/classes/use-classes";
 import { queryClient } from "@/src/lib/react-query";
-import { ClassRow } from "@/src/types/extendend-database.types";
+import { Class } from "@/src/types/models";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -18,7 +18,7 @@ import { ChevronDownIcon } from "../ui/icon";
 interface ActionsProps {
   topBadgeText?: string;
   isHigherRole: boolean;
-  data: ClassRow;
+  data: Class;
   classDate?: string;
 }
 

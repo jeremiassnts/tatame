@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
-import { CheckinRow } from "../../types/extendend-database.types";
+import { Checkin } from "../../types/models";
 import { CreateCheckinProps } from "./types";
 
 export function useCheckins() {
@@ -122,7 +122,7 @@ export function useCheckins() {
           const { data } = await get<any>(
             `/checkins/user/${userId}/last-month`,
           );
-          return (Array.isArray(data) ? data : (data ?? [])) as CheckinRow[];
+          return (Array.isArray(data) ? data : (data ?? [])) as Checkin[];
         } catch (error) {
           showErrorToast("Erro", "Ocorreu um erro ao buscar os checkins");
           throw error;

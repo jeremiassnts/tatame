@@ -2,7 +2,6 @@ import { useUser } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
 import { createContext } from "react";
 import { useApi } from "../hooks/use-api";
-import { Database } from "../types/database.types";
 
 type UserInfo = {
     fullName: string;
@@ -17,9 +16,19 @@ type UserInfo = {
     gymId: number;
 };
 
+type GymInfo = {
+    id: number;
+    name: string;
+    logo: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+};
+
 interface ProfileContextType {
     user: UserInfo | undefined | null;
-    gym: Database["public"]["Tables"]["gyms"]["Row"] | undefined | null;
+    gym: GymInfo | undefined | null;
     refetch: (() => Promise<void>) | null;
     isLoading: boolean;
 }
@@ -44,7 +53,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
                     fullName: `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim(),
                     ...data,
                 };
-            } catch (error) {
+            } catch {
                 return null;
             }
         },
@@ -57,7 +66,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
             try {
                 const { data } = await get<any>(`/gyms/user/${user.data?.id}`);
                 return data;
-            } catch (error) {
+            } catch {
                 return null;
             }
         },

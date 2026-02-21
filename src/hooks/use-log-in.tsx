@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
 import { Platform } from "react-native";
-import z from "zod";
+import { z } from "zod";
 import { useToast } from "./use-toast";
 
 export const loginFormSchema = z.object({
@@ -48,21 +48,24 @@ export function useLogIn() {
         // complete further steps.
         showErrorToast(
           "Erro ao realizar login!",
-          "Não foi possível entrar com suas credenciais, tente novamente."
+          "Não foi possível entrar com suas credenciais, tente novamente.",
         );
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
       showErrorToast(
         "Erro ao realizar login!",
-        "Não foi possível entrar com suas credenciais, tente novamente."
+        "Não foi possível entrar com suas credenciais, tente novamente.",
       );
     }
   };
 
   const signInWithSSO = async (strategy: "oauth_google" | "oauth_apple") => {
     try {
-      const redirectUrl = __DEV__ && Platform.OS === "web" ? AuthSession.makeRedirectUri() : `${AuthSession.makeRedirectUri()}sso-callback`;
+      const redirectUrl =
+        __DEV__ && Platform.OS === "web"
+          ? AuthSession.makeRedirectUri()
+          : `${AuthSession.makeRedirectUri()}sso-callback`;
       const { createdSessionId, setActive: setActiveSSO } = await startSSOFlow({
         strategy,
         redirectUrl,
@@ -82,7 +85,7 @@ export function useLogIn() {
       console.error(JSON.stringify(err, null, 2));
       showErrorToast(
         "Erro ao realizar login!",
-        `Ocorreu um erro ao concluir o login com sua conta ${platform}, tente novamente.`
+        `Ocorreu um erro ao concluir o login com sua conta ${platform}, tente novamente.`,
       );
     }
   };

@@ -1,5 +1,5 @@
 import { GENDERS } from "@/src/constants/genders";
-import { BaseUserRow } from "@/src/types/extendend-database.types";
+import { User } from "@/src/types/models";
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
 import { Instagram } from "lucide-react-native";
@@ -12,12 +12,16 @@ import { VStack } from "../ui/vstack";
 import { InfoRow } from "./info-row";
 
 interface PersonalDataSectionProps {
-    user: BaseUserRow;
+    user: User;
     firstName: string;
     lastName: string;
 }
 
-export function PersonalDataSection({ user, firstName, lastName }: PersonalDataSectionProps) {
+export function PersonalDataSection({
+    user,
+    firstName,
+    lastName,
+}: PersonalDataSectionProps) {
     const router = useRouter();
 
     function handleEditProfile() {
@@ -36,23 +40,46 @@ export function PersonalDataSection({ user, firstName, lastName }: PersonalDataS
     }
 
     const birthDate = user.birth ? new Date(user.birth) : null;
-    const birthDateOnly = birthDate ? new Date(birthDate.valueOf() + birthDate.getTimezoneOffset() * 60 * 1000) : null;
-    const birthFormatted = birthDateOnly ? format(birthDateOnly, "dd/MM/yyyy") : null;
+    const birthDateOnly = birthDate
+        ? new Date(birthDate.valueOf() + birthDate.getTimezoneOffset() * 60 * 1000)
+        : null;
+    const birthFormatted = birthDateOnly
+        ? format(birthDateOnly, "dd/MM/yyyy")
+        : null;
 
     return (
         <Card className="w-full border-2 border-neutral-800 mt-4 bg-neutral-900">
             <HStack className="justify-between items-center mb-4">
-                <Heading size="xs" className="text-neutral-400">Dados Pessoais</Heading>
+                <Heading size="xs" className="text-neutral-400">
+                    Dados Pessoais
+                </Heading>
                 <Button variant="link" size="sm" onPress={handleEditProfile}>
                     <ButtonText>Editar</ButtonText>
                 </Button>
             </HStack>
             <VStack className="gap-1">
-                <InfoRow icon={Instagram} label="Instagram" value={user.instagram} isLink={true} url={`https://www.instagram.com/${user.instagram}`} />
+                <InfoRow
+                    icon={Instagram}
+                    label="Instagram"
+                    value={user.instagram}
+                    isLink={true}
+                    url={`https://www.instagram.com/${user.instagram}`}
+                />
                 <InfoRow icon={PhoneIcon} label="Telefone" value={user.phone} />
-                <InfoRow icon={InfoIcon} label="Gênero" value={GENDERS.find((gender) => gender.value === user.gender)?.label ?? null} />
-                <InfoRow icon={CalendarDaysIcon} label="Data de nascimento" value={birthFormatted} />
+                <InfoRow
+                    icon={InfoIcon}
+                    label="Gênero"
+                    value={
+                        GENDERS.find((gender) => gender.value === user.gender)?.label ??
+                        null
+                    }
+                />
+                <InfoRow
+                    icon={CalendarDaysIcon}
+                    label="Data de nascimento"
+                    value={birthFormatted}
+                />
             </VStack>
         </Card>
-    )
+    );
 }

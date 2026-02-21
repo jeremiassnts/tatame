@@ -2,7 +2,7 @@ import { useClasses } from "@/src/api/classes/use-classes";
 import { useRoles } from "@/src/api/roles/use-roles";
 import { useUsers } from "@/src/api/users/use-users";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { Database } from "@/src/types/database.types";
+import { Gym } from "@/src/types/models";
 import { useRouter } from "expo-router";
 import { Pressable } from "react-native";
 import { ClassCard } from "../class-card";
@@ -16,7 +16,7 @@ import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
 interface NextClassProps {
-  gym: Database["public"]["Tables"]["gyms"]["Row"] | undefined | null;
+  gym: Gym | undefined | null;
   isLoadingGym: boolean;
 }
 

@@ -3,7 +3,6 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { queryClient } from "../lib/react-query";
-import { Database } from "../types/database.types";
 import { useToast } from "./use-toast";
 import { useSupabase } from "./useSupabase";
 
@@ -24,11 +23,15 @@ export interface SendNotificationProps {
     recipients: string[];
 }
 
-export type Notification =
-    Database["public"]["Tables"]["notifications"]["Row"] & {
-        status: string;
-        sent_at: string;
-    };
+export interface Notification {
+    id: number;
+    channel: string;
+    title: string;
+    content: string;
+    recipients: string[];
+    status: string;
+    sent_at: string;
+}
 
 export function useSendNotification() {
     const { showErrorToast } = useToast();
@@ -106,7 +109,6 @@ export function useSendNotification() {
                     throw new Error(
                         "Permission not granted to get push token for push notification!",
                     );
-                    return;
                 }
                 const projectId =
                     Constants?.expoConfig?.extra?.eas?.projectId ??

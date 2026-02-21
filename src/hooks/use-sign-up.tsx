@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
 import { Platform } from "react-native";
-import z from "zod";
+import { z } from "zod";
 import { useToast } from "./use-toast";
 
 export const signUpFormSchema = z.object({
@@ -35,13 +35,13 @@ export function useSignUp() {
       } else {
         showErrorToast(
           "Erro ao verificar email!",
-          "Não foi possível verificar o email, tente novamente."
+          "Não foi possível verificar o email, tente novamente.",
         );
       }
     } catch (err) {
       showErrorToast(
         "Erro ao verificar email!",
-        "Não foi possível verificar o email, tente novamente."
+        "Não foi possível verificar o email, tente novamente.",
       );
       console.error(JSON.stringify(err, null, 2));
     }
@@ -73,17 +73,17 @@ export function useSignUp() {
       if (err?.errors[0]?.code === "form_identifier_exists") {
         showErrorToast(
           "Erro ao cadastrar!",
-          "E-mail já cadastrado, tente outro e-mail."
+          "E-mail já cadastrado, tente outro e-mail.",
         );
       } else if (err?.errors[0]?.code === "form_password_pwned") {
         showErrorToast(
           "Erro ao cadastrar!",
-          "A senha fornecida foi encontrada em uma violação de dados online. Para a segurança da sua conta, por favor, use uma senha diferente."
+          "A senha fornecida foi encontrada em uma violação de dados online. Para a segurança da sua conta, por favor, use uma senha diferente.",
         );
       } else {
         showErrorToast(
           "Erro ao cadastrar!",
-          "Não foi possível cadastrar, tente novamente."
+          "Não foi possível cadastrar, tente novamente.",
         );
       }
       console.error(JSON.stringify(err, null, 2));

@@ -3,13 +3,12 @@ import { useApi } from "../../hooks/use-api";
 import { useSendNotification } from "../../hooks/use-send-notification";
 import { useToast } from "../../hooks/use-toast";
 import { queryClient } from "../../lib/react-query";
-import { Database } from "../../types/database.types";
+import { Notification as NotificationRow } from "../../types/models";
 
-export type Notification =
-  Database["public"]["Tables"]["notifications"]["Row"] & {
-    sent_by_name: string;
-    sent_by_image_url: string;
-  };
+export type Notification = NotificationRow & {
+  sent_by_name: string;
+  sent_by_image_url: string;
+};
 
 export function useNotifications() {
   const { get, put, post } = useApi();
@@ -53,7 +52,7 @@ export function useNotifications() {
   const update = () => {
     return useMutation({
       mutationFn: async (
-        notification: Database["public"]["Tables"]["notifications"]["Update"],
+        notification: Partial<NotificationRow> & { sent_at?: string },
       ) => {
         if (!notification.id) throw new Error("Notification id required");
         try {

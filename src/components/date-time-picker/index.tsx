@@ -62,7 +62,7 @@ export default function DateTimePicker({
             />
           )
         );
-      }, [show])}
+      }, [show, date, mode, setNewDate])}
       {error && <Text className="text-red-500 text-sm">{error}</Text>}
     </Pressable>
   );

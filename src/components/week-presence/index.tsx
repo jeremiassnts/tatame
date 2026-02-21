@@ -62,7 +62,7 @@ export function WeekPresence() {
             }
             setCheckInDays(tempDays);
         }
-    }, [checkins]);
+    }, [checkins, isLoadingCheckins]);
 
     const isSelected = (day: string): boolean => {
         return checkInDays.some((checkin) => checkin.day === day);
