@@ -41,8 +41,6 @@ export default function CreateGraduation() {
   const {
     watch,
     setValue,
-    register,
-    setFocus,
     formState: { errors },
     handleSubmit,
     reset,

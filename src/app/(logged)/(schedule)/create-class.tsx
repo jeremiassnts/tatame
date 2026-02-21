@@ -147,7 +147,7 @@ export default function CreateClass() {
                 className="w-[49%]"
               />
             )}
-            {Platform.OS == "ios" ? (
+            {Platform.OS === "ios" ? (
               <IosTimePicker
                 setNewDate={(date: Date | undefined) => {
                   if (date) {

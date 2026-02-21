@@ -1,14 +1,14 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { useCreateNotification } from "../notifications/use-create-notification";
+import { useCreateNotification } from "../notifications/create-notification";
 import { useGetGymById } from "./get-gym-by-id";
 
 export function useAssociateGym() {
   const { post } = useApi();
   const { showErrorToast } = useToast();
   const getGymById = useGetGymById();
-  const { mutateAsync: createNotification } = useCreateNotification().create();
+  const { mutateAsync: createNotificationFn } = useCreateNotification();
 
   return useMutation({
     mutationFn: async ({
@@ -24,7 +24,7 @@ export function useAssociateGym() {
           userId,
         });
         const gym = await getGymById(gymId);
-        await createNotification({
+        await createNotificationFn({
           title: "Novo aluno associado a academia",
           content: `Verifique na lista de alunos para aprovar ou negar a associação`,
           recipients: [gym.managerId.toString()],

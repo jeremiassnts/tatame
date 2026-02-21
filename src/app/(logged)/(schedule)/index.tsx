@@ -26,7 +26,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Modal, Pressable, RefreshControl, ScrollView } from "react-native";
@@ -55,10 +55,9 @@ export default function Schedule() {
   const [initialScrollIndex, setInitialScrollIndex] = useState(0);
   const [isOpenCheckInModal, setIsOpenCheckInModal] = useState(false);
   const { showErrorToast, showSuccessToast } = useToast();
-  const [_, requestPermission] = useCameraPermissions();
   const { decrypt } = useCrypto();
   const qrCodeLock = useRef(false);
-  const [isLoadingCheckin, setIsLoadingCheckin] = useState(false);
+  const [_, setIsLoadingCheckin] = useState(false);
   const { user } = useProfileContext();
 
   useEffect(() => {

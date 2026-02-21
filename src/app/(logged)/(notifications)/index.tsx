@@ -33,7 +33,7 @@ export default function Notifications() {
                     />
                 }
             >
-                {data && data.length == 0 && !isLoading && !isFetching && (
+                {data && data.length === 0 && !isLoading && !isFetching && (
                     <Text className="text-white text-center text-md">
                         Nenhuma notificação encontrada
                     </Text>

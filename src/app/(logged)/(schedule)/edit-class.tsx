@@ -60,7 +60,8 @@ export default function EditClass() {
     useListInstructorsByGymId(parseInt(gymId));
   const [isLoading, setIsLoading] = useState(true);
   const [classData, setClassData] = useState<Class | null>(null);
-  const { mutateAsync: editClassFn, isPending: isEditingClass } = useUpdateClass();
+  const { mutateAsync: editClassFn, isPending: isEditingClass } =
+    useUpdateClass();
   const router = useRouter();
   const { user } = useProfileContext();
   const {
@@ -121,7 +122,7 @@ export default function EditClass() {
       setIsLoading(false);
     }
     fetchClass();
-  }, [classId, setValue]);
+  }, [classId, getClassById, setValue]);
 
   function formatTime(time: string) {
     const template = `${new Date().toISOString().split("T")[0]} ${time}`;

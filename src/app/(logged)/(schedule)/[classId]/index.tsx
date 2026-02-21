@@ -44,7 +44,7 @@ type ClassProps = {
 
 export default function Class() {
     const { classId, classDate } = useLocalSearchParams<ClassProps>();
-    const { user, isLoading: isLoadingProfile } = useProfileContext();
+    const { user } = useProfileContext();
     const getClassById = useGetClassById();
     const isHigherRole = useIsHigherRole();
     const isLowerRole = useIsLowerRole();

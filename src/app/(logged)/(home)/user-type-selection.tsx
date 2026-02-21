@@ -67,7 +67,14 @@ export default function Home() {
       }
     };
     fetchUserType();
-  }, []);
+  }, [
+    getUserByClerkUserId,
+    getUserType,
+    isHigherRole,
+    router,
+    setUserType,
+    user,
+  ]);
 
   if (!isUserTypeLoaded) {
     return <SplashScreen />;
