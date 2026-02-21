@@ -19,7 +19,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import z from "zod";
+import { z } from "zod";
 
 const updateGraduationFormSchema = z.object({
     belt: z.string().min(1, "A faixa é obrigatória"),

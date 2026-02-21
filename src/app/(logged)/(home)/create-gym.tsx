@@ -22,7 +22,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import z from "zod";
+import { z } from "zod";
 
 const createGymFormSchema = z.object({
   name: z.string().min(1, "O nome da academia é obrigatório"),

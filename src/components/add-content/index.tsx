@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { endOfWeek, format } from "date-fns";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import { SelectInput } from "../select-input";
 import { TextInput } from "../text-input";
 import { Alert, AlertIcon, AlertText } from "../ui/alert";

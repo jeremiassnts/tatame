@@ -31,7 +31,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Platform, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import z from "zod";
+import { z } from "zod";
 
 const createClassFormSchema = z.object({
   description: z.string().min(1, "A descrição da aula é obrigatória"),

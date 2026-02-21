@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { View } from "react-native";
-import z from "zod";
+import { z } from "zod";
 import { TextInput } from "../text-input";
 import { Button, ButtonIcon } from "../ui/button";
 import { Heading } from "../ui/heading";

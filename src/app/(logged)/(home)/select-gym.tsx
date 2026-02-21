@@ -18,7 +18,7 @@ import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import z from "zod";
+import { z } from "zod";
 
 const selectGymFormSchema = z.object({
   gymId: z.number().min(1, "A academia é obrigatória"),
