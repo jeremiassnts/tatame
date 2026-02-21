@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../../hooks/use-api";
 import { useToast } from "../../hooks/use-toast";
 
-export function getStoreUrls() {
+export function useGetStoreUrls() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 

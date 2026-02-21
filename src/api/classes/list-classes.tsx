@@ -4,7 +4,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { mapToClassRow } from "./map-class";
 
-export function listClasses() {
+export function useListClasses() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
   const { gym } = useProfileContext();

@@ -4,7 +4,7 @@ import { Class } from "@/src/types/models";
 import { useMutation } from "@tanstack/react-query";
 import { useCreateNotification } from "../notifications/use-create-notification";
 
-export function createClass() {
+export function useCreateClass() {
   const { get, post } = useApi();
   const { showErrorToast } = useToast();
   const { mutateAsync: createNotification } = useCreateNotification().create();

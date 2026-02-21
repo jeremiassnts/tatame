@@ -1,4 +1,4 @@
-import { updateGraduation } from "@/src/api/graduations/update-graduation";
+import { useUpdateGraduation } from "@/src/api/graduations/update-graduation";
 import { SelectInput } from "@/src/components/select-input";
 import {
     Button,
@@ -39,7 +39,7 @@ export default function UpdateGraduation() {
     const { id, belt, degree } = useLocalSearchParams<UpdateGraduationParams>();
     const router = useRouter();
     const { mutateAsync: updateGraduationFn, isPending: isUpdatingGraduation } =
-        updateGraduation();
+        useUpdateGraduation();
     const [degrees, setDegrees] = useState<{ value: string; label: string }[]>(
         getBeltDegrees(belt),
     );

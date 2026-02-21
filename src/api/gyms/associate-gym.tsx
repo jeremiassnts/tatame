@@ -2,9 +2,9 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { useCreateNotification } from "../notifications/use-create-notification";
-import { useGetGymById } from "./get-by-id";
+import { useGetGymById } from "./get-gym-by-id";
 
-export function associateGym() {
+export function useAssociateGym() {
   const { post } = useApi();
   const { showErrorToast } = useToast();
   const getGymById = useGetGymById();

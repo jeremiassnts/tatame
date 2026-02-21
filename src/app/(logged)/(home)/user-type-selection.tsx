@@ -1,6 +1,6 @@
-import { isHigherRole } from "@/src/api/roles/is-higher-role";
-import { createUser } from "@/src/api/users/create-user";
-import { getUserByClerkUserId } from "@/src/api/users/get-user-by-clerk-user-id";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
+import { useCreateUser } from "@/src/api/users/create-user";
+import { useGetUserByClerkUserId } from "@/src/api/users/get-user-by-clerk-user-id";
 import { SplashScreen } from "@/src/components/splash-screen";
 import { Box } from "@/src/components/ui/box";
 import { Button, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
@@ -23,7 +23,9 @@ export default function Home() {
   const [isUserTypeLoaded, setIsUserTypeLoaded] = useState(false);
   const router = useRouter();
   const { user } = useUser();
-  const { mutateAsync: createUserFn, isPending: isLoading } = createUser();
+  const isHigherRole = useIsHigherRole();
+  const getUserByClerkUserId = useGetUserByClerkUserId();
+  const { mutateAsync: createUserFn, isPending: isLoading } = useCreateUser();
   const [tempUserType, setTempUserType] = useState<UserType | null>(null);
 
   async function handleContinue() {

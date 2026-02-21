@@ -3,7 +3,7 @@ import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
-export function getGraduationByUserId() {
+export function useGetGraduationByUserId() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
   const { user } = useProfileContext();

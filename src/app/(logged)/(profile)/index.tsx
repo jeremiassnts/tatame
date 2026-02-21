@@ -1,8 +1,8 @@
-import { updateUserImage } from "@/src/api/attachments/update-user-image";
-import { listLastMonthCheckins } from "@/src/api/checkins/list-last-month-checkins";
-import { isHigherRole } from "@/src/api/roles/is-higher-role";
-import { isLowerRole } from "@/src/api/roles/is-lower-role";
-import { listStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
+import { useUpdateUserImage } from "@/src/api/attachments/update-user-image";
+import { useListLastMonthCheckins } from "@/src/api/checkins/list-last-month-checkins";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
+import { useIsLowerRole } from "@/src/api/roles/is-lower-role";
+import { useListStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { AccountSection } from "@/src/components/account-section";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { PersonalDataSection } from "@/src/components/personal-data-section";
@@ -18,11 +18,13 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
-  const { mutateAsync: updateUserImageAsync } = updateUserImage();
+  const isHigherRole = useIsHigherRole();
+  const isLowerRole = useIsLowerRole();
+  const { mutateAsync: updateUserImageAsync } = useUpdateUserImage();
   const { user, gym, isLoading } = useProfileContext();
 
-  const { data: studentsApprovalStatus } = listStudentsApprovalStatus();
-  const { data: lastMonthCheckins } = listLastMonthCheckins(user?.id ?? 0);
+  const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
+  const { data: lastMonthCheckins } = useListLastMonthCheckins(user?.id ?? 0);
 
   const fullName = (user?.first_name + " " + (user?.last_name ?? "")).trim();
 

@@ -1,6 +1,6 @@
-import { isHigherRole } from "@/src/api/roles/is-higher-role";
-import { approveStudent } from "@/src/api/users/approve-student";
-import { denyStudent } from "@/src/api/users/deny-student";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
+import { useApproveStudent } from "@/src/api/users/approve-student";
+import { useDenyStudent } from "@/src/api/users/deny-student";
 import { BackButton } from "@/src/components/back-button";
 import { InfoRow } from "@/src/components/personal-data-section/info-row";
 import { StudentBelt } from "@/src/components/student-belt";
@@ -68,8 +68,9 @@ export default function User() {
     } = useLocalSearchParams<UserProps>();
     const [approvedAt, setApprovedAt] = useState<string | null>(approved_at);
     const [deniedAt, setDeniedAt] = useState<string | null>(denied_at);
-    const { mutateAsync: approveStudentFn } = approveStudent();
-    const { mutateAsync: denyStudentFn } = denyStudent();
+    const isHigherRole = useIsHigherRole();
+    const { mutateAsync: approveStudentFn } = useApproveStudent();
+    const { mutateAsync: denyStudentFn } = useDenyStudent();
 
     function handleApproveStudent() {
         approveStudentFn(Number(userId)).then(() => {

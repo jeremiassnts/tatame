@@ -2,7 +2,7 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
-export function listCheckinsByClassIdAndUserId(
+export function useListCheckinsByClassIdAndUserId(
   classId: number,
   userId: number,
 ) {

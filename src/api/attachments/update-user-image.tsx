@@ -1,7 +1,7 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useMutation } from "@tanstack/react-query";
 
-export function updateUserImage() {
+export function useUpdateUserImage() {
   const { post } = useApi();
 
   return useMutation({

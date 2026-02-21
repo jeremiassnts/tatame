@@ -1,6 +1,6 @@
-import { isHigherRole } from "@/src/api/roles/is-higher-role";
-import { isLowerRole } from "@/src/api/roles/is-lower-role";
-import { isMediumRole } from "@/src/api/roles/is-medium-role";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
+import { useIsLowerRole } from "@/src/api/roles/is-lower-role";
+import { useIsMediumRole } from "@/src/api/roles/is-medium-role";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { Class } from "@/src/types/models";
 import { formatDay, formatTime } from "@/src/utils/class";
@@ -29,6 +29,9 @@ export function ClassCard({
   classDate,
 }: ClassCardProps) {
   const { user } = useProfileContext();
+  const isHigherRole = useIsHigherRole();
+  const isLowerRole = useIsLowerRole();
+  const isMediumRole = useIsMediumRole();
 
   const canOpenActions =
     isHigherRole() || (isMediumRole() && data.instructor_id === user?.id);

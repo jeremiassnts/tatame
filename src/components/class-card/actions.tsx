@@ -1,4 +1,4 @@
-import { deleteClass } from "@/src/api/classes/delete-class";
+import { useDeleteClass } from "@/src/api/classes/delete-class";
 import { queryClient } from "@/src/lib/react-query";
 import { Class } from "@/src/types/models";
 import { useRouter } from "expo-router";
@@ -30,7 +30,7 @@ export function Actions({
 }: ActionsProps) {
   const router = useRouter();
   const [showOptions, setShowOptions] = useState(false);
-  const { mutateAsync: deleteClassFn } = deleteClass();
+  const { mutateAsync: deleteClassFn } = useDeleteClass();
 
   function handleClose() {
     setShowOptions(false);

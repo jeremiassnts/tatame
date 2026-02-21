@@ -1,4 +1,4 @@
-import { createAsset } from "@/src/api/assets/create-asset";
+import { useCreateAsset } from "@/src/api/assets/create-asset";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { endOfWeek, format } from "date-fns";
 import { useState } from "react";
@@ -64,7 +64,7 @@ export function AddContent({ classId, refetch, classDate }: AddContentProps) {
             content: "",
         },
     });
-    const { mutateAsync: createAssetFn } = createAsset();
+    const { mutateAsync: createAssetFn } = useCreateAsset();
     const [isPending, setIsPending] = useState(false);
     const validUntil = endOfWeek(new Date(classDate));
 

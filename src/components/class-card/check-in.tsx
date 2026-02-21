@@ -1,6 +1,6 @@
-import { createCheckin } from "@/src/api/checkins/create-checkin";
-import { listCheckinsByClassId } from "@/src/api/checkins/list-checkins-by-class-id";
-import { removeCheckin } from "@/src/api/checkins/remove-checkin";
+import { useCreateCheckin } from "@/src/api/checkins/create-checkin";
+import { useListCheckinsByClassId } from "@/src/api/checkins/list-checkins-by-class-id";
+import { useRemoveCheckin } from "@/src/api/checkins/remove-checkin";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
 import { Class } from "@/src/types/models";
@@ -17,10 +17,10 @@ interface CheckInProps {
 
 export function CheckIn({ class: classData, classDate }: CheckInProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { mutateAsync: createCheckinFn } = createCheckin();
+  const { mutateAsync: createCheckinFn } = useCreateCheckin();
   const { data: checkins, isLoading: isLoadingCheckins } =
-    listCheckinsByClassId(classData.id);
-  const { mutateAsync: removeCheckinFn } = removeCheckin();
+    useListCheckinsByClassId(classData.id);
+  const { mutateAsync: removeCheckinFn } = useRemoveCheckin();
   const [date, setDate] = useState<Date | null>(null);
   const { user } = useProfileContext();
 

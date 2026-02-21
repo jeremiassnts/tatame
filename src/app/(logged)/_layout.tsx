@@ -1,5 +1,5 @@
-import { isHigherRole } from "@/src/api/roles/is-higher-role";
-import { listStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
+import { useListStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { IconNotification } from "@/src/components/icon-notification";
 import {
   CalendarDaysIcon,
@@ -22,7 +22,8 @@ import { useEffect } from "react";
 export default function Layout() {
   const segments = useSegments();
   const pathname = segments[segments.length - 1].replace(/[^a-zA-Z]/g, "");
-  const { data: studentsApprovalStatus } = listStudentsApprovalStatus();
+  const isHigherRole = useIsHigherRole();
+  const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
   const { initializePushNotifications } = useSendNotification();
   const { user } = useProfileContext();
 

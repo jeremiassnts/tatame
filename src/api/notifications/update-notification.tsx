@@ -3,7 +3,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { Notification as NotificationRow } from "@/src/types/models";
 import { useMutation } from "@tanstack/react-query";
 
-export function updateNotification() {
+export function useUpdateNotification() {
   const { put } = useApi();
   const { showErrorToast } = useToast();
 

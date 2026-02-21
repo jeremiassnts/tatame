@@ -2,7 +2,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useSupabase } from "@/src/hooks/useSupabase";
 import { useMutation } from "@tanstack/react-query";
 
-export function deleteAsset() {
+export function useDeleteAsset() {
     const supabase = useSupabase();
     const { showErrorToast } = useToast();
 

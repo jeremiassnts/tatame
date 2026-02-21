@@ -1,5 +1,5 @@
-import { uploadImage } from "@/src/api/attachments/upload-image";
-import { createGym } from "@/src/api/gyms/create-gym";
+import { useUploadImage } from "@/src/api/attachments/upload-image";
+import { useCreateGym } from "@/src/api/gyms/create-gym";
 import DateTimePicker from "@/src/components/date-time-picker";
 import ImageViewer from "@/src/components/image-picker";
 import { TextInput } from "@/src/components/text-input";
@@ -40,9 +40,9 @@ const createGymFormSchema = z.object({
 
 export default function CreateGym() {
   const router = useRouter();
-  const { mutateAsync: createGymFn } = createGym();
+  const { mutateAsync: createGymFn } = useCreateGym();
   const [isCreatingGym, setIsCreatingGym] = useState(false);
-  const { mutateAsync: uploadImageFn } = uploadImage();
+  const { mutateAsync: uploadImageFn } = useUploadImage();
   const { showErrorToast } = useToast();
   const { user } = useProfileContext();
   const {

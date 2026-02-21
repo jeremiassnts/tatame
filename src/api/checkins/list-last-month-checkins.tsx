@@ -3,7 +3,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { Checkin } from "@/src/types/models";
 import { useQuery } from "@tanstack/react-query";
 
-export function listLastMonthCheckins(userId: number) {
+export function useListLastMonthCheckins(userId: number) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 

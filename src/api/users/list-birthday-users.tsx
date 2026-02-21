@@ -3,7 +3,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
-export function listBirthdayUsers() {
+export function useListBirthdayUsers() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 

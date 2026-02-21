@@ -1,7 +1,7 @@
-import { listNotifications } from "@/src/api/notifications/list-notifications";
-import { resendNotification } from "@/src/api/notifications/resend-notification";
-import { viewNotification } from "@/src/api/notifications/view-notification";
-import { isMediumRole } from "@/src/api/roles/is-medium-role";
+import { useListNotifications } from "@/src/api/notifications/list-notifications";
+import { useResendNotification } from "@/src/api/notifications/resend-notification";
+import { useViewNotification } from "@/src/api/notifications/view-notification";
+import { useIsMediumRole } from "@/src/api/roles/is-medium-role";
 import CreateNotificationDialog from "@/src/components/create-notification-dialog";
 import NotificationRow from "@/src/components/notification-row";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -13,12 +13,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Notifications() {
     const { user } = useProfileContext();
-    const { data, isLoading, isFetching, refetch } = listNotifications();
+    const isMediumRole = useIsMediumRole();
+    const { data, isLoading, isFetching, refetch } = useListNotifications();
     const {
         mutateAsync: resendNotificationFn,
         isPending: isResendingNotification,
-    } = resendNotification();
-    const { mutateAsync: viewNotificationFn } = viewNotification();
+    } = useResendNotification();
+    const { mutateAsync: viewNotificationFn } = useViewNotification();
 
     return (
         <SafeAreaView className="flex-1 pl-5 pr-5 pb-10">

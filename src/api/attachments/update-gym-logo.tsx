@@ -2,7 +2,7 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 
-export function updateGymLogo() {
+export function useUpdateGymLogo() {
   const { put } = useApi();
   const { showErrorToast } = useToast();
 

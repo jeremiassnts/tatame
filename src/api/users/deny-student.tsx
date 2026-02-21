@@ -3,7 +3,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { createNotification } from "../notifications/create-notification";
 
-export function denyStudent() {
+export function useDenyStudent() {
   const { put } = useApi();
   const { showErrorToast } = useToast();
   const { mutateAsync: createNotificationFn } = createNotification();

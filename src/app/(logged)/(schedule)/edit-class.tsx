@@ -1,6 +1,7 @@
-import { getClassById } from "@/src/api/classes/get-class-by-id";
-import { updateClass } from "@/src/api/classes/update-class";
-import { listInstructorsByGymId } from "@/src/api/users/list-instructors-by-gym-id";
+import { useGetClassById } from "@/src/api/classes/get-class-by-id";
+import { useUpdateClass } from "@/src/api/classes/update-class";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
+import { useListInstructorsByGymId } from "@/src/api/users/list-instructors-by-gym-id";
 import DateTimePicker from "@/src/components/date-time-picker";
 import IosTimePicker from "@/src/components/ios-time-picker";
 import { SelectInput } from "@/src/components/select-input";
@@ -53,11 +54,13 @@ export default function EditClass() {
     classId: string;
     gymId: string;
   }>();
+  const getClassById = useGetClassById();
+  const isHigherRole = useIsHigherRole();
   const { data: instructors, isLoading: isLoadingInstructors } =
-    listInstructorsByGymId(parseInt(gymId));
+    useListInstructorsByGymId(parseInt(gymId));
   const [isLoading, setIsLoading] = useState(true);
   const [classData, setClassData] = useState<Class | null>(null);
-  const { mutateAsync: editClassFn, isPending: isEditingClass } = updateClass();
+  const { mutateAsync: editClassFn, isPending: isEditingClass } = useUpdateClass();
   const router = useRouter();
   const { user } = useProfileContext();
   const {

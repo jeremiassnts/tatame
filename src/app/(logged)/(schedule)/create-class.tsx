@@ -1,4 +1,4 @@
-import { createClass } from "@/src/api/classes/create-class";
+import { useCreateClass } from "@/src/api/classes/create-class";
 import DateTimePicker from "@/src/components/date-time-picker";
 import IosTimePicker from "@/src/components/ios-time-picker";
 import { TextInput } from "@/src/components/text-input";
@@ -43,7 +43,7 @@ const createClassFormSchema = z.object({
 export default function CreateClass() {
   const router = useRouter();
   const [isCreatingClass, setIsCreatingClass] = useState(false);
-  const { mutateAsync: createClassFn } = createClass();
+  const { mutateAsync: createClassFn } = useCreateClass();
   const {
     watch,
     setValue,

@@ -1,8 +1,10 @@
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 
-export function isMediumRole(role?: string) {
+export function useIsMediumRole() {
   const { user } = useProfileContext();
 
-  const _role = role ?? user?.role;
-  return _role === "INSTRUCTOR" || _role === "MANAGER";
+  return (role?: string) => {
+    const _role = role ?? user?.role;
+    return _role === "INSTRUCTOR" || _role === "MANAGER";
+  };
 }

@@ -3,7 +3,7 @@ import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { CreateGymProps } from "./types";
 
-export function createGym() {
+export function useCreateGym() {
   const { post } = useApi();
   const { showErrorToast } = useToast();
 

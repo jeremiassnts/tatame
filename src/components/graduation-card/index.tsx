@@ -1,4 +1,4 @@
-import { getGraduationByUserId } from "@/src/api/graduations/get-graduation-by-user-id";
+import { useGetGraduationByUserId } from "@/src/api/graduations/get-graduation-by-user-id";
 import { BELT_COLORS } from "@/src/constants/belts";
 import { useRouter } from "expo-router";
 import { Box } from "../ui/box";
@@ -14,7 +14,7 @@ interface GraduationCardProps {
 
 export function GraduationCard({ showBelt }: GraduationCardProps) {
   const { data: graduation, isLoading: isLoadingGraduation } =
-    getGraduationByUserId();
+    useGetGraduationByUserId();
   const router = useRouter();
 
   function handleCreateGraduation() {

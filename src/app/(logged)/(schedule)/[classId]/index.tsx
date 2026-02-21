@@ -1,7 +1,9 @@
-import { deleteAsset } from "@/src/api/assets/delete-asset";
-import { deleteClass } from "@/src/api/classes/delete-class";
-import { getClassById } from "@/src/api/classes/get-class-by-id";
-import { isLowerRole } from "@/src/api/roles/is-lower-role";
+import { useDeleteAsset } from "@/src/api/assets/delete-asset";
+import { useDeleteClass } from "@/src/api/classes/delete-class";
+import { useGetClassById } from "@/src/api/classes/get-class-by-id";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
+import { useIsLowerRole } from "@/src/api/roles/is-lower-role";
+import { useIsMediumRole } from "@/src/api/roles/is-medium-role";
 import { AddContent } from "@/src/components/add-content";
 import { BackButton } from "@/src/components/back-button";
 import { CheckIn } from "@/src/components/class-card/check-in";
@@ -43,14 +45,18 @@ type ClassProps = {
 export default function Class() {
     const { classId, classDate } = useLocalSearchParams<ClassProps>();
     const { user, isLoading: isLoadingProfile } = useProfileContext();
+    const getClassById = useGetClassById();
+    const isHigherRole = useIsHigherRole();
+    const isLowerRole = useIsLowerRole();
+    const isMediumRole = useIsMediumRole();
     const { data, isLoading, refetch, isFetching } = useQuery({
         queryKey: ["class", classId],
         queryFn: () => getClassById(parseInt(classId)),
     });
     const router = useRouter();
-    const { mutateAsync: deleteClassFn } = deleteClass();
+    const { mutateAsync: deleteClassFn } = useDeleteClass();
     const { mutateAsync: deleteAssetFn, isPending: isDeletingAsset } =
-        deleteAsset();
+        useDeleteAsset();
     const startOfWeekDate = startOfWeek(new Date(classDate));
 
     async function handleDeleteAsset(assetId: number) {

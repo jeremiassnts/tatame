@@ -1,4 +1,4 @@
-import { listLastCheckins } from "@/src/api/checkins/list-last-checkins";
+import { useListLastCheckins } from "@/src/api/checkins/list-last-checkins";
 import { DayOfWeek, Days } from "@/src/constants/date";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { addDays, eachWeekOfInterval, format, subWeeks } from "date-fns";
@@ -31,7 +31,7 @@ function WeekPresenceDay({ day, isSelected }: WeekPresenceDayProps) {
 
 export function WeekPresence() {
     const { user } = useProfileContext();
-    const { data: checkins, isLoading: isLoadingCheckins } = listLastCheckins(
+    const { data: checkins, isLoading: isLoadingCheckins } = useListLastCheckins(
         user?.id ?? 0,
     );
     const [checkInDays, setCheckInDays] = useState<

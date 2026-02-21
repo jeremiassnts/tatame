@@ -1,6 +1,6 @@
-import { updateGymLogo } from "@/src/api/attachments/update-gym-logo";
-import { uploadImage } from "@/src/api/attachments/upload-image";
-import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { useUpdateGymLogo } from "@/src/api/attachments/update-gym-logo";
+import { useUploadImage } from "@/src/api/attachments/upload-image";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
 import { Gym } from "@/src/types/models";
@@ -21,8 +21,9 @@ interface ProfileGymCardProps {
 
 export function ProfileGymCard({ gym }: ProfileGymCardProps) {
   const router = useRouter();
-  const { mutateAsync: uploadImageAsync } = uploadImage();
-  const { mutateAsync: updateGymLogoAsync } = updateGymLogo();
+  const isHigherRole = useIsHigherRole();
+  const { mutateAsync: uploadImageAsync } = useUploadImage();
+  const { mutateAsync: updateGymLogoAsync } = useUpdateGymLogo();
   const { user } = useProfileContext();
 
   async function updateGymImage(logo: string) {

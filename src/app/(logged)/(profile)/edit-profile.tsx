@@ -1,4 +1,4 @@
-import { updateUser } from "@/src/api/users/update-user";
+import { useUpdateUser } from "@/src/api/users/update-user";
 import DateTimePicker from "@/src/components/date-time-picker";
 import IosDateTimePicker from "@/src/components/ios-date-time-picker";
 import { SelectInput } from "@/src/components/select-input";
@@ -46,7 +46,7 @@ export default function EditProfile() {
     const { user } = useUser();
     const router = useRouter();
     const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const { mutateAsync: editUser } = updateUser();
+    const { mutateAsync: editUser } = useUpdateUser();
     const { id, firstName, lastName, instagram, phone, gender, birth } =
         useLocalSearchParams<EditProfileParams>();
     const {

@@ -1,4 +1,4 @@
-import { listCheckinsByClassId } from "@/src/api/checkins/list-checkins-by-class-id";
+import { useListCheckinsByClassId } from "@/src/api/checkins/list-checkins-by-class-id";
 import { Avatar, AvatarFallbackText, AvatarImage } from "../ui/avatar";
 import { HStack } from "../ui/hstack";
 import { Skeleton } from "../ui/skeleton";
@@ -10,7 +10,7 @@ interface CheckInsProps {
 
 export function CheckIns({ classId }: CheckInsProps) {
   const { data: checkins, isLoading: isLoadingCheckins } =
-    listCheckinsByClassId(classId);
+    useListCheckinsByClassId(classId);
 
   if (isLoadingCheckins) {
     return (

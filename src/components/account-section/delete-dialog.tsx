@@ -1,4 +1,4 @@
-import { deleteUser } from "@/src/api/users/delete-user";
+import { useDeleteUser } from "@/src/api/users/delete-user";
 import { useUserTypeCache } from "@/src/hooks/use-user-type-cache";
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
@@ -22,7 +22,7 @@ export function DeleteDialog() {
     const { user } = useUser();
     const { clearUserType } = useUserTypeCache();
     const router = useRouter();
-    const { mutateAsync: deleteUserFn } = deleteUser();
+    const { mutateAsync: deleteUserFn } = useDeleteUser();
     const [isDeleting, setIsDeleting] = useState(false);
 
     async function handleDeleteAccount() {

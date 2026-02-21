@@ -3,7 +3,7 @@ import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useMutation } from "@tanstack/react-query";
 import { CreateUserProps } from "./types";
 
-export function createUser() {
+export function useCreateUser() {
   const { post } = useApi();
   const { user } = useProfileContext();
 

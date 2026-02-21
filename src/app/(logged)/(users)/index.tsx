@@ -1,4 +1,4 @@
-import { listStudentsByGymId } from "@/src/api/users/list-students-by-gym-id";
+import { useListStudentsByGymId } from "@/src/api/users/list-students-by-gym-id";
 import { StudentRow } from "@/src/components/student-row";
 import { Heading } from "@/src/components/ui/heading";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -14,7 +14,7 @@ export default function Users() {
         data,
         isLoading: isLoadingStudents,
         refetch: refetchStudents,
-    } = listStudentsByGymId();
+    } = useListStudentsByGymId();
 
     const students = data?.filter((user) => user.role === "STUDENT");
     const studentsWaitingApproval = students?.filter(

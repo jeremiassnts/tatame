@@ -1,15 +1,17 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 
-export async function getUserById(userId: number) {
+export function useGetUserById() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
-  try {
-    const { data } = await get<any>(`/users/${userId}`);
-    return data;
-  } catch (error) {
-    showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
-    throw error;
-  }
+  return async (userId: number) => {
+    try {
+      const { data } = await get<any>(`/users/${userId}`);
+      return data;
+    } catch (error) {
+      showErrorToast("Erro", "Ocorreu um erro ao buscar o usuário");
+      throw error;
+    }
+  };
 }

@@ -3,7 +3,7 @@ import { useSupabase } from "@/src/hooks/useSupabase";
 import { Asset } from "@/src/types/models";
 import { useMutation } from "@tanstack/react-query";
 
-export function createAsset() {
+export function useCreateAsset() {
     const supabase = useSupabase();
     const { showErrorToast } = useToast();
 

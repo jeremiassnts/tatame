@@ -5,7 +5,7 @@ import { useToast } from "../../hooks/use-toast";
 import { queryClient } from "../../lib/react-query";
 import { Notification } from "../../types/models";
 
-export function createNotification() {
+export function useCreateNotification() {
   const { post, put } = useApi();
   const { sendNotification } = useSendNotification();
   const { showErrorToast } = useToast();

@@ -1,7 +1,7 @@
-import { createCheckin } from "@/src/api/checkins/create-checkin";
-import { getClassToCheckIn } from "@/src/api/classes/get-class-to-check-in";
-import { listClasses } from "@/src/api/classes/list-classes";
-import { isMediumRole } from "@/src/api/roles/is-medium-role";
+import { useCreateCheckin } from "@/src/api/checkins/create-checkin";
+import { useGetClassToCheckIn } from "@/src/api/classes/get-class-to-check-in";
+import { useListClasses } from "@/src/api/classes/list-classes";
+import { useIsMediumRole } from "@/src/api/roles/is-medium-role";
 import { ClassCard } from "@/src/components/class-card";
 import { Box } from "@/src/components/ui/box";
 import { Button, ButtonIcon } from "@/src/components/ui/button";
@@ -42,13 +42,15 @@ export default function Schedule() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<WeekDay | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { mutateAsync: createCheckinFn } = createCheckin();
+  const getClassToCheckIn = useGetClassToCheckIn();
+  const { mutateAsync: createCheckinFn } = useCreateCheckin();
   const {
     data: classes,
     isLoading: isLoadingClasses,
     refetch: refetchClasses,
     isFetching: isFetchingClasses,
-  } = listClasses();
+  } = useListClasses();
+  const isMediumRole = useIsMediumRole();
   const router = useRouter();
   const [initialScrollIndex, setInitialScrollIndex] = useState(0);
   const [isOpenCheckInModal, setIsOpenCheckInModal] = useState(false);

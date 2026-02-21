@@ -1,5 +1,5 @@
-import { getGraduationByUserId } from "@/src/api/graduations/get-graduation-by-user-id";
-import { listStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
+import { useGetGraduationByUserId } from "@/src/api/graduations/get-graduation-by-user-id";
+import { useListStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { BELT_COLORS } from "@/src/constants/belts";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { Gym } from "@/src/types/models";
@@ -16,8 +16,8 @@ interface HomeGymHeaderProps {
 
 export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
   const { user } = useProfileContext();
-  const { data: graduation } = getGraduationByUserId();
-  const { data: studentsApprovalStatus } = listStudentsApprovalStatus();
+  const { data: graduation } = useGetGraduationByUserId();
+  const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
 
   const shift = useMemo(() => {
     const now = new Date();

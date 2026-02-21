@@ -1,5 +1,5 @@
-import { isLowerRole } from "@/src/api/roles/is-lower-role";
-import { listStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
+import { useIsLowerRole } from "@/src/api/roles/is-lower-role";
+import { useListStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { SplashScreen } from "@/src/components/splash-screen";
 import { Button, ButtonText } from "@/src/components/ui/button";
 import { Heading } from "@/src/components/ui/heading";
@@ -11,11 +11,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UserApprovalCheck() {
     const router = useRouter();
+    const isLowerRole = useIsLowerRole();
     const {
         data: studentsApprovalStatus,
         isLoading: isLoadingStudentsApprovalStatus,
         refetch: refetchStudentsApprovalStatus,
-    } = listStudentsApprovalStatus();
+    } = useListStudentsApprovalStatus();
 
     if (isLoadingStudentsApprovalStatus) {
         return <SplashScreen />;

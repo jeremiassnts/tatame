@@ -51,6 +51,8 @@ export default function SignIn() {
     },
   });
 
+  useWarmUpBrowser();
+
   if (isSignedIn) {
     return <Redirect href={"/(logged)/(home)/user-type-selection"} />;
   }
@@ -84,8 +86,6 @@ export default function SignIn() {
 
   const email = watch("email");
   const password = watch("password");
-
-  useWarmUpBrowser();
 
   return (
     <SafeAreaView className="flex flex-1 items-center justify-center pl-5 pr-5">

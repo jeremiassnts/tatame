@@ -1,6 +1,6 @@
-import { isHigherRole } from "@/src/api/roles/is-higher-role";
-import { approveStudent } from "@/src/api/users/approve-student";
-import { denyStudent } from "@/src/api/users/deny-student";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
+import { useApproveStudent } from "@/src/api/users/approve-student";
+import { useDenyStudent } from "@/src/api/users/deny-student";
 import { BELT_COLORS, BELTS } from "@/src/constants/belts";
 import { DEGREES } from "@/src/constants/degrees";
 import { queryClient } from "@/src/lib/react-query";
@@ -21,8 +21,9 @@ interface StudentRowProps {
 }
 
 export function StudentRow({ student }: StudentRowProps) {
-    const { mutateAsync: approveStudentFn } = approveStudent();
-    const { mutateAsync: denyStudentFn } = denyStudent();
+    const isHigherRole = useIsHigherRole();
+    const { mutateAsync: approveStudentFn } = useApproveStudent();
+    const { mutateAsync: denyStudentFn } = useDenyStudent();
     const router = useRouter();
 
     function handleApproveStudent() {

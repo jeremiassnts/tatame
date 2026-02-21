@@ -1,4 +1,4 @@
-import { getStoreUrls } from "@/src/api/app-stores/get-store-urls";
+import { useGetStoreUrls } from "@/src/api/app-stores/get-store-urls";
 import { useToast } from "@/src/hooks/use-toast";
 import * as Application from "expo-application";
 import * as Linking from "expo-linking";
@@ -14,7 +14,7 @@ interface VersionAlertProps {
     lastVersion: string;
 }
 export function VersionAlert({ lastVersion }: VersionAlertProps) {
-    const { data: storeUrls } = getStoreUrls();
+    const { data: storeUrls } = useGetStoreUrls();
     const { showErrorToast } = useToast();
 
     function handleUpdateVersion() {

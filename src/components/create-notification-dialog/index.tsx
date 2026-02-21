@@ -1,5 +1,5 @@
-import { createNotification } from "@/src/api/notifications/create-notification";
-import { listStudentsByGymId } from "@/src/api/users/list-students-by-gym-id";
+import { useCreateNotification } from "@/src/api/notifications/create-notification";
+import { useListStudentsByGymId } from "@/src/api/users/list-students-by-gym-id";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -47,9 +47,9 @@ export default function CreateNotificationDialog() {
     const {
         mutateAsync: createNotificationFn,
         isPending: isCreatingNotification,
-    } = createNotification();
+    } = useCreateNotification();
     const { data: tempStudents, isLoading: isLoadingStudents } =
-        listStudentsByGymId();
+        useListStudentsByGymId();
     const students = tempStudents?.filter((student) => student.id !== user?.id);
     const {
         setValue,

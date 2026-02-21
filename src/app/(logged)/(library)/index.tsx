@@ -1,6 +1,6 @@
-import { deleteAsset } from "@/src/api/assets/delete-asset";
-import { listVideoAssets } from "@/src/api/assets/list-video-assets";
-import { isMediumRole } from "@/src/api/roles/is-medium-role";
+import { useDeleteAsset } from "@/src/api/assets/delete-asset";
+import { useListVideoAssets } from "@/src/api/assets/list-video-assets";
+import { useIsMediumRole } from "@/src/api/roles/is-medium-role";
 import { AddVideoToLibrary } from "@/src/components/add-video-to-library";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
@@ -10,7 +10,9 @@ import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Library() {
-    const { data, isLoading, isFetching, refetch } = listVideoAssets();
+    const isMediumRole = useIsMediumRole();
+    const deleteAssetMutation = useDeleteAsset();
+    const { data, isLoading, isFetching, refetch } = useListVideoAssets();
 
     return (
         <SafeAreaView className="flex-1 pl-4 pr-4">
@@ -47,7 +49,7 @@ export default function Library() {
                                 video={`${process.env.EXPO_PUBLIC_R2_URL}${video.content}`}
                                 createdAt={video.created_at}
                                 title={video.title ?? ""}
-                                onDelete={deleteAsset()}
+                                onDelete={deleteAssetMutation}
                             />
                         ))}
                     </VStack>

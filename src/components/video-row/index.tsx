@@ -1,4 +1,4 @@
-import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
 import { queryClient } from "@/src/lib/react-query";
 import { UseMutationResult } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -26,6 +26,7 @@ export function VideoRow({
     title,
     onDelete,
 }: VideoRowProps) {
+    const isHigherRole = useIsHigherRole();
     const player = useVideoPlayer(video, (player) => {
         player.loop = true;
     });

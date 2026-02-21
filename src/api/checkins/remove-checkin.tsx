@@ -2,7 +2,7 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 
-export function removeCheckin() {
+export function useRemoveCheckin() {
   const { del } = useApi();
   const { showErrorToast } = useToast();
 
