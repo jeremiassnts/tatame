@@ -1,6 +1,7 @@
-import { useCheckins } from "@/src/api/checkins/use-checkins";
-import { useClasses } from "@/src/api/classes/use-classes";
-import { useRoles } from "@/src/api/roles/use-roles";
+import { createCheckin } from "@/src/api/checkins/create-checkin";
+import { getClassToCheckIn } from "@/src/api/classes/get-class-to-check-in";
+import { listClasses } from "@/src/api/classes/list-classes";
+import { isMediumRole } from "@/src/api/roles/is-medium-role";
 import { ClassCard } from "@/src/components/class-card";
 import { Box } from "@/src/components/ui/box";
 import { Button, ButtonIcon } from "@/src/components/ui/button";
@@ -38,26 +39,22 @@ const qrCodeSchema = z.object({
 });
 
 export default function Schedule() {
-  const { gym } = useProfileContext();
   const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<WeekDay | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { fetchClasses, findClassToCheckIn } = useClasses();
-  const { create } = useCheckins();
-  const { mutateAsync: createCheckinFn } = create();
+  const { mutateAsync: createCheckinFn } = createCheckin();
   const {
     data: classes,
     isLoading: isLoadingClasses,
     refetch: refetchClasses,
     isFetching: isFetchingClasses,
-  } = fetchClasses(gym?.id ?? 0);
+  } = listClasses();
   const router = useRouter();
-  const { isLowerRole, isMediumRole } = useRoles();
   const [initialScrollIndex, setInitialScrollIndex] = useState(0);
   const [isOpenCheckInModal, setIsOpenCheckInModal] = useState(false);
   const { showErrorToast, showSuccessToast } = useToast();
-  const [permission, requestPermission] = useCameraPermissions();
-  const { encrypt, decrypt } = useCrypto();
+  const [_, requestPermission] = useCameraPermissions();
+  const { decrypt } = useCrypto();
   const qrCodeLock = useRef(false);
   const [isLoadingCheckin, setIsLoadingCheckin] = useState(false);
   const { user } = useProfileContext();
@@ -122,16 +119,16 @@ export default function Schedule() {
     });
   }
 
-  async function handleCheckIn() {
-    if (isLoadingCheckin) return;
-    const { granted } = await requestPermission();
-    if (!granted) {
-      showErrorToast("Erro", "Permissão de câmera negada");
-      return;
-    }
-    qrCodeLock.current = false;
-    setIsOpenCheckInModal(true);
-  }
+  // async function handleCheckIn() {
+  //   if (isLoadingCheckin) return;
+  //   const { granted } = await requestPermission();
+  //   if (!granted) {
+  //     showErrorToast("Erro", "Permissão de câmera negada");
+  //     return;
+  //   }
+  //   qrCodeLock.current = false;
+  //   setIsOpenCheckInModal(true);
+  // }
 
   async function handleBarcodeScanned(data: string) {
     try {
@@ -146,7 +143,7 @@ export default function Schedule() {
       setIsOpenCheckInModal(false);
       setIsLoadingCheckin(true);
       const { gymId } = result.data;
-      const classToCheckIn = await findClassToCheckIn(
+      const classToCheckIn = await getClassToCheckIn(
         gymId,
         format(new Date(), "HH:mm:ss"),
         selectedDay?.dayOfWeek ?? "",

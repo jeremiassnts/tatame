@@ -1,5 +1,4 @@
-import { useAssets } from "@/src/api/assets/use-assets";
-import { useToast } from "@/src/hooks/use-toast";
+import { createAsset } from "@/src/api/assets/create-asset";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { endOfWeek, format } from "date-fns";
 import { useState } from "react";
@@ -65,12 +64,8 @@ export function AddContent({ classId, refetch, classDate }: AddContentProps) {
             content: "",
         },
     });
-    const { createAsset } = useAssets();
     const { mutateAsync: createAssetFn } = createAsset();
     const [isPending, setIsPending] = useState(false);
-    // const { uploadVideo } = useAttachments();
-    // const { mutateAsync: uploadVideoFn } = uploadVideo();
-    const { showErrorToast } = useToast();
     const validUntil = endOfWeek(new Date(classDate));
 
     async function handleAddContent(data: AddContentFormType) {
@@ -83,24 +78,6 @@ export function AddContent({ classId, refetch, classDate }: AddContentProps) {
         setIsPending(true);
         try {
             let videoUrl = null;
-            // if (data.type === "video") {
-            //     for (let i = 0; i < 4; i++) {
-            //         try {
-            //             videoUrl = await uploadVideoFn(data.content);
-            //             if (!videoUrl) continue;
-            //             break;
-            //         } catch (error) {
-            //             continue;
-            //         }
-            //     }
-            //     if (!videoUrl) {
-            //         showErrorToast(
-            //             "Erro",
-            //             "Erro ao enviar o vídeo, tentando novamente...",
-            //         );
-            //         return;
-            //     }
-            // }
 
             await createAssetFn({
                 class_id: classId,

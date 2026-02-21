@@ -1,4 +1,4 @@
-import { useRoles } from "@/src/api/roles/use-roles";
+import { isLowerRole } from "@/src/api/roles/is-lower-role";
 import { BirthdayAlert } from "@/src/components/birthday-alert";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { HomeGymHeader } from "@/src/components/home-gym/header";
@@ -9,7 +9,6 @@ import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home() {
-  const { isLowerRole } = useRoles();
   const { gym, isLoading } = useProfileContext();
 
   return (

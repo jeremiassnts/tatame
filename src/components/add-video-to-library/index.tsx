@@ -1,5 +1,3 @@
-import { useAssets } from "@/src/api/assets/use-assets";
-import { useToast } from "@/src/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -33,9 +31,6 @@ export function AddVideoToLibrary() {
         watch,
         setValue,
         formState: { errors },
-        handleSubmit,
-        reset,
-        setError,
     } = useForm<AddVideoFormType>({
         resolver: zodResolver(addVideoFormSchema),
         defaultValues: {
@@ -43,49 +38,8 @@ export function AddVideoToLibrary() {
             content: "",
         },
     });
-    const { createAsset } = useAssets();
-    // const { uploadVideo } = useAttachments();
-    // const { mutateAsync: uploadVideoFn } = uploadVideo;
-    const { mutateAsync: createAssetFn } = createAsset();
-    const [isPending, setIsPending] = useState(false);
-    const { showErrorToast } = useToast();
-
-    // async function handleUploadVideo(data: AddVideoFormType) {
-    //     setIsPending(true);
-    //     try {
-    //         let videoUrl = null
-    //         for (let i = 0; i < 4; i++) {
-    //             try {
-    //                 videoUrl = await uploadVideoFn(data.content);
-    //                 if (!videoUrl) continue;
-    //                 break;
-    //             } catch (error) {
-    //                 continue;
-    //             }
-    //         }
-    //         if (!videoUrl) {
-    //             showErrorToast("Erro", "Erro ao enviar o vídeo, tentando novamente...");
-    //             return;
-    //         }
-
-    //         await createAssetFn({
-    //             class_id: null,
-    //             content: videoUrl,
-    //             type: 'video',
-    //             title: data.title,
-    //             valid_until: null,
-    //         });
-    //         setIsOpen(false);
-    //         reset();
-    //         queryClient.invalidateQueries({ queryKey: ["videos"] });
-    //     } catch (error) {
-    //         console.error(JSON.stringify(error, null, 2));
-    //     }
-    //     setIsPending(false);
-    // }
 
     const title = watch("title");
-    const content = watch("content");
 
     return (
         <View>
@@ -133,11 +87,6 @@ export function AddVideoToLibrary() {
                                     {errors.content?.message}
                                 </Text>
                             )}
-                            {/* <Button onPress={handleSubmit(handleUploadVideo)} isDisabled={isPending}>
-                            {isPending && <ButtonSpinner color="white" />}
-                            {!isPending && <ButtonIcon as={AddIcon} />}
-                            {!isPending && <ButtonText>Adicionar</ButtonText>}
-                        </Button> */}
                         </VStack>
                     </ModalBody>
                 </ModalContent>

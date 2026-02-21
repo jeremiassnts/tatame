@@ -1,7 +1,8 @@
-import { useAttachments } from "@/src/api/attachments/use-attachments";
-import { useCheckins } from "@/src/api/checkins/use-checkins";
-import { useRoles } from "@/src/api/roles/use-roles";
-import { useUsers } from "@/src/api/users/use-users";
+import { updateUserImage } from "@/src/api/attachments/update-user-image";
+import { listLastMonthCheckins } from "@/src/api/checkins/list-last-month-checkins";
+import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { isLowerRole } from "@/src/api/roles/is-lower-role";
+import { listStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { AccountSection } from "@/src/components/account-section";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { PersonalDataSection } from "@/src/components/personal-data-section";
@@ -17,15 +18,11 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
-  const { getStudentsApprovalStatus } = useUsers();
-  const { updateUserImage } = useAttachments();
   const { mutateAsync: updateUserImageAsync } = updateUserImage();
-  const { fetchLastMonthCheckins } = useCheckins();
-  const { isLowerRole, isHigherRole } = useRoles();
   const { user, gym, isLoading } = useProfileContext();
 
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus();
-  const { data: lastMonthCheckins } = fetchLastMonthCheckins(user?.id ?? 0);
+  const { data: studentsApprovalStatus } = listStudentsApprovalStatus();
+  const { data: lastMonthCheckins } = listLastMonthCheckins(user?.id ?? 0);
 
   const fullName = (user?.first_name + " " + (user?.last_name ?? "")).trim();
 

@@ -1,6 +1,7 @@
-import { useAttachments } from "@/src/api/attachments/use-attachments";
-import { useRoles } from "@/src/api/roles/use-roles";
-import { useUsers } from "@/src/api/users/use-users";
+import { updateGymLogo } from "@/src/api/attachments/update-gym-logo";
+import { uploadImage } from "@/src/api/attachments/upload-image";
+import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { listStudentsByGymId } from "@/src/api/users/list-students-by-gym-id";
 import { StudentRow } from "@/src/components/student-row";
 import AvatarWithDialog from "@/src/components/ui/avatar/avatar-with-dialog";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -12,17 +13,11 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Gym() {
-    const { isHigherRole } = useRoles();
-    const { updateGymLogo, uploadImage } = useAttachments();
     const { mutateAsync: uploadImageAsync } = uploadImage();
     const { mutateAsync: updateGymLogoAsync } = updateGymLogo();
-    const { getStudentsByGymId } = useUsers();
     const { user, gym } = useProfileContext();
-    const {
-        data: students,
-        isLoading: isLoadingStudents,
-        refetch: refetchStudents,
-    } = getStudentsByGymId(gym?.id ?? 0);
+    const { data: students, isLoading: isLoadingStudents } =
+        listStudentsByGymId();
 
     async function updateGymImage(logo: string) {
         if (!gym?.id) return;

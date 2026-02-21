@@ -1,5 +1,6 @@
-import { useRoles } from "@/src/api/roles/use-roles";
-import { useUsers } from "@/src/api/users/use-users";
+import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { approveStudent } from "@/src/api/users/approve-student";
+import { denyStudent } from "@/src/api/users/deny-student";
 import { BELT_COLORS, BELTS } from "@/src/constants/belts";
 import { DEGREES } from "@/src/constants/degrees";
 import { queryClient } from "@/src/lib/react-query";
@@ -20,28 +21,24 @@ interface StudentRowProps {
 }
 
 export function StudentRow({ student }: StudentRowProps) {
-    const { approveStudent, denyStudent } = useUsers();
-    const { isHigherRole } = useRoles();
+    const { mutateAsync: approveStudentFn } = approveStudent();
+    const { mutateAsync: denyStudentFn } = denyStudent();
     const router = useRouter();
 
     function handleApproveStudent() {
-        approveStudent()
-            .mutateAsync(student.id)
-            .then(() => {
-                queryClient.invalidateQueries({
-                    queryKey: ["students-by-gym-id", student.gym_id],
-                });
+        approveStudentFn(student.id).then(() => {
+            queryClient.invalidateQueries({
+                queryKey: ["students-by-gym-id", student.gym_id],
             });
+        });
     }
 
     function handleDenyStudent() {
-        denyStudent()
-            .mutateAsync(student.id)
-            .then(() => {
-                queryClient.invalidateQueries({
-                    queryKey: ["students-by-gym-id", student.gym_id],
-                });
+        denyStudentFn(student.id).then(() => {
+            queryClient.invalidateQueries({
+                queryKey: ["students-by-gym-id", student.gym_id],
             });
+        });
     }
 
     function handleViewUser() {

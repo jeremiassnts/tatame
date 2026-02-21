@@ -1,8 +1,9 @@
-import { useRoles } from "@/src/api/roles/use-roles";
+import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { isLowerRole } from "@/src/api/roles/is-lower-role";
+import { isMediumRole } from "@/src/api/roles/is-medium-role";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { Class } from "@/src/types/models";
 import { formatDay, formatTime } from "@/src/utils/class";
-import { isAfter, startOfWeek } from "date-fns";
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
@@ -27,25 +28,7 @@ export function ClassCard({
   currentClass,
   classDate,
 }: ClassCardProps) {
-  const { isHigherRole, isLowerRole, isMediumRole } = useRoles();
   const { user } = useProfileContext();
-  const startOfWeekDate = classDate
-    ? startOfWeek(new Date(classDate))
-    : undefined;
-  const videos = startOfWeekDate
-    ? data.assets?.filter(
-      (a) =>
-        a.type === "video" &&
-        isAfter(new Date(a.valid_until ?? ""), startOfWeekDate),
-    )?.length
-    : 0;
-  const instructions = startOfWeekDate
-    ? data.assets?.filter(
-      (a) =>
-        a.type === "text" &&
-        isAfter(new Date(a.valid_until ?? ""), startOfWeekDate),
-    )?.length
-    : 0;
 
   const canOpenActions =
     isHigherRole() || (isMediumRole() && data.instructor_id === user?.id);

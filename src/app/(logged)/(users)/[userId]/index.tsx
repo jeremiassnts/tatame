@@ -1,5 +1,6 @@
-import { useRoles } from "@/src/api/roles/use-roles";
-import { useUsers } from "@/src/api/users/use-users";
+import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { approveStudent } from "@/src/api/users/approve-student";
+import { denyStudent } from "@/src/api/users/deny-student";
 import { BackButton } from "@/src/components/back-button";
 import { InfoRow } from "@/src/components/personal-data-section/info-row";
 import { StudentBelt } from "@/src/components/student-belt";
@@ -24,7 +25,7 @@ import { VStack } from "@/src/components/ui/vstack";
 import { GENDERS } from "@/src/constants/genders";
 import { queryClient } from "@/src/lib/react-query";
 import { format } from "date-fns";
-import { useLocalSearchParams, useRouter } from "expo-router/build/hooks";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 import { Instagram } from "lucide-react-native";
 import { useState } from "react";
 import { ScrollView } from "react-native";
@@ -60,8 +61,6 @@ export default function User() {
         denied_at,
         userId,
         gym_id,
-        firstName,
-        lastName,
         instagram,
         phone,
         gender,
@@ -69,32 +68,27 @@ export default function User() {
     } = useLocalSearchParams<UserProps>();
     const [approvedAt, setApprovedAt] = useState<string | null>(approved_at);
     const [deniedAt, setDeniedAt] = useState<string | null>(denied_at);
-    const { approveStudent, denyStudent } = useUsers();
-    const { isHigherRole } = useRoles();
-    const router = useRouter();
+    const { mutateAsync: approveStudentFn } = approveStudent();
+    const { mutateAsync: denyStudentFn } = denyStudent();
 
     function handleApproveStudent() {
-        approveStudent()
-            .mutateAsync(Number(userId))
-            .then(() => {
-                queryClient.invalidateQueries({
-                    queryKey: ["students-by-gym-id", Number(gym_id)],
-                });
-                setApprovedAt(new Date().toISOString());
-                setDeniedAt(null);
+        approveStudentFn(Number(userId)).then(() => {
+            queryClient.invalidateQueries({
+                queryKey: ["students-by-gym-id", Number(gym_id)],
             });
+            setApprovedAt(new Date().toISOString());
+            setDeniedAt(null);
+        });
     }
 
     function handleDenyStudent() {
-        denyStudent()
-            .mutateAsync(Number(userId))
-            .then(() => {
-                queryClient.invalidateQueries({
-                    queryKey: ["students-by-gym-id", Number(gym_id)],
-                });
-                setDeniedAt(new Date().toISOString());
-                setApprovedAt(null);
+        denyStudentFn(Number(userId)).then(() => {
+            queryClient.invalidateQueries({
+                queryKey: ["students-by-gym-id", Number(gym_id)],
             });
+            setDeniedAt(new Date().toISOString());
+            setApprovedAt(null);
+        });
     }
 
     const isWaitingApproval = !approvedAt && !deniedAt;

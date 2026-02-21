@@ -1,5 +1,4 @@
-import { useGraduations } from "@/src/api/graduations/use-graduations";
-import { useUsers } from "@/src/api/users/use-users";
+import { createGraduation } from "@/src/api/graduations/create-graduation";
 import { SelectInput } from "@/src/components/select-input";
 import {
   Button,
@@ -33,9 +32,7 @@ const createGraduationFormSchema = z.object({
 
 export default function CreateGraduation() {
   const router = useRouter();
-  const { getUserByClerkUserId } = useUsers();
   const [isCreatingGraduation, setIsCreatingGraduation] = useState(false);
-  const { createGraduation } = useGraduations();
   const { mutateAsync: createGraduationFn } = createGraduation();
   const [degrees, setDegrees] = useState<{ value: string; label: string }[]>(
     [],

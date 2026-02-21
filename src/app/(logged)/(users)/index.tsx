@@ -1,4 +1,4 @@
-import { useUsers } from "@/src/api/users/use-users";
+import { listStudentsByGymId } from "@/src/api/users/list-students-by-gym-id";
 import { StudentRow } from "@/src/components/student-row";
 import { Heading } from "@/src/components/ui/heading";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -9,13 +9,12 @@ import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Users() {
-    const { getStudentsByGymId } = useUsers();
     const { user } = useProfileContext();
     const {
         data,
         isLoading: isLoadingStudents,
         refetch: refetchStudents,
-    } = getStudentsByGymId(user?.gym_id!);
+    } = listStudentsByGymId();
 
     const students = data?.filter((user) => user.role === "STUDENT");
     const studentsWaitingApproval = students?.filter(
@@ -75,7 +74,7 @@ export default function Users() {
                     {instructorsDenied?.map((instructor) => (
                         <StudentRow key={instructor.id} student={instructor} />
                     ))}
-                    {instructors?.length == 0 && (
+                    {instructors?.length === 0 && (
                         <Text className="text-neutral-400 mb-2">
                             Nenhum instrutor encontrado
                         </Text>
@@ -92,7 +91,7 @@ export default function Users() {
                     {studentsDenied?.map((student) => (
                         <StudentRow key={student.id} student={student} />
                     ))}
-                    {students?.length == 0 && (
+                    {students?.length === 0 && (
                         <Text className="text-neutral-400 mb-2">
                             Nenhum aluno encontrado
                         </Text>

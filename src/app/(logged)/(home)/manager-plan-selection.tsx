@@ -1,5 +1,5 @@
 import { useStripeHook } from "@/src/api/stripe/use-stripe-hook";
-import { useUsers } from "@/src/api/users/use-users";
+import { updateUser } from "@/src/api/users/update-user";
 import ManagerPlan from "@/src/components/manager-plan";
 import { SplashScreen } from "@/src/components/splash-screen";
 import { Button, ButtonSpinner, ButtonText } from "@/src/components/ui/button";
@@ -27,8 +27,7 @@ export default function ManagerPlanSelection() {
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [isLoading, setIsLoading] = useState(false);
-    const { update } = useUsers();
-    const { mutateAsync: updateUser } = update();
+    const { mutateAsync: updateUserFn } = updateUser();
     const { mutateAsync: createCustomer } = stripeApi.customers.create();
     const { mutateAsync: createSetupIntent } = stripeApi.setupIntents.create();
     const { mutateAsync: createSubscription } = stripeApi.subscriptions.create();
@@ -48,7 +47,7 @@ export default function ManagerPlanSelection() {
             setIsLoading(true);
             const product = products?.find((product) => product.id === selectedPlan);
             if (product?.default_price.unit_amount! <= 0) {
-                await updateUser({
+                await updateUserFn({
                     id: user?.id ?? 0,
                     plan: product?.name?.toLowerCase(),
                     subscriptionId: null,

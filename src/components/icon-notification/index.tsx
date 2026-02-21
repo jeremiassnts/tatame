@@ -1,7 +1,6 @@
-import { useNotifications } from "@/src/api/notifications/use-notifications";
+import { listUnreadNotifications } from "@/src/api/notifications/list-unread-notifications";
 import { Box } from "@/src/components/ui/box";
 import { Icon } from "@/src/components/ui/icon";
-import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { DrawerActions } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import { ElementType } from "react";
@@ -24,9 +23,7 @@ export function IconNotification({
     style,
 }: IconNotificationProps) {
     const navigation = useNavigation();
-    const { listUnread } = useNotifications();
-    const { user } = useProfileContext();
-    const { data: unreadNotifications } = listUnread(user?.id ?? 0);
+    const { data: unreadNotifications } = listUnreadNotifications();
     const amount =
         unreadNotifications && unreadNotifications?.length > 9
             ? "9+"

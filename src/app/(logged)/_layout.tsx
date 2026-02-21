@@ -1,5 +1,5 @@
-import { useRoles } from "@/src/api/roles/use-roles";
-import { useUsers } from "@/src/api/users/use-users";
+import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { listStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { IconNotification } from "@/src/components/icon-notification";
 import {
   CalendarDaysIcon,
@@ -22,10 +22,8 @@ import { useEffect } from "react";
 export default function Layout() {
   const segments = useSegments();
   const pathname = segments[segments.length - 1].replace(/[^a-zA-Z]/g, "");
-  const { getStudentsApprovalStatus } = useUsers();
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus();
+  const { data: studentsApprovalStatus } = listStudentsApprovalStatus();
   const { initializePushNotifications } = useSendNotification();
-  const { isHigherRole } = useRoles();
   const { user } = useProfileContext();
 
   const isApproved = isHigherRole() || studentsApprovalStatus;
@@ -34,7 +32,7 @@ export default function Layout() {
     if (user) {
       initializePushNotifications(user?.id);
     }
-  }, [user]);
+  }, [user, initializePushNotifications]);
 
   const headerShown = (isHigherRole() && !!user?.plan) || !isHigherRole();
 

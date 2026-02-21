@@ -1,4 +1,4 @@
-import { useRoles } from "@/src/api/roles/use-roles";
+import { isLowerRole } from "@/src/api/roles/is-lower-role";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { GraduationCard } from "../graduation-card";
 import { NextClass } from "../next-class";
@@ -7,7 +7,6 @@ import { WeekPresence } from "../week-presence";
 import { HomeGymHeader } from "./header";
 
 export function HomeGym() {
-  const { isLowerRole } = useRoles();
   const { gym, isLoading } = useProfileContext();
 
   return (

@@ -1,4 +1,4 @@
-import { useUsers } from "@/src/api/users/use-users";
+import { listBirthdayUsers } from "@/src/api/users/list-birthday-users";
 import { PartyPopper } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable } from "react-native";
@@ -10,8 +10,7 @@ import { VStack } from "../ui/vstack";
 
 export function BirthdayAlert() {
     const [isOpen, setIsOpen] = useState(true);
-    const { getBirthdayUsers } = useUsers();
-    const { data: birthdayUsers } = getBirthdayUsers();
+    const { data: birthdayUsers } = listBirthdayUsers();
 
     if (!birthdayUsers || birthdayUsers.length === 0) return null;
 

@@ -1,5 +1,6 @@
-import { useAssets } from "@/src/api/assets/use-assets";
-import { useRoles } from "@/src/api/roles/use-roles";
+import { deleteAsset } from "@/src/api/assets/delete-asset";
+import { listVideoAssets } from "@/src/api/assets/list-video-assets";
+import { isMediumRole } from "@/src/api/roles/is-medium-role";
 import { AddVideoToLibrary } from "@/src/components/add-video-to-library";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
@@ -9,10 +10,7 @@ import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Library() {
-    const { fetchVideos, deleteAsset } = useAssets();
-    const { isMediumRole } = useRoles();
-
-    const { data, isLoading, isFetching, refetch } = fetchVideos();
+    const { data, isLoading, isFetching, refetch } = listVideoAssets();
 
     return (
         <SafeAreaView className="flex-1 pl-4 pr-4">

@@ -1,6 +1,8 @@
-import { useClasses } from "@/src/api/classes/use-classes";
-import { useRoles } from "@/src/api/roles/use-roles";
-import { useUsers } from "@/src/api/users/use-users";
+import { getNextClass } from "@/src/api/classes/get-next-class";
+import { isHigherRole } from "@/src/api/roles/is-higher-role";
+import { isLowerRole } from "@/src/api/roles/is-lower-role";
+import { isMediumRole } from "@/src/api/roles/is-medium-role";
+import { listStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { Gym } from "@/src/types/models";
 import { useRouter } from "expo-router";
@@ -22,14 +24,9 @@ interface NextClassProps {
 
 export function NextClass({ gym, isLoadingGym }: NextClassProps) {
   const router = useRouter();
-  const { fetchNextClass } = useClasses();
   const { user, isLoading: isLoadingUser } = useProfileContext();
-  const { data: nextClass, isLoading: isLoadingNextClass } = fetchNextClass(
-    user?.id ?? 0,
-  );
-  const { getStudentsApprovalStatus } = useUsers();
-  const { data: studentsApprovalStatus } = getStudentsApprovalStatus();
-  const { isHigherRole, isMediumRole, isLowerRole } = useRoles();
+  const { data: nextClass, isLoading: isLoadingNextClass } = getNextClass();
+  const { data: studentsApprovalStatus } = listStudentsApprovalStatus();
 
   if (gym && !studentsApprovalStatus && !isHigherRole()) {
     return (

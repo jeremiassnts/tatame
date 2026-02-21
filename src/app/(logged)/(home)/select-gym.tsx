@@ -1,4 +1,5 @@
-import { useGyms } from "@/src/api/gyms/use-gyms";
+import { associateGym } from "@/src/api/gyms/associate-gym";
+import { listGyms } from "@/src/api/gyms/list-gyms";
 import { SelectInput } from "@/src/components/select-input";
 import {
   Button,
@@ -26,8 +27,7 @@ const selectGymFormSchema = z.object({
 type SelectGymFormSchema = z.infer<typeof selectGymFormSchema>;
 
 export default function SelectGym() {
-  const { fetchAll, associateGym } = useGyms();
-  const { data: gyms, isLoading: isLoadingGyms } = fetchAll();
+  const { data: gyms, isLoading: isLoadingGyms } = listGyms();
   const { mutateAsync: associateGymFn, isPending: isAssociatingGym } =
     associateGym();
   const { user } = useProfileContext();

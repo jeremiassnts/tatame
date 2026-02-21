@@ -1,4 +1,6 @@
-import { useCheckins } from "@/src/api/checkins/use-checkins";
+import { createCheckin } from "@/src/api/checkins/create-checkin";
+import { listCheckinsByClassId } from "@/src/api/checkins/list-checkins-by-class-id";
+import { removeCheckin } from "@/src/api/checkins/remove-checkin";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { queryClient } from "@/src/lib/react-query";
 import { Class } from "@/src/types/models";
@@ -15,14 +17,21 @@ interface CheckInProps {
 
 export function CheckIn({ class: classData, classDate }: CheckInProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { create, fetchAllByClassId, remove } = useCheckins();
-  const { mutateAsync: createCheckinFn } = create();
-  const { data: checkins, isLoading: isLoadingCheckins } = fetchAllByClassId(
-    classData.id,
-  );
-  const { mutateAsync: removeCheckinFn } = remove();
+  const { mutateAsync: createCheckinFn } = createCheckin();
+  const { data: checkins, isLoading: isLoadingCheckins } =
+    listCheckinsByClassId(classData.id);
+  const { mutateAsync: removeCheckinFn } = removeCheckin();
   const [date, setDate] = useState<Date | null>(null);
   const { user } = useProfileContext();
+
+  useEffect(() => {
+    if (!classDate) return;
+    const hour = classData.end?.split(":")[0];
+    const minute = classData.end?.split(":")[1];
+    const temp = new Date(`${classDate}`);
+    temp.setHours(Number(hour), Number(minute));
+    setDate(temp);
+  }, [classDate, classData.end]);
 
   if (!classDate) return null;
 
@@ -83,14 +92,6 @@ export function CheckIn({ class: classData, classDate }: CheckInProps) {
         setIsLoading(false);
       });
   }
-
-  useEffect(() => {
-    const hour = classData.end?.split(":")[0];
-    const minute = classData.end?.split(":")[1];
-    const temp = new Date(`${classDate}`);
-    temp.setHours(Number(hour), Number(minute));
-    setDate(temp);
-  }, [classDate, classData.end]);
 
   if (!date || differenceInHours(date, new Date()) > 24) return null;
 

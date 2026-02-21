@@ -1,16 +1,20 @@
 import { useApi } from "@/src/hooks/use-api";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
-export function listUnreadNotifications(userId: number) {
+export function listUnreadNotifications() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
+  const { user } = useProfileContext();
 
   return useQuery({
-    queryKey: ["notifications-unread", userId],
+    queryKey: ["notifications-unread", user?.id],
     queryFn: async () => {
       try {
-        const { data } = await get<any>(`/notifications/user/${userId}/unread`);
+        const { data } = await get<any>(
+          `/notifications/user/${user?.id}/unread`,
+        );
         return data;
       } catch (error) {
         showErrorToast(

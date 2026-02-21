@@ -1,6 +1,5 @@
-import { useGraduations } from "@/src/api/graduations/use-graduations";
+import { getGraduationByUserId } from "@/src/api/graduations/get-graduation-by-user-id";
 import { BELT_COLORS } from "@/src/constants/belts";
-import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useRouter } from "expo-router";
 import { Box } from "../ui/box";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
@@ -14,11 +13,8 @@ interface GraduationCardProps {
 }
 
 export function GraduationCard({ showBelt }: GraduationCardProps) {
-  const { getGraduation } = useGraduations();
-  const { user } = useProfileContext();
-  const { data: graduation, isLoading: isLoadingGraduation } = getGraduation(
-    user?.id ?? 0,
-  );
+  const { data: graduation, isLoading: isLoadingGraduation } =
+    getGraduationByUserId();
   const router = useRouter();
 
   function handleCreateGraduation() {

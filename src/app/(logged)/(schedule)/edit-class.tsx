@@ -1,6 +1,6 @@
-import { useClasses } from "@/src/api/classes/use-classes";
-import { useRoles } from "@/src/api/roles/use-roles";
-import { useUsers } from "@/src/api/users/use-users";
+import { getClassById } from "@/src/api/classes/get-class-by-id";
+import { updateClass } from "@/src/api/classes/update-class";
+import { listInstructorsByGymId } from "@/src/api/users/list-instructors-by-gym-id";
 import DateTimePicker from "@/src/components/date-time-picker";
 import IosTimePicker from "@/src/components/ios-time-picker";
 import { SelectInput } from "@/src/components/select-input";
@@ -53,14 +53,11 @@ export default function EditClass() {
     classId: string;
     gymId: string;
   }>();
-  const { isHigherRole } = useRoles();
-  const { getInstructorsByGymId } = useUsers();
   const { data: instructors, isLoading: isLoadingInstructors } =
-    getInstructorsByGymId(parseInt(gymId));
-  const { fetchClassById, editClass } = useClasses();
+    listInstructorsByGymId(parseInt(gymId));
   const [isLoading, setIsLoading] = useState(true);
   const [classData, setClassData] = useState<Class | null>(null);
-  const { mutateAsync: editClassFn, isPending: isEditingClass } = editClass();
+  const { mutateAsync: editClassFn, isPending: isEditingClass } = updateClass();
   const router = useRouter();
   const { user } = useProfileContext();
   const {
@@ -108,7 +105,7 @@ export default function EditClass() {
 
   useEffect(() => {
     async function fetchClass() {
-      const classData = await fetchClassById(parseInt(classId));
+      const classData = await getClassById(parseInt(classId));
       if (classData) {
         setClassData(classData);
         setValue("description", classData.description ?? "");
@@ -121,7 +118,7 @@ export default function EditClass() {
       setIsLoading(false);
     }
     fetchClass();
-  }, []);
+  }, [classId, setValue]);
 
   function formatTime(time: string) {
     const template = `${new Date().toISOString().split("T")[0]} ${time}`;

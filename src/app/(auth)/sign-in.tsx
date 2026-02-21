@@ -31,18 +31,11 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function SignIn() {
   const { isSignedIn } = useAuth();
-  if (isSignedIn) {
-    return <Redirect href={"/(logged)/(home)/user-type-selection"} />;
-  }
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isSigningInWithGoogle, setIsSigningInWithGoogle] = useState(false);
   const [isSigningInWithApple, setIsSigningInWithApple] = useState(false);
-  const {
-    useWarmUpBrowser,
-    signInWithSSO,
-    signInWithEmailAndPassword,
-
-  } = useLogIn();
+  const { useWarmUpBrowser, signInWithSSO, signInWithEmailAndPassword } =
+    useLogIn();
   const {
     setValue,
     watch,
@@ -57,6 +50,10 @@ export default function SignIn() {
       password: "",
     },
   });
+
+  if (isSignedIn) {
+    return <Redirect href={"/(logged)/(home)/user-type-selection"} />;
+  }
 
   const handleSignInWithGoogle = async () => {
     try {

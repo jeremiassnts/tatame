@@ -1,5 +1,5 @@
 import { useStripeHook } from "@/src/api/stripe/use-stripe-hook";
-import { useUsers } from "@/src/api/users/use-users";
+import { updateUser } from "@/src/api/users/update-user";
 import { queryClient } from "@/src/lib/react-query";
 import { useState } from "react";
 import { Button, ButtonSpinner, ButtonText } from "../ui/button";
@@ -29,8 +29,7 @@ export function CancelButton({
 }: CancelButtonProps) {
     const [isOpen, setIsOpen] = useState(false);
     const stripeApi = useStripeHook();
-    const { update } = useUsers();
-    const { mutateAsync: updateUserAsync } = update();
+    const { mutateAsync: updateUserAsync } = updateUser();
     const deleteSubscription = stripeApi.subscriptions.delete;
     const {
         mutateAsync: deleteSubscriptionFn,

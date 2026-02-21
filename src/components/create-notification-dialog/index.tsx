@@ -1,5 +1,5 @@
-import { useCreateNotification } from "@/src/api/notifications/use-create-notification";
-import { useUsers } from "@/src/api/users/use-users";
+import { createNotification } from "@/src/api/notifications/create-notification";
+import { listStudentsByGymId } from "@/src/api/users/list-students-by-gym-id";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -43,13 +43,13 @@ type CreateNotificationFormType = z.infer<typeof createNotificationFormSchema>;
 
 export default function CreateNotificationDialog() {
     const [isOpen, setIsOpen] = useState(false);
-    const { getStudentsByGymId } = useUsers();
-    const { user, gym } = useProfileContext();
-    const { create } = useCreateNotification();
-    const { mutateAsync: createNotification, isPending: isCreatingNotification } =
-        create();
+    const { user } = useProfileContext();
+    const {
+        mutateAsync: createNotificationFn,
+        isPending: isCreatingNotification,
+    } = createNotification();
     const { data: tempStudents, isLoading: isLoadingStudents } =
-        getStudentsByGymId(gym?.id ?? 0);
+        listStudentsByGymId();
     const students = tempStudents?.filter((student) => student.id !== user?.id);
     const {
         setValue,
@@ -90,7 +90,7 @@ export default function CreateNotificationDialog() {
     };
 
     async function handleCreateNotification(data: CreateNotificationFormType) {
-        await createNotification({
+        await createNotificationFn({
             title: data.title,
             content: data.content,
             recipients: data.recipients.map((id) => id.toString()),

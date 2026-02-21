@@ -2,7 +2,7 @@ import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { mapToClassRow } from "./map-class";
 
-export async function getClassesById(classId: number) {
+export async function getClassById(classId: number) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 

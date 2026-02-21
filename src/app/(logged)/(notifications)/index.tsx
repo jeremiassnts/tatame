@@ -1,5 +1,7 @@
-import { useNotifications } from "@/src/api/notifications/use-notifications";
-import { useRoles } from "@/src/api/roles/use-roles";
+import { listNotifications } from "@/src/api/notifications/list-notifications";
+import { resendNotification } from "@/src/api/notifications/resend-notification";
+import { viewNotification } from "@/src/api/notifications/view-notification";
+import { isMediumRole } from "@/src/api/roles/is-medium-role";
 import CreateNotificationDialog from "@/src/components/create-notification-dialog";
 import NotificationRow from "@/src/components/notification-row";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -11,14 +13,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Notifications() {
     const { user } = useProfileContext();
-    const { list, resend, view } = useNotifications();
-    const { isMediumRole } = useRoles();
-    const { data, isLoading, isFetching, refetch } = list(user?.id ?? 0);
+    const { data, isLoading, isFetching, refetch } = listNotifications();
     const {
-        mutateAsync: resendNotification,
+        mutateAsync: resendNotificationFn,
         isPending: isResendingNotification,
-    } = resend();
-    const { mutateAsync: viewNotification } = view();
+    } = resendNotification();
+    const { mutateAsync: viewNotificationFn } = viewNotification();
 
     return (
         <SafeAreaView className="flex-1 pl-5 pr-5 pb-10">
@@ -51,11 +51,11 @@ export default function Notifications() {
                         {data.map((notification) => (
                             <NotificationRow
                                 isHigherRole={isMediumRole()}
-                                onView={viewNotification}
+                                onView={viewNotificationFn}
                                 currentUserId={user?.id ?? 0}
                                 key={notification.id}
                                 notification={notification}
-                                onResend={resendNotification}
+                                onResend={resendNotificationFn}
                                 isPendingResending={isResendingNotification}
                             />
                         ))}

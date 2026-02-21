@@ -3,13 +3,13 @@ import { useSendNotification } from "@/src/hooks/use-send-notification";
 import { useToast } from "@/src/hooks/use-toast";
 import { queryClient } from "@/src/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { update } from "./update-notification";
+import { updateNotification } from "./update-notification";
 
 export function resendNotification() {
   const { get } = useApi();
   const { sendNotification } = useSendNotification();
   const { showErrorToast } = useToast();
-  const updateMutation = update();
+  const { mutateAsync: updateNotificationFn } = updateNotification();
 
   return useMutation({
     mutationFn: async ({
@@ -32,7 +32,7 @@ export function resendNotification() {
           content: notification.content ?? "",
           recipients: notification.recipients ?? [],
         });
-        await updateMutation.mutateAsync({
+        await updateNotificationFn({
           id: notification.id,
           status: "sent",
           sent_at: new Date().toISOString(),
@@ -40,7 +40,7 @@ export function resendNotification() {
         queryClient.invalidateQueries({ queryKey: ["notifications"] });
       } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao enviar a notificação");
-        await updateMutation.mutateAsync({
+        await updateNotificationFn({
           id: notificationId,
           status: "failed",
         });
