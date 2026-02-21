@@ -30,6 +30,7 @@ export function CancelButton({
     const [isOpen, setIsOpen] = useState(false);
     const stripeApi = useStripeHook();
     const { update } = useUsers();
+    const { mutateAsync: updateUserAsync } = update();
     const deleteSubscription = stripeApi.subscriptions.delete;
     const {
         mutateAsync: deleteSubscriptionFn,
@@ -40,7 +41,7 @@ export function CancelButton({
         await deleteSubscriptionFn({
             subscriptionId,
         });
-        await update().mutateAsync({
+        await updateUserAsync({
             id: userId,
             subscription_id: null,
             customer_id: null,

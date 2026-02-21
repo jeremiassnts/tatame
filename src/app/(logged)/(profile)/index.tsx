@@ -19,6 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Profile() {
   const { getStudentsApprovalStatus } = useUsers();
   const { updateUserImage } = useAttachments();
+  const { mutateAsync: updateUserImageAsync } = updateUserImage();
   const { fetchLastMonthCheckins } = useCheckins();
   const { isLowerRole, isHigherRole } = useRoles();
   const { user, gym, isLoading } = useProfileContext();
@@ -48,7 +49,7 @@ export default function Profile() {
               imageUrl={user?.profile_picture ?? ""}
               size="xl"
               updateImageFn={async (image) => {
-                await updateUserImage().mutateAsync({
+                await updateUserImageAsync({
                   image,
                   userId: user.clerk_user_id,
                 });

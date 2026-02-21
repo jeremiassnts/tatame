@@ -22,6 +22,8 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
   const { isHigherRole } = useRoles();
   const router = useRouter();
   const { updateGymLogo, uploadImage } = useAttachments();
+  const { mutateAsync: uploadImageAsync } = uploadImage();
+  const { mutateAsync: updateGymLogoAsync } = updateGymLogo();
   const { user } = useProfileContext();
 
   async function updateGymImage(logo: string) {
@@ -29,9 +31,9 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
     //tries to upload the logo 4 times
     for (let i = 0; i < 4; i++) {
       try {
-        const imageUrl = await uploadImage().mutateAsync(logo);
+        const imageUrl = await uploadImageAsync(logo);
         if (!imageUrl) continue;
-        await updateGymLogo().mutateAsync({ logo: imageUrl, gymId: gym.id });
+        await updateGymLogoAsync({ logo: imageUrl, gymId: gym.id });
         queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
         break;
       } catch (error) {
