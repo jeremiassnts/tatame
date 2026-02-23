@@ -2,9 +2,10 @@ import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
+import { useGetNotificationRecipients } from "../api/users/get-notification-recipients";
+import { useUpdateUser } from "../api/users/update-user";
 import { queryClient } from "../lib/react-query";
 import { useToast } from "./use-toast";
-import { useSupabase } from "./useSupabase";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -35,7 +36,8 @@ export interface Notification {
 
 export function useSendNotification() {
     const { showErrorToast } = useToast();
-    const supabase = useSupabase();
+    const getNotificationRecipientsFn = useGetNotificationRecipients;
+    const { mutateAsync: updateUserFn } = useUpdateUser();
 
     async function sendNotification(notification: SendNotificationProps) {
         try {
@@ -53,16 +55,9 @@ export function useSendNotification() {
     }
 
     async function sendPushNotification(notification: SendNotificationProps) {
-        const { data, error } = await supabase
-            .from("users")
-            .select("expo_push_token")
-            .in(
-                "id",
-                notification.recipients.map((recipient) => parseInt(recipient)),
-            );
-        if (error) {
-            throw error;
-        }
+        const data = await getNotificationRecipientsFn(
+            notification.recipients.map((recipient) => parseInt(recipient)),
+        );
         const expoPushTokens = data.map((user) => user.expoPushToken);
         const messages = expoPushTokens
             .filter((token) => !!token)
@@ -138,13 +133,10 @@ export function useSendNotification() {
     async function initializePushNotifications(userId: number) {
         registerForPushNotificationsAsync()
             .then(async (token) => {
-                await supabase
-                    .from("users")
-                    .update({
-                        id: userId,
-                        expo_push_token: token ?? "",
-                    })
-                    .eq("id", userId);
+                await updateUserFn({
+                    id: userId,
+                    expoPushToken: token ?? "",
+                });
                 queryClient.invalidateQueries({ queryKey: ["user-profile"] });
             })
             .catch((error: any) => {
