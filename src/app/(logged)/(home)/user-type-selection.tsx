@@ -12,6 +12,7 @@ import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { USER_TYPES, UserType } from "@/src/constants/user-type";
 import { useUserTypeCache } from "@/src/hooks/use-user-type-cache";
+import { queryClient } from "@/src/lib/react-query";
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -40,6 +41,7 @@ export default function Home() {
       profilePicture: user?.imageUrl ?? "",
     });
     setUserType(tempUserType as UserType);
+    queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     router.replace("/(logged)/(home)/home");
   }
 
@@ -81,7 +83,7 @@ export default function Home() {
   }
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 mt-40">
       <ImageBackground
         source={require("@/assets/images/home-bg.png")}
         className="flex-1 pl-5 pr-5"

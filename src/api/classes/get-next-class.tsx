@@ -12,6 +12,7 @@ export function useGetNextClass() {
     queryKey: ["next-class", user?.id],
     queryFn: async () => {
       try {
+        if (!user?.id) return null;
         const { data } = await get<any>(`/class/next/${user?.id}`);
         if (!data) return null;
         return data;

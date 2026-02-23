@@ -7,7 +7,7 @@ import {
   ButtonText,
 } from "@/src/components/ui/button";
 import { Heading } from "@/src/components/ui/heading";
-import { AddIcon, ArrowLeftIcon } from "@/src/components/ui/icon";
+import { AddIcon } from "@/src/components/ui/icon";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { BELTS } from "@/src/constants/belts";
@@ -57,39 +57,33 @@ export default function CreateGraduation() {
   ) {
     if (!user?.id) return;
     setIsCreatingGraduation(true);
-    createGraduationFn({
-      userId: user?.id ?? 0,
-      belt: data.belt,
-      degree: data.degree,
-      modality: "jiu-jitsu",
-    })
-      .then(() => {
-        reset();
+    try {
+      await createGraduationFn({
+        userId: user?.id ?? 0,
+        belt: data.belt,
+        degree: data.degree,
+        modality: "jiu-jitsu",
+      });
+      reset();
+      setIsCreatingGraduation(false);
+      setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["graduation"] });
         router.replace("/(logged)/(profile)");
-      })
-      .catch(() => {
-        setIsCreatingGraduation(false);
-      })
-      .finally(() => {
-        setIsCreatingGraduation(false);
-      });
+      }, 0);
+    } catch (error) {
+      setIsCreatingGraduation(false);
+    }
+  }
+
+  function handleBack() {
+    router.back();
   }
 
   const belt = watch("belt");
   const degree = watch("degree");
 
   return (
-    <SafeAreaView className="p-5">
-      <VStack className="items-start gap-6">
-        <Button
-          action="secondary"
-          onPress={() => router.back()}
-          className="bg-neutral-800"
-        >
-          <ButtonIcon as={ArrowLeftIcon} />
-        </Button>
-      </VStack>
+    <SafeAreaView className="p-5 pt-0">
       <ScrollView>
         <VStack className="pt-10 gap-2">
           <VStack className="pb-2">
@@ -132,6 +126,13 @@ export default function CreateGraduation() {
             {!isCreatingGraduation && (
               <ButtonIcon as={AddIcon} size="md" color="white" />
             )}
+          </Button>
+          <Button
+            action="secondary"
+            onPress={handleBack}
+            className="mt-1 bg-neutral-800"
+          >
+            <ButtonText>Voltar</ButtonText>
           </Button>
         </VStack>
       </ScrollView>

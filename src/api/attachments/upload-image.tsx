@@ -1,6 +1,10 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useMutation } from "@tanstack/react-query";
 
+interface UploadImageResponse {
+  data: { url: string };
+}
+
 export function useUploadImage() {
   const { post } = useApi();
 
@@ -17,7 +21,7 @@ export function useUploadImage() {
         name: filename,
         type: mimeType,
       } as any);
-      const response = await post<{ data?: { url: string }; url?: string }>(
+      const { data } = await post<UploadImageResponse>(
         "/attachments/image",
         formData,
         {
@@ -26,8 +30,7 @@ export function useUploadImage() {
           },
         },
       );
-      const body = response.data as any;
-      return body?.data?.url ?? body?.url ?? body;
+      return data.url;
     },
   });
 }

@@ -18,11 +18,11 @@ export function GraduationCard({ showBelt }: GraduationCardProps) {
   const router = useRouter();
 
   function handleCreateGraduation() {
-    router.push("/(logged)/(profile)/create-graduation");
+    router.replace("/(logged)/(profile)/create-graduation");
   }
 
   function handleUpdateGraduation() {
-    router.push({
+    router.replace({
       pathname: "/(logged)/(profile)/update-graduation",
       params: {
         id: graduation?.id,

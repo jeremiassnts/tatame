@@ -25,18 +25,18 @@ export default function Layout() {
   const isHigherRole = useIsHigherRole();
   const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
   const { initializePushNotifications } = useSendNotification();
-  const { user } = useProfileContext();
+  const { user, gym } = useProfileContext();
 
   const isApproved = isHigherRole() || studentsApprovalStatus;
 
   useEffect(() => {
     if (user) {
-      initializePushNotifications(user?.id);
+      initializePushNotifications();
     }
-  }, [user, initializePushNotifications]);
+  }, [initializePushNotifications]);
 
-  const headerShown = (isHigherRole() && !!user?.plan) || !isHigherRole();
-
+  const headerShown =
+    !!user?.role && ((isHigherRole() && !!user?.plan) || !isHigherRole());
   return (
     <Drawer
       screenOptions={{
@@ -105,7 +105,7 @@ export default function Layout() {
           drawerLabel: "Agenda",
           title: "Agenda",
           drawerItemStyle: {
-            display: isApproved ? "flex" : "none",
+            display: isApproved && !!gym?.id ? "flex" : "none",
           },
           drawerIcon: () => (
             <Icon
@@ -120,7 +120,7 @@ export default function Layout() {
         name="(users)"
         options={{
           drawerItemStyle: {
-            display: isHigherRole() ? "flex" : "none",
+            display: isHigherRole() && !!gym?.id ? "flex" : "none",
           },
           drawerLabel: "Usuários",
           title: "Usuários",
@@ -138,7 +138,7 @@ export default function Layout() {
         options={{
           drawerLabel: "Academia",
           drawerItemStyle: {
-            display: isApproved ? "flex" : "none",
+            display: isApproved && !!gym?.id ? "flex" : "none",
           },
           title: "Academia",
           drawerIcon: () => (
@@ -189,6 +189,15 @@ export default function Layout() {
       />
       <Drawer.Screen
         name="(profile)"
+        listeners={({ navigation }) => ({
+          drawerItemPress: (e) => {
+            e.preventDefault();
+
+            navigation.navigate("(profile)", {
+              screen: "index",
+            });
+          },
+        })}
         options={{
           drawerLabel: "Perfil",
           title: "Perfil",

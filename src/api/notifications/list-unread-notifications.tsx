@@ -12,6 +12,7 @@ export function useListUnreadNotifications() {
     queryKey: ["notifications-unread", user?.id],
     queryFn: async () => {
       try {
+        if (!user?.id) return [];
         const { data } = await get<any>(
           `/notifications/user/${user?.id}/unread`,
         );

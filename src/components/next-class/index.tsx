@@ -81,7 +81,7 @@ export function NextClass() {
           </Button>
         </Box>
       )}
-      {!gym && !isLoadingNextClass && user && isMediumRole() && (
+      {!gym && !isLoadingNextClass && user && !isHigherRole() && (
         <Box className="w-full bg-neutral-800 rounded-md h-[150px] items-center justify-center">
           <Button onPress={() => router.push("/(logged)/(home)/select-gym")}>
             <ButtonIcon as={AddIcon} />

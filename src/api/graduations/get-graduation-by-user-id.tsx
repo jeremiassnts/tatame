@@ -12,6 +12,7 @@ export function useGetGraduationByUserId() {
     queryKey: ["graduation", user?.id],
     queryFn: async () => {
       try {
+        if (!user?.id) return null;
         const { data } = await get<any>(`/graduations/user/${user?.id}`);
         if (!data) return null;
         return Array.isArray(data) ? (data[0] ?? null) : data;

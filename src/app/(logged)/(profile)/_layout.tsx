@@ -8,6 +8,7 @@ export default function Layout() {
         headerShown: false,
         contentStyle: { backgroundColor: COLORS.background, marginTop: -30 },
       }}
+      initialRouteName="index"
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="create-graduation" />

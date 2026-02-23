@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView } from "react-native";
+import { KeyboardAvoidingView, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
@@ -94,8 +94,9 @@ export default function CreateGym() {
     if (!imageUrl) {
       showErrorToast(
         "Erro",
-        "Erro ao enviar a logo da academia, tentando novamente...",
+        "Erro ao enviar a logo da academia, tente novamente...",
       );
+      setIsCreatingGym(false);
       return;
     }
     createGymFn({
@@ -125,141 +126,145 @@ export default function CreateGym() {
   const address = watch("address");
 
   return (
-    <SafeAreaView className="pl-5 pr-5">
-      <ScrollView>
-        <VStack className="pt-10 gap-2">
-          <ImageViewer
-            placeholder="Adicionar logo"
-            setRemoteImage={(image: string) => {
-              setValue("logo", image);
-            }}
-            error={errors?.logo?.message}
-          />
-          <VStack className="pt-5 pb-2">
-            <Heading className="text-white" size="xl">
-              Cadastro de academia
-            </Heading>
-            <Text className="text-neutral-400 text-md">
-              Preencha as informações para o cadastro da academia
-            </Text>
+    <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <SafeAreaView className="pl-5 pr-5 pb-5">
+        <ScrollView>
+          <VStack className="pt-10 gap-2">
+            <ImageViewer
+              placeholder="Adicionar logo"
+              setRemoteImage={(image: string) => {
+                setValue("logo", image);
+              }}
+              error={errors?.logo?.message}
+            />
+            <VStack className="pt-5 pb-2">
+              <Heading className="text-white" size="xl">
+                Cadastro de academia
+              </Heading>
+              <Text className="text-neutral-400 text-md">
+                Preencha as informações para o cadastro da academia
+              </Text>
+            </VStack>
+            <TextInput
+              value={name}
+              onChangeText={(text) => {
+                setValue("name", text);
+              }}
+              placeholder="Digite o nome da academia"
+              error={errors.name?.message}
+              {...register("name")}
+              onSubmitEditing={() =>
+                setFocus("address", { shouldSelect: true })
+              }
+              returnKeyType="next"
+            />
+            <DateTimePicker
+              setNewDate={(date: Date | undefined) => {
+                if (date) {
+                  setValue("since", date);
+                }
+              }}
+              placeholder="Data de criação"
+              error={errors?.since?.message}
+            />
+            <VStack className="pt-2 gap-2">
+              <Text className="text-white text-md font-medium">Endereço</Text>
+              <TextInput
+                value={address.cep}
+                onChangeText={(text) => {
+                  setValue("address.cep", text);
+                }}
+                placeholder="Digite o CEP"
+                error={errors.address?.cep?.message}
+                {...register("address.cep")}
+                onSubmitEditing={() =>
+                  setFocus("address.street", { shouldSelect: true })
+                }
+                returnKeyType="next"
+                keyboardType="numeric"
+              />
+              <TextInput
+                value={address.street}
+                onChangeText={(text) => {
+                  setValue("address.street", text);
+                }}
+                placeholder="Digite a rua"
+                error={errors.address?.street?.message}
+                {...register("address.street")}
+                onSubmitEditing={() =>
+                  setFocus("address.number", { shouldSelect: true })
+                }
+                returnKeyType="next"
+              />
+              <TextInput
+                value={address.number}
+                onChangeText={(text) => {
+                  setValue("address.number", text);
+                }}
+                placeholder="Digite o número"
+                error={errors.address?.number?.message}
+                {...register("address.number")}
+                onSubmitEditing={() =>
+                  setFocus("address.neighborhood", { shouldSelect: true })
+                }
+                returnKeyType="next"
+                keyboardType="numeric"
+              />
+              <TextInput
+                value={address.neighborhood}
+                onChangeText={(text) => {
+                  setValue("address.neighborhood", text);
+                }}
+                placeholder="Digite o bairro"
+                error={errors.address?.neighborhood?.message}
+                {...register("address.neighborhood")}
+                onSubmitEditing={() =>
+                  setFocus("address.city", { shouldSelect: true })
+                }
+                returnKeyType="next"
+              />
+              <TextInput
+                value={address.city}
+                onChangeText={(text) => {
+                  setValue("address.city", text);
+                }}
+                placeholder="Digite a cidade"
+                error={errors.address?.city?.message}
+                {...register("address.city")}
+                onSubmitEditing={() =>
+                  setFocus("address.city", { shouldSelect: true })
+                }
+                returnKeyType="next"
+              />
+              <TextInput
+                value={address.state}
+                onChangeText={(text) => {
+                  setValue("address.state", text);
+                }}
+                placeholder="Digite o estado"
+                error={errors.address?.state?.message}
+                {...register("address.city")}
+                returnKeyType="send"
+                onSubmitEditing={handleSubmit(handleCreateGym)}
+              />
+            </VStack>
+            <Button
+              action="primary"
+              onPress={handleSubmit(handleCreateGym)}
+              className="mt-4 bg-violet-800"
+              disabled={isCreatingGym}
+            >
+              {isCreatingGym && <ButtonSpinner color="white" />}
+              {!isCreatingGym && (
+                <ButtonText className="text-white">Cadastrar</ButtonText>
+              )}
+              {!isCreatingGym && (
+                <ButtonIcon as={AddIcon} size="md" color="white" />
+              )}
+            </Button>
           </VStack>
-          <TextInput
-            value={name}
-            onChangeText={(text) => {
-              setValue("name", text);
-            }}
-            placeholder="Digite o nome da academia"
-            error={errors.name?.message}
-            {...register("name")}
-            onSubmitEditing={() => setFocus("address", { shouldSelect: true })}
-            returnKeyType="next"
-          />
-          <DateTimePicker
-            setNewDate={(date: Date | undefined) => {
-              if (date) {
-                setValue("since", date);
-              }
-            }}
-            placeholder="Data de criação"
-            error={errors?.since?.message}
-          />
-          <VStack className="pt-2 gap-2">
-            <Text className="text-white text-md font-medium">Endereço</Text>
-            <TextInput
-              value={address.cep}
-              onChangeText={(text) => {
-                setValue("address.cep", text);
-              }}
-              placeholder="Digite o CEP"
-              error={errors.address?.cep?.message}
-              {...register("address.cep")}
-              onSubmitEditing={() =>
-                setFocus("address.street", { shouldSelect: true })
-              }
-              returnKeyType="next"
-              keyboardType="numeric"
-            />
-            <TextInput
-              value={address.street}
-              onChangeText={(text) => {
-                setValue("address.street", text);
-              }}
-              placeholder="Digite a rua"
-              error={errors.address?.street?.message}
-              {...register("address.street")}
-              onSubmitEditing={() =>
-                setFocus("address.number", { shouldSelect: true })
-              }
-              returnKeyType="next"
-            />
-            <TextInput
-              value={address.number}
-              onChangeText={(text) => {
-                setValue("address.number", text);
-              }}
-              placeholder="Digite o número"
-              error={errors.address?.number?.message}
-              {...register("address.number")}
-              onSubmitEditing={() =>
-                setFocus("address.neighborhood", { shouldSelect: true })
-              }
-              returnKeyType="next"
-              keyboardType="numeric"
-            />
-            <TextInput
-              value={address.neighborhood}
-              onChangeText={(text) => {
-                setValue("address.neighborhood", text);
-              }}
-              placeholder="Digite o bairro"
-              error={errors.address?.neighborhood?.message}
-              {...register("address.neighborhood")}
-              onSubmitEditing={() =>
-                setFocus("address.city", { shouldSelect: true })
-              }
-              returnKeyType="next"
-            />
-            <TextInput
-              value={address.city}
-              onChangeText={(text) => {
-                setValue("address.city", text);
-              }}
-              placeholder="Digite a cidade"
-              error={errors.address?.city?.message}
-              {...register("address.city")}
-              onSubmitEditing={() =>
-                setFocus("address.city", { shouldSelect: true })
-              }
-              returnKeyType="next"
-            />
-            <TextInput
-              value={address.state}
-              onChangeText={(text) => {
-                setValue("address.state", text);
-              }}
-              placeholder="Digite o estado"
-              error={errors.address?.state?.message}
-              {...register("address.city")}
-              returnKeyType="send"
-              onSubmitEditing={handleSubmit(handleCreateGym)}
-            />
-          </VStack>
-          <Button
-            action="primary"
-            onPress={handleSubmit(handleCreateGym)}
-            className="mt-4 bg-violet-800"
-            disabled={isCreatingGym}
-          >
-            {isCreatingGym && <ButtonSpinner color="white" />}
-            {!isCreatingGym && (
-              <ButtonText className="text-white">Cadastrar</ButtonText>
-            )}
-            {!isCreatingGym && (
-              <ButtonIcon as={AddIcon} size="md" color="white" />
-            )}
-          </Button>
-        </VStack>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }

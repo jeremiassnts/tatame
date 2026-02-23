@@ -1,10 +1,11 @@
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import { useCallback } from "react";
 import { Platform } from "react-native";
 import { useGetNotificationRecipients } from "../api/users/get-notification-recipients";
 import { useUpdateUser } from "../api/users/update-user";
-import { queryClient } from "../lib/react-query";
+import { useProfileContext } from "./use-profile-context";
 import { useToast } from "./use-toast";
 
 Notifications.setNotificationHandler({
@@ -38,6 +39,7 @@ export function useSendNotification() {
     const { showErrorToast } = useToast();
     const getNotificationRecipientsFn = useGetNotificationRecipients;
     const { mutateAsync: updateUserFn } = useUpdateUser();
+    const { user } = useProfileContext();
 
     async function sendNotification(notification: SendNotificationProps) {
         try {
@@ -130,14 +132,13 @@ export function useSendNotification() {
         }
     }
 
-    async function initializePushNotifications(userId: number) {
+    const initializePushNotifications = useCallback(() => {
         registerForPushNotificationsAsync()
             .then(async (token) => {
                 await updateUserFn({
-                    id: userId,
+                    id: user?.id ?? 0,
                     expoPushToken: token ?? "",
                 });
-                queryClient.invalidateQueries({ queryKey: ["user-profile"] });
             })
             .catch((error: any) => {
                 console.error(error);
@@ -154,7 +155,7 @@ export function useSendNotification() {
             notificationListener.remove();
             responseListener.remove();
         };
-    }
+    }, [user?.id]);
 
     return {
         sendNotification,
