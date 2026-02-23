@@ -3,7 +3,16 @@ import { useApi } from "../../hooks/use-api";
 import { useSendNotification } from "../../hooks/use-send-notification";
 import { useToast } from "../../hooks/use-toast";
 import { queryClient } from "../../lib/react-query";
-import { Notification } from "../../types/models";
+
+export interface CreateNotificationProps {
+  title: string;
+  content: string;
+  recipients: string[];
+  channel: string;
+  sentBy?: number;
+  status: string;
+  viewedBy: string[];
+}
 
 export function useCreateNotification() {
   const { post, put } = useApi();
@@ -11,16 +20,16 @@ export function useCreateNotification() {
   const { showErrorToast } = useToast();
 
   return useMutation({
-    mutationFn: async (notification: Notification) => {
+    mutationFn: async (notification: CreateNotificationProps) => {
       try {
         const { data } = await post<any>("/notifications", {
           title: notification.title,
           content: notification.content,
           recipients: notification.recipients ?? [],
           channel: notification.channel ?? "push",
-          sent_by: notification.sent_by,
+          sentBy: notification.sentBy,
           status: notification.status ?? "pending",
-          viewed_by: notification.viewed_by ?? [],
+          viewedBy: notification.viewedBy ?? [],
         });
         const created = Array.isArray(data) ? data[0] : data;
         if (!created?.id) throw new Error("No notification id returned");
@@ -35,7 +44,7 @@ export function useCreateNotification() {
           });
           await put(`/notifications/${created.id}`, {
             status: "sent",
-            sent_at: new Date().toISOString(),
+            sentAt: new Date().toISOString(),
           });
         } catch (error) {
           console.error(error);

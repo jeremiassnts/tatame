@@ -61,7 +61,7 @@ export default function ManagerPlanSelection() {
             } else {
                 //create customer
                 const customer = await createCustomer({
-                    name: (user?.first_name + " " + (user?.last_name ?? "")).trim(),
+                    name: (user?.firstName + " " + (user?.lastName ?? "")).trim(),
                     email: user?.email ?? "",
                     userId: user?.id ?? 0,
                 });

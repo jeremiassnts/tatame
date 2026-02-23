@@ -1,7 +1,11 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { CreateCheckinProps } from "./types";
+export interface CreateCheckinProps {
+  classId: number;
+  date: string;
+  userId: number;
+}
 
 export function useCreateCheckin() {
   const { get, post } = useApi();

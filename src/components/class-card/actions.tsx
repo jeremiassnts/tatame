@@ -41,7 +41,7 @@ export function Actions({
       pathname: "/(logged)/(schedule)/edit-class",
       params: {
         classId: data.id,
-        gymId: data.gym_id,
+        gymId: data.gymId,
       },
     });
     handleClose();

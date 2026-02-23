@@ -1,5 +1,5 @@
+import { NotificationDetails } from "@/src/api/notifications/list-notifications";
 import { queryClient } from "@/src/lib/react-query";
-import { Notification } from "@/src/types/models";
 import { formatInTimeZone } from "date-fns-tz";
 import { SendIcon } from "lucide-react-native";
 import { useState } from "react";
@@ -24,8 +24,8 @@ import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
 interface NotificationRowProps {
-    notification: Notification;
-    onResend: (id: number) => void;
+    notification: NotificationDetails;
+    onResend: ({ notificationId }: { notificationId: number }) => Promise<void>;
     isPendingResending: boolean;
     currentUserId: number;
     onView: (props: { id: number; userId: string }) => Promise<void>;
@@ -44,16 +44,16 @@ export default function NotificationRow({
         id,
         title,
         content,
-        sent_by_name,
-        sent_by_image_url,
-        sent_at,
-        created_at,
+        sentByName,
+        sentByImageUrl,
+        sentAt,
+        createdAt,
         status,
-        sent_by,
+        sentBy,
     } = notification;
     const [viewed, setViewed] = useState(
-        notification.viewed_by?.includes(currentUserId.toString()) ||
-        notification.sent_by === currentUserId,
+        notification.viewedBy?.includes(currentUserId.toString()) ||
+        notification.sentBy === currentUserId,
     );
     const [isOpen, setIsOpen] = useState(false);
 
@@ -93,7 +93,7 @@ export default function NotificationRow({
     }
 
     function handleResendNotification() {
-        onResend(id);
+        onResend({ notificationId: id });
     }
 
     async function handleViewNotification() {
@@ -114,10 +114,10 @@ export default function NotificationRow({
                 >
                     <VStack className="gap-2">
                         <HStack className="gap-2 items-center justify-start">
-                            {sent_by && (
+                            {sentBy && (
                                 <Avatar size="sm">
-                                    <AvatarFallbackText>{sent_by_name}</AvatarFallbackText>
-                                    <AvatarImage source={{ uri: sent_by_image_url }} />
+                                    <AvatarFallbackText>{sentByName}</AvatarFallbackText>
+                                    <AvatarImage source={{ uri: sentByImageUrl }} />
                                 </Avatar>
                             )}
                             <VStack className="max-w-[90%]">
@@ -127,7 +127,7 @@ export default function NotificationRow({
                         </HStack>
                         <HStack className="items-center justify-between">
                             <Text className="text-neutral-400 text-sm">
-                                {getSentTime(sent_at ?? created_at)}
+                                {getSentTime(sentAt?.toISOString() ?? createdAt.toISOString())}
                             </Text>
                             {isHigherRole && (
                                 <Badge size="sm" action={getStatusColor(status)}>
@@ -170,27 +170,31 @@ export default function NotificationRow({
                             )}
                             <HStack className="items-center justify-between w-full">
                                 <HStack className="max-w-[60%] gap-2 items-baseline justify-start mr-auto">
-                                    {notification.sent_by && (
+                                    {notification.sentBy && (
                                         <Avatar size="xs">
-                                            <AvatarFallbackText>{sent_by_name}</AvatarFallbackText>
-                                            <AvatarImage source={{ uri: sent_by_image_url }} />
+                                            <AvatarFallbackText>{sentByName}</AvatarFallbackText>
+                                            <AvatarImage source={{ uri: sentByImageUrl }} />
                                         </Avatar>
                                     )}
-                                    {notification.sent_by && (
+                                    {notification.sentBy && (
                                         <Text>
-                                            Enviado por {sent_by_name} às{" "}
+                                            Enviado por {sentByName} às{" "}
                                             {formatInTimeZone(
-                                                new Date(sent_at ?? created_at),
+                                                new Date(
+                                                    sentAt?.toISOString() ?? createdAt.toISOString(),
+                                                ),
                                                 "America/Sao_Paulo",
                                                 "dd/MM/yyyy HH:mm",
                                             )}
                                         </Text>
                                     )}
-                                    {!notification.sent_by && (
+                                    {!notification.sentBy && (
                                         <Text>
                                             Enviado às{" "}
                                             {formatInTimeZone(
-                                                new Date(sent_at ?? created_at),
+                                                new Date(
+                                                    sentAt?.toISOString() ?? createdAt.toISOString(),
+                                                ),
                                                 "America/Sao_Paulo",
                                                 "dd/MM/yyyy HH:mm",
                                             )}

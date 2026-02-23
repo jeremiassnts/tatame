@@ -1,19 +1,19 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { createNotification } from "../notifications/create-notification";
+import { useCreateNotification } from "../notifications/create-notification";
 
 export function useDenyStudent() {
   const { put } = useApi();
   const { showErrorToast } = useToast();
-  const { mutateAsync: createNotificationFn } = createNotification();
+  const { mutateAsync: createNotificationFn } = useCreateNotification();
 
   return useMutation({
     mutationFn: async (userId: number) => {
       try {
         await put<any>(`/users/${userId}`, {
-          approved_at: null,
-          denied_at: new Date().toISOString(),
+          approvedAt: null,
+          deniedAt: new Date().toISOString(),
         });
         await createNotificationFn({
           title: "Que pena! Seu cadastro foi negado",
@@ -21,7 +21,7 @@ export function useDenyStudent() {
           recipients: [userId.toString()],
           channel: "push",
           status: "pending",
-          viewed_by: [],
+          viewedBy: [],
         });
       } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao negar o aluno");

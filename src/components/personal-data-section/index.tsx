@@ -1,4 +1,5 @@
 import { GENDERS } from "@/src/constants/genders";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { User } from "@/src/types/models";
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
@@ -18,11 +19,11 @@ interface PersonalDataSectionProps {
 }
 
 export function PersonalDataSection({
-    user,
     firstName,
     lastName,
 }: PersonalDataSectionProps) {
     const router = useRouter();
+    const { user } = useProfileContext();
 
     function handleEditProfile() {
         router.push({

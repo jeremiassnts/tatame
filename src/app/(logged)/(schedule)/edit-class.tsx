@@ -46,7 +46,7 @@ const createClassFormSchema = z.object({
   end: z.string().min(1, "O horário de término é obrigatório"),
   days: z.array(z.string()).min(1, "Selecione pelo menos um dia"),
   modality: z.string().min(1, "A modalidade é obrigatória"),
-  instructor_id: z.number().min(1, "O instrutor é obrigatório"),
+  instructorId: z.number().min(1, "O instrutor é obrigatório"),
 });
 
 export default function EditClass() {
@@ -79,7 +79,7 @@ export default function EditClass() {
       end: "",
       days: [],
       modality: "",
-      instructor_id: 0,
+      instructorId: 0,
     },
   });
 
@@ -94,10 +94,10 @@ export default function EditClass() {
         day: data.days[0],
         modality: data.modality,
         id: classData?.id,
-        instructor_id: data.instructor_id,
-        gym_id: classData?.gym_id,
-        created_by: classData?.created_by,
-        created_at: classData?.created_at,
+        instructorId: data.instructorId,
+        gymId: classData?.gymId ?? 0,
+        createdBy: classData?.createdBy ?? 0,
+        createdAt: classData?.createdAt ?? new Date(),
       });
       reset();
       queryClient.invalidateQueries({ queryKey: ["classes"] });
@@ -117,7 +117,7 @@ export default function EditClass() {
         setValue("end", classData.end ?? "");
         setValue("modality", classData.modality ?? "");
         setValue("days", classData.day ? [classData.day] : []);
-        setValue("instructor_id", classData.instructor_id ?? 0);
+        setValue("instructorId", classData.instructorId ?? 0);
       }
       setIsLoading(false);
     }
@@ -135,7 +135,7 @@ export default function EditClass() {
   const start = watch("start");
   const end = watch("end");
   const days = watch("days");
-  const instructor_id = watch("instructor_id");
+  const instructorId = watch("instructorId");
 
   return (
     <SafeAreaView className="pl-5 pr-5">
@@ -172,9 +172,9 @@ export default function EditClass() {
             <SelectInput
               options={(instructors ?? []).map((instructor) => {
                 const name = (
-                  instructor.first_name +
+                  instructor.firstName +
                   " " +
-                  (instructor.last_name ?? "")
+                  (instructor.lastName ?? "")
                 ).trim();
                 return {
                   label: name,
@@ -182,11 +182,11 @@ export default function EditClass() {
                 };
               })}
               placeholder="Selecione o instrutor"
-              error={errors?.instructor_id?.message}
+              error={errors?.instructorId?.message}
               onValueChange={(value) => {
-                setValue("instructor_id", parseInt(value));
+                setValue("instructorId", parseInt(value));
               }}
-              selectedValue={instructor_id.toString()}
+              selectedValue={instructorId.toString()}
               disabled={!isHigherRole()}
             />
             <HStack className="gap-2 items-center justify-center">

@@ -37,7 +37,7 @@ export default function Gym() {
         }
     }
 
-    const studentsApproved = students?.filter((student) => student.approved_at);
+    const studentsApproved = students?.filter((student) => student.approvedAt);
 
     return (
         <SafeAreaView className="flex-1 pl-5 pr-5">

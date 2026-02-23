@@ -26,8 +26,6 @@ export default function Profile() {
   const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
   const { data: lastMonthCheckins } = useListLastMonthCheckins(user?.id ?? 0);
 
-  const fullName = (user?.first_name + " " + (user?.last_name ?? "")).trim();
-
   return (
     <SafeAreaView>
       {isLoading && (
@@ -44,25 +42,24 @@ export default function Profile() {
         <ScrollView>
           <VStack className="items-center justify-center pl-5 pr-5 mb-10">
             <AvatarWithDialog
-              fullName={fullName}
-              imageUrl={user?.profile_picture ?? ""}
+              fullName={user?.fullName ?? ""}
+              imageUrl={user?.profilePicture ?? ""}
               size="xl"
               updateImageFn={async (image) => {
                 await updateUserImageAsync({
                   image,
-                  userId: user.clerk_user_id,
+                  userId: user.clerkUserId,
                 });
               }}
             />
             <Text className="text-white text-lg font-bold mt-3">
-              {fullName}
+              {user?.fullName ?? ""}
             </Text>
             <Text className="text-neutral-400 text-md">{user?.email}</Text>
             <GraduationCard showBelt={true} />
             <PersonalDataSection
-              user={user}
-              firstName={user?.first_name ?? ""}
-              lastName={user?.last_name ?? ""}
+              firstName={user?.firstName ?? ""}
+              lastName={user?.lastName ?? ""}
             />
             {isHigherRole() && <ProfilePlan />}
             {lastMonthCheckins && studentsApprovalStatus && isLowerRole() && (

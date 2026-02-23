@@ -29,7 +29,7 @@ export function StudentRow({ student }: StudentRowProps) {
     function handleApproveStudent() {
         approveStudentFn(student.id).then(() => {
             queryClient.invalidateQueries({
-                queryKey: ["students-by-gym-id", student.gym_id],
+                queryKey: ["students-by-gym-id", student.gymId],
             });
         });
     }
@@ -37,7 +37,7 @@ export function StudentRow({ student }: StudentRowProps) {
     function handleDenyStudent() {
         denyStudentFn(student.id).then(() => {
             queryClient.invalidateQueries({
-                queryKey: ["students-by-gym-id", student.gym_id],
+                queryKey: ["students-by-gym-id", student.gymId],
             });
         });
     }
@@ -52,10 +52,10 @@ export function StudentRow({ student }: StudentRowProps) {
                 imageUrl: student.imageUrl,
                 belt: student.belt,
                 degree: student.degree,
-                approved_at: student.approved_at,
-                denied_at: student.denied_at,
-                gym_id: student.gym_id,
-                clerk_user_id: student.clerk_user_id,
+                approvedAt: student.approvedAt,
+                deniedAt: student.deniedAt,
+                gymId: student.gymId,
+                clerkUserId: student.clerkUserId,
                 firstName: student.firstName,
                 lastName: student.lastName,
                 instagram: student.instagram,
@@ -66,9 +66,9 @@ export function StudentRow({ student }: StudentRowProps) {
         });
     }
 
-    const isWaitingApproval = !student.approved_at && !student.denied_at;
-    const isApproved = student.approved_at && !student.denied_at;
-    const isDenied = student.denied_at && !student.approved_at;
+    const isWaitingApproval = !student.approvedAt && !student.deniedAt;
+    const isApproved = student.approvedAt && !student.deniedAt;
+    const isDenied = student.deniedAt && !student.approvedAt;
     // @ts-ignore
     const beltColor = student.belt ? BELT_COLORS[student.belt] : "#FFFFFF";
     const beltLabel = BELTS.find((b) => b.value === student.belt)?.label;

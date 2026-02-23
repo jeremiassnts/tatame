@@ -1,8 +1,18 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
-import { Class } from "@/src/types/models";
 import { useMutation } from "@tanstack/react-query";
 import { useCreateNotification } from "../notifications/create-notification";
+
+export interface CreateClassProps {
+  gymId: number;
+  instructorId: number;
+  createdBy: number;
+  day: string;
+  start: string;
+  end: string;
+  description: string;
+  modality: string;
+}
 
 export function useCreateClass() {
   const { get, post } = useApi();
@@ -10,13 +20,13 @@ export function useCreateClass() {
   const { mutateAsync: createNotificationFn } = useCreateNotification();
 
   return useMutation({
-    mutationFn: async (classData: Class) => {
+    mutationFn: async (classData: CreateClassProps) => {
       try {
         const { data } = await post<any>("/class", {
-          gym_id: (classData as any).gym_id ?? classData.gymId,
-          instructor_id:
-            (classData as any).instructor_id ?? classData.instructorId,
-          created_by: (classData as any).created_by ?? classData.createdBy,
+          gymId: (classData as any).gymId ?? classData.gymId,
+          instructorId:
+            (classData as any).instructorId ?? classData.instructorId,
+          createdBy: (classData as any).createdBy ?? classData.createdBy,
           day: classData.day,
           start: classData.start,
           end: classData.end,
@@ -24,22 +34,22 @@ export function useCreateClass() {
         });
         const created = Array.isArray(data) ? data[0] : data;
 
-        const gymId = (classData as any).gym_id ?? classData.gymId;
+        const gymId = (classData as any).gymId ?? classData.gymId;
         const { data: students } = await get<any>(
           `/users/gym/${gymId}/students`,
         );
         const list = Array.isArray(students) ? students : (students ?? []);
-        const approved = list.filter((s: any) => s.approved_at != null);
+        const approved = list.filter((s: any) => s.approvedAt != null);
 
-        const sentBy = (classData as any).created_by ?? classData.createdBy;
+        const sentBy = (classData as any).createdBy ?? classData.createdBy;
         await createNotificationFn({
           title: "Nova aula criada",
           content: "Seu professor cadastrou uma nova aula, venha conferir!",
           recipients: approved.map((s: any) => s.id.toString()),
           channel: "push",
-          sent_by: sentBy ?? 0,
+          sentBy: sentBy ?? 0,
           status: "pending",
-          viewed_by: [(sentBy ?? "").toString()],
+          viewedBy: [(sentBy ?? "").toString()],
         });
 
         return created;

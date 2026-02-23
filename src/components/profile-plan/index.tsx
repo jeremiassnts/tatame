@@ -19,7 +19,7 @@ export function ProfilePlan() {
     const stripeApi = useStripeHook();
     const { user, isLoading: isLoadingProfile } = useProfileContext();
     const { data: subscription, isLoading: isLoadingSubscription } =
-        stripeApi.subscriptions.get(user?.subscription_id ?? "");
+        stripeApi.subscriptions.get(user?.subscriptionId ?? "");
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const { showErrorToast, showSuccessToast } = useToast();
     const [isUpdatingPayment, setIsUpdatingPayment] = useState(false);
@@ -27,7 +27,7 @@ export function ProfilePlan() {
 
     async function handleChangePaymentData() {
         try {
-            if (!user?.customer_id) {
+            if (!user?.customerId) {
                 showErrorToast(
                     "Erro",
                     "Não foi possível identificar seus dados de pagamento.",
@@ -39,18 +39,18 @@ export function ProfilePlan() {
             const { client_secret: setupIntentSecret } = await stripeApi.setupIntents
                 .create()
                 .mutateAsync({
-                    customerId: user.customer_id,
+                    customerId: user.customerId,
                 });
             // Criar Ephemeral Key
             const { secret: ephemeralKey } = await stripeApi.ephemeralKeys
                 .create()
                 .mutateAsync({
-                    customerId: user.customer_id,
+                    customerId: user.customerId,
                 });
             // Inicializar Payment Sheet
             const { error: initError } = await initPaymentSheet({
                 merchantDisplayName: "Tatame",
-                customerId: user.customer_id,
+                customerId: user.customerId,
                 customerEphemeralKeySecret: ephemeralKey,
                 setupIntentClientSecret: setupIntentSecret,
             });

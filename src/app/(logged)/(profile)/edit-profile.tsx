@@ -91,8 +91,8 @@ export default function EditProfile() {
                 gender: !!data.gender ? data.gender : null,
                 birth: !!data.birth ? data.birth : null,
                 birth_day: formatBirthDay(data.birth),
-                first_name: data.firstName,
-                last_name: data.lastName,
+                firstName: data.firstName,
+                lastName: data.lastName,
             });
             setIsEditingProfile(false);
             reset();

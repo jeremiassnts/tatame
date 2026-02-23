@@ -38,10 +38,10 @@ type UserProps = {
     imageUrl: string;
     belt: string;
     degree: string;
-    approved_at: string;
-    denied_at: string;
-    gym_id: string;
-    clerk_user_id: string;
+    approvedAt: string;
+    deniedAt: string;
+    gymId: string;
+    clerkUserId: string;
     firstName: string;
     lastName: string;
     instagram: string;
@@ -57,17 +57,19 @@ export default function User() {
         imageUrl,
         belt,
         degree,
-        approved_at,
-        denied_at,
+        approvedAt: initialApprovedAt,
+        deniedAt: initialDeniedAt,
         userId,
-        gym_id,
+        gymId,
         instagram,
         phone,
         gender,
         birth,
     } = useLocalSearchParams<UserProps>();
-    const [approvedAt, setApprovedAt] = useState<string | null>(approved_at);
-    const [deniedAt, setDeniedAt] = useState<string | null>(denied_at);
+    const [approvedAt, setApprovedAt] = useState<string | null>(
+        initialApprovedAt,
+    );
+    const [deniedAt, setDeniedAt] = useState<string | null>(initialDeniedAt);
     const isHigherRole = useIsHigherRole();
     const { mutateAsync: approveStudentFn } = useApproveStudent();
     const { mutateAsync: denyStudentFn } = useDenyStudent();
@@ -75,7 +77,7 @@ export default function User() {
     function handleApproveStudent() {
         approveStudentFn(Number(userId)).then(() => {
             queryClient.invalidateQueries({
-                queryKey: ["students-by-gym-id", Number(gym_id)],
+                queryKey: ["students-by-gym-id", Number(gymId)],
             });
             setApprovedAt(new Date().toISOString());
             setDeniedAt(null);
@@ -85,7 +87,7 @@ export default function User() {
     function handleDenyStudent() {
         denyStudentFn(Number(userId)).then(() => {
             queryClient.invalidateQueries({
-                queryKey: ["students-by-gym-id", Number(gym_id)],
+                queryKey: ["students-by-gym-id", Number(gymId)],
             });
             setDeniedAt(new Date().toISOString());
             setApprovedAt(null);

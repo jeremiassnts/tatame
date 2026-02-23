@@ -19,27 +19,27 @@ export default function Users() {
     const students = data?.filter((user) => user.role === "STUDENT");
     const studentsWaitingApproval = students?.filter(
         (student) =>
-            student.id !== user?.id && !student.approved_at && !student.denied_at,
+            student.id !== user?.id && !student.approvedAt && !student.deniedAt,
     );
     const studentsApproved = students?.filter(
-        (student) => student.id !== user?.id && student.approved_at,
+        (student) => student.id !== user?.id && student.approvedAt,
     );
     const studentsDenied = students?.filter(
-        (student) => student.id !== user?.id && student.denied_at,
+        (student) => student.id !== user?.id && student.deniedAt,
     );
 
     const instructors = data?.filter((user) => user.role === "INSTRUCTOR");
     const instructorsWaitingApproval = instructors?.filter(
         (instructor) =>
             instructor.id !== user?.id &&
-            !instructor.approved_at &&
-            !instructor.denied_at,
+            !instructor.approvedAt &&
+            !instructor.deniedAt,
     );
     const instructorsApproved = instructors?.filter(
-        (instructor) => instructor.id !== user?.id && instructor.approved_at,
+        (instructor) => instructor.id !== user?.id && instructor.approvedAt,
     );
     const instructorsDenied = instructors?.filter(
-        (instructor) => instructor.id !== user?.id && instructor.denied_at,
+        (instructor) => instructor.id !== user?.id && instructor.deniedAt,
     );
 
     return (

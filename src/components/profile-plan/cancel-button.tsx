@@ -42,8 +42,8 @@ export function CancelButton({
         });
         await updateUserAsync({
             id: userId,
-            subscription_id: null,
-            customer_id: null,
+            subscriptionId: null,
+            customerId: null,
             plan: "free",
         });
         queryClient.invalidateQueries({

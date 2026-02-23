@@ -30,7 +30,7 @@ export interface Notification {
     content: string;
     recipients: string[];
     status: string;
-    sent_at: string;
+    sentAt: string;
 }
 
 export function useSendNotification() {
@@ -63,7 +63,7 @@ export function useSendNotification() {
         if (error) {
             throw error;
         }
-        const expoPushTokens = data.map((user) => user.expo_push_token);
+        const expoPushTokens = data.map((user) => user.expoPushToken);
         const messages = expoPushTokens
             .filter((token) => !!token)
             .map((token) => ({
@@ -72,7 +72,7 @@ export function useSendNotification() {
                 title: notification.title,
                 body: notification.content,
                 data: {
-                    notification_id: notification.id,
+                    notificationId: notification.id,
                 },
             }));
         await fetch("https://exp.host/--/api/v2/push/send", {

@@ -72,7 +72,7 @@ export default function Class() {
             pathname: "/(logged)/(schedule)/edit-class",
             params: {
                 classId: data?.id,
-                gymId: data?.gym_id,
+                gymId: data?.gymId ?? 0,
             },
         });
     }
@@ -94,7 +94,7 @@ export default function Class() {
             ? data.assets.filter(
                 (a) =>
                     a.type === "text" &&
-                    isAfter(new Date(a.valid_until ?? ""), startOfWeekDate),
+                    isAfter(new Date(a.validUntil ?? ""), startOfWeekDate),
             )
             : [];
     const videos =
@@ -102,12 +102,12 @@ export default function Class() {
             ? data.assets.filter(
                 (a) =>
                     a.type === "video" &&
-                    isAfter(new Date(a.valid_until ?? ""), startOfWeekDate),
+                    isAfter(new Date(a.validUntil ?? ""), startOfWeekDate),
             )
             : [];
 
     const canManageClass =
-        isHigherRole() || (isMediumRole() && data?.instructor_id === user?.id);
+        isHigherRole() || (isMediumRole() && data?.instructorId === user?.id);
 
     return (
         <SafeAreaView className="flex-1">
@@ -153,7 +153,7 @@ export default function Class() {
                                 </HStack>
                                 <HStack className="gap-2 items-center">
                                     <Icon as={UserIcon} size="md" className="text-neutral-400" />
-                                    <Text className="text-white">{data.instructor_name}</Text>
+                                    <Text className="text-white">{data.instructorName}</Text>
                                 </HStack>
                                 <HStack className="gap-2 items-center">
                                     <Icon
@@ -207,7 +207,7 @@ export default function Class() {
                                                 </HStack>
                                                 <Text className="text-neutral-500 text-sm ml-auto">
                                                     Publicado às{" "}
-                                                    {format(new Date(a.created_at), "dd/MM/yyyy HH:mm")}
+                                                    {format(new Date(a.createdAt), "dd/MM/yyyy HH:mm")}
                                                 </Text>
                                             </VStack>
                                         ))}
@@ -242,7 +242,7 @@ export default function Class() {
                                                 />
                                                 <Text className="text-neutral-500 text-sm ml-auto mt-2">
                                                     Publicado às{" "}
-                                                    {format(new Date(a.created_at), "dd/MM/yyyy HH:mm")}
+                                                    {format(new Date(a.createdAt), "dd/MM/yyyy HH:mm")}
                                                 </Text>
                                             </Box>
                                         ))}

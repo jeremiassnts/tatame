@@ -1,6 +1,11 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useQuery } from "@tanstack/react-query";
-import { GetLastVersionResponse } from "./types";
+export interface GetLastVersionResponse {
+  data: {
+    appVersion: string;
+    disabledAt: string | null;
+  };
+}
 
 export function useGetLastVersion() {
   const { get } = useApi();

@@ -30,8 +30,8 @@ export function useAssociateGym() {
           recipients: [gym.managerId.toString()],
           channel: "push",
           status: "pending",
-          viewed_by: [userId.toString()],
-          sent_by: userId,
+          viewedBy: [userId.toString()],
+          sentBy: userId,
         });
       } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao associar a academia");

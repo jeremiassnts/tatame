@@ -74,10 +74,10 @@ export default function CreateClass() {
         start: data.start,
         end: data.end,
         day: day,
-        gym_id: user?.gym_id ?? 0,
-        instructor_id: user?.id ?? 0,
+        gymId: user?.gymId ?? 0,
+        instructorId: user?.id ?? 0,
         modality: "jiu-jitsu",
-        created_by: user?.id ?? 0,
+        createdBy: user?.id ?? 0,
       }),
     );
 

@@ -80,11 +80,11 @@ export function AddContent({ classId, refetch, classDate }: AddContentProps) {
             let videoUrl = null;
 
             await createAssetFn({
-                class_id: classId,
+                classId: classId,
                 content: data.type === "video" ? videoUrl : data.content,
                 type: data.type,
                 title: data.type === "video" ? data.title : null,
-                valid_until: format(validUntil, "yyyy-MM-dd"),
+                validUntil: format(validUntil, "yyyy-MM-dd"),
             });
             setIsOpen(false);
             reset();

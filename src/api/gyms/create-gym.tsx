@@ -1,7 +1,12 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { CreateGymProps } from "./types";
+export interface CreateGymProps {
+  name: string;
+  address: string;
+  since: string;
+  logo: string;
+}
 
 export function useCreateGym() {
   const { post } = useApi();

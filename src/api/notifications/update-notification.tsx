@@ -9,7 +9,7 @@ export function useUpdateNotification() {
 
   return useMutation({
     mutationFn: async (
-      notification: Partial<NotificationRow> & { sent_at?: string },
+      notification: Partial<NotificationRow> & { sentAt?: string },
     ) => {
       if (!notification.id) throw new Error("Notification id required");
       try {

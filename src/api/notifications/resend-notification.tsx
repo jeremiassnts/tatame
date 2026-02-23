@@ -1,26 +1,22 @@
 import { useApi } from "@/src/hooks/use-api";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useSendNotification } from "@/src/hooks/use-send-notification";
 import { useToast } from "@/src/hooks/use-toast";
 import { queryClient } from "@/src/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { updateNotification } from "./update-notification";
+import { useUpdateNotification } from "./update-notification";
 
 export function useResendNotification() {
   const { get } = useApi();
   const { sendNotification } = useSendNotification();
   const { showErrorToast } = useToast();
-  const { mutateAsync: updateNotificationFn } = updateNotification();
+  const { mutateAsync: updateNotificationFn } = useUpdateNotification();
+  const { user } = useProfileContext();
 
   return useMutation({
-    mutationFn: async ({
-      notificationId,
-      userId,
-    }: {
-      notificationId: number;
-      userId: number;
-    }) => {
+    mutationFn: async ({ notificationId }: { notificationId: number }) => {
       try {
-        const { data } = await get<any>(`/notifications/user/${userId}`);
+        const { data } = await get<any>(`/notifications/user/${user?.id}`);
         const list = Array.isArray(data) ? data : (data ?? []);
         const notification = list.find((n: any) => n.id === notificationId);
         if (!notification) throw new Error("Notification not found");
@@ -35,7 +31,7 @@ export function useResendNotification() {
         await updateNotificationFn({
           id: notification.id,
           status: "sent",
-          sent_at: new Date().toISOString(),
+          sentAt: new Date().toISOString(),
         });
         queryClient.invalidateQueries({ queryKey: ["notifications"] });
       } catch (error) {

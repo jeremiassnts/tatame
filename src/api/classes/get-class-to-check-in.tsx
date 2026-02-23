@@ -1,5 +1,4 @@
 import { useApi } from "@/src/hooks/use-api";
-import { mapToClassRow } from "./map-class";
 
 export function useGetClassToCheckIn() {
   const { get } = useApi();
@@ -9,8 +8,8 @@ export function useGetClassToCheckIn() {
       const { data } = await get<any>(
         `/class/check-in/available?gymId=${gymId}&time=${encodeURIComponent(time)}&day=${encodeURIComponent(day)}`,
       );
-      const raw = Array.isArray(data) ? data[0] : data;
-      return raw ? mapToClassRow(raw) : null;
+      if (!data) return null;
+      return data;
     } catch (error) {
       console.error(error);
       return null;

@@ -95,9 +95,9 @@ export default function CreateNotificationDialog() {
             content: data.content,
             recipients: data.recipients.map((id) => id.toString()),
             channel: "push",
-            sent_by: user?.id,
+            sentBy: user?.id,
             status: "pending",
-            viewed_by: [user?.id?.toString() ?? ""],
+            viewedBy: [user?.id?.toString() ?? ""],
         });
         reset();
         setIsOpen(false);
@@ -185,7 +185,9 @@ export default function CreateNotificationDialog() {
                                                     <AvatarFallbackText>
                                                         {student.name}
                                                     </AvatarFallbackText>
-                                                    <AvatarImage source={{ uri: student.imageUrl }} />
+                                                    <AvatarImage
+                                                        source={{ uri: student.profilePicture ?? "" }}
+                                                    />
                                                 </Avatar>
                                                 <Text>{student.name}</Text>
                                             </Card>

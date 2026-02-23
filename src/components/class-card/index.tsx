@@ -34,7 +34,7 @@ export function ClassCard({
   const isMediumRole = useIsMediumRole();
 
   const canOpenActions =
-    isHigherRole() || (isMediumRole() && data.instructor_id === user?.id);
+    isHigherRole() || (isMediumRole() && data.instructorId === user?.id);
 
   return (
     <Card
@@ -81,7 +81,7 @@ export function ClassCard({
       <HStack className="justify-between pt-4">
         <Badge className="gap-1">
           <BadgeIcon as={UserIcon} />
-          <BadgeText>{data.instructor_name}</BadgeText>
+          <BadgeText>{data.instructorName}</BadgeText>
         </Badge>
         <Badge variant="outline">
           <BadgeText>{data.modality}</BadgeText>
