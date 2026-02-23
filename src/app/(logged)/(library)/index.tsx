@@ -47,7 +47,7 @@ export default function Library() {
                                 id={video.id}
                                 key={video.id}
                                 video={`${process.env.EXPO_PUBLIC_R2_URL}${video.content}`}
-                                createdAt={video.createdAt}
+                                createdAt={video.createdAt?.toISOString() ?? ""}
                                 title={video.title ?? ""}
                                 onDelete={deleteAssetMutation}
                             />

@@ -4,7 +4,6 @@ import { useIsLowerRole } from "@/src/api/roles/is-lower-role";
 import { useIsMediumRole } from "@/src/api/roles/is-medium-role";
 import { useListStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { Gym } from "@/src/types/models";
 import { useRouter } from "expo-router";
 import { Pressable } from "react-native";
 import { ClassCard } from "../class-card";
@@ -17,14 +16,9 @@ import { Skeleton } from "../ui/skeleton";
 import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
-interface NextClassProps {
-  gym: Gym | undefined | null;
-  isLoadingGym: boolean;
-}
-
-export function NextClass({ gym, isLoadingGym }: NextClassProps) {
+export function NextClass() {
   const router = useRouter();
-  const { user, isLoading: isLoadingUser } = useProfileContext();
+  const { user, gym, isLoading } = useProfileContext();
   const isHigherRole = useIsHigherRole();
   const isLowerRole = useIsLowerRole();
   const isMediumRole = useIsMediumRole();
@@ -51,11 +45,11 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
       <Skeleton
         className="h-[150px] w-full bg-neutral-800 rounded-md"
         speed={4}
-        isLoaded={!isLoadingNextClass && !isLoadingUser}
+        isLoaded={!isLoadingNextClass && !isLoading}
       />
       {gym &&
         !isLoadingNextClass &&
-        !isLoadingGym &&
+        !isLoading &&
         !nextClass &&
         user &&
         isHigherRole() && (
@@ -68,7 +62,7 @@ export function NextClass({ gym, isLoadingGym }: NextClassProps) {
             </Button>
           </Box>
         )}
-      {gym && !isLoadingNextClass && !isLoadingGym && nextClass && (
+      {gym && !isLoadingNextClass && !isLoading && nextClass && (
         <Box>
           <Pressable onPress={() => router.push(`/(logged)/(schedule)`)}>
             <ClassCard

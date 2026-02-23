@@ -2,33 +2,14 @@ import { useUser } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
 import { createContext } from "react";
 import { useApi } from "../hooks/use-api";
+import { Gym, User } from "../types/models";
 
 type UserInfo = {
     fullName: string;
-    profilePicture: string;
-    email: string;
-    role: string;
-    plan: string;
-    subscriptionId: string;
-    customerId: string;
-    clerkUserId: string;
-    id: number;
-    gymId: number;
-};
-
-type GymInfo = {
-    id: number;
-    name: string;
-    logo: string;
-    address: string;
-    city: string;
-    state: string;
-    zip: string;
-};
-
+} & User;
 interface ProfileContextType {
     user: UserInfo | undefined | null;
-    gym: GymInfo | undefined | null;
+    gym: Gym | undefined | null;
     refetch: (() => Promise<void>) | null;
     isLoading: boolean;
 }

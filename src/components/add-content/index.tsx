@@ -83,8 +83,8 @@ export function AddContent({ classId, refetch, classDate }: AddContentProps) {
                 classId: classId,
                 content: data.type === "video" ? videoUrl : data.content,
                 type: data.type,
-                title: data.type === "video" ? data.title : null,
-                validUntil: format(validUntil, "yyyy-MM-dd"),
+                title: data.type === "video" && data.title ? data.title : "",
+                validUntil: validUntil,
             });
             setIsOpen(false);
             reset();

@@ -57,10 +57,7 @@ export default function Profile() {
             </Text>
             <Text className="text-neutral-400 text-md">{user?.email}</Text>
             <GraduationCard showBelt={true} />
-            <PersonalDataSection
-              firstName={user?.firstName ?? ""}
-              lastName={user?.lastName ?? ""}
-            />
+            <PersonalDataSection />
             {isHigherRole() && <ProfilePlan />}
             {lastMonthCheckins && studentsApprovalStatus && isLowerRole() && (
               <StudentPresenceSection checkins={lastMonthCheckins} />

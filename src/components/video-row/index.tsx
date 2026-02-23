@@ -16,7 +16,7 @@ interface VideoRowProps {
     video: string;
     createdAt: string;
     title: string;
-    onDelete: UseMutationResult<null, Error, number, unknown>;
+    onDelete: UseMutationResult<unknown, Error, number, unknown>;
 }
 
 export function VideoRow({

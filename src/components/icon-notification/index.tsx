@@ -1,4 +1,4 @@
-import { listUnreadNotifications } from "@/src/api/notifications/list-unread-notifications";
+import { useListUnreadNotifications } from "@/src/api/notifications/list-unread-notifications";
 import { Box } from "@/src/components/ui/box";
 import { Icon } from "@/src/components/ui/icon";
 import { DrawerActions } from "@react-navigation/native";
@@ -23,7 +23,7 @@ export function IconNotification({
     style,
 }: IconNotificationProps) {
     const navigation = useNavigation();
-    const { data: unreadNotifications } = listUnreadNotifications();
+    const { data: unreadNotifications } = useListUnreadNotifications();
     const amount =
         unreadNotifications && unreadNotifications?.length > 9
             ? "9+"

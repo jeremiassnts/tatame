@@ -1,8 +1,8 @@
+import { ClassDetails } from "@/src/api/classes/get-class-by-id";
 import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
 import { useIsLowerRole } from "@/src/api/roles/is-lower-role";
 import { useIsMediumRole } from "@/src/api/roles/is-medium-role";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { Class } from "@/src/types/models";
 import { formatDay, formatTime } from "@/src/utils/class";
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Card } from "../ui/card";
@@ -16,7 +16,7 @@ import { CheckIn } from "./check-in";
 import { CheckIns } from "./check-ins";
 
 interface ClassCardProps {
-  data: Class;
+  data: ClassDetails;
   topBadgeText?: string;
   currentClass: boolean;
   classDate?: string;

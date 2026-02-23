@@ -1,6 +1,5 @@
 import { GENDERS } from "@/src/constants/genders";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { User } from "@/src/types/models";
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
 import { Instagram } from "lucide-react-native";
@@ -9,33 +8,29 @@ import { Card } from "../ui/card";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 import { CalendarDaysIcon, InfoIcon, PhoneIcon } from "../ui/icon";
+import { Skeleton } from "../ui/skeleton";
 import { VStack } from "../ui/vstack";
 import { InfoRow } from "./info-row";
 
-interface PersonalDataSectionProps {
-    user: User;
-    firstName: string;
-    lastName: string;
-}
-
-export function PersonalDataSection({
-    firstName,
-    lastName,
-}: PersonalDataSectionProps) {
+export function PersonalDataSection() {
     const router = useRouter();
-    const { user } = useProfileContext();
+    const { user, isLoading } = useProfileContext();
+
+    if (isLoading || !user) {
+        return <Skeleton className="w-full h-[100px] rounded-md bg-neutral-800" />;
+    }
 
     function handleEditProfile() {
         router.push({
             pathname: "/(logged)/(profile)/edit-profile",
             params: {
-                id: user.id.toString(),
-                firstName: firstName,
-                lastName: lastName,
-                instagram: user.instagram,
-                phone: user.phone,
-                gender: user.gender,
-                birth: user.birth,
+                id: user?.id.toString(),
+                firstName: user?.firstName,
+                lastName: user?.lastName,
+                instagram: user?.instagram,
+                phone: user?.phone,
+                gender: user?.gender,
+                birth: user?.birth,
             },
         });
     }

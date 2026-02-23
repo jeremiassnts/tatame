@@ -2,7 +2,6 @@ import { useGetGraduationByUserId } from "@/src/api/graduations/get-graduation-b
 import { useListStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { BELT_COLORS } from "@/src/constants/belts";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { Gym } from "@/src/types/models";
 import { useMemo } from "react";
 import AvatarWithDialog from "../ui/avatar/avatar-with-dialog";
 import { Box } from "../ui/box";
@@ -10,12 +9,8 @@ import { HStack } from "../ui/hstack";
 import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
-interface HomeGymHeaderProps {
-  gym: Gym | undefined | null;
-}
-
-export function HomeGymHeader({ gym }: HomeGymHeaderProps) {
-  const { user } = useProfileContext();
+export function HomeGymHeader() {
+  const { user, gym } = useProfileContext();
   const { data: graduation } = useGetGraduationByUserId();
   const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
 

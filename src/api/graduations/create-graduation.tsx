@@ -1,14 +1,20 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
-import { Graduation } from "@/src/types/models";
 import { useMutation } from "@tanstack/react-query";
+
+export interface CreateGraduationProps {
+  userId: number;
+  belt: string;
+  degree: number;
+  modality: string;
+}
 
 export function useCreateGraduation() {
   const { post } = useApi();
   const { showErrorToast } = useToast();
 
   return useMutation({
-    mutationFn: async (graduation: Graduation) => {
+    mutationFn: async (graduation: CreateGraduationProps) => {
       try {
         const { data } = await post<any>("/graduations", {
           userId: graduation.userId,
