@@ -3,6 +3,7 @@ import { useListLastMonthCheckins } from "@/src/api/checkins/list-last-month-che
 import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
 import { useIsLowerRole } from "@/src/api/roles/is-lower-role";
 import { useListStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
+import { useUpdateUser } from "@/src/api/users/update-user";
 import { AccountSection } from "@/src/components/account-section";
 import { GraduationCard } from "@/src/components/graduation-card";
 import { PersonalDataSection } from "@/src/components/personal-data-section";
@@ -14,6 +15,8 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
+import { queryClient } from "@/src/lib/react-query";
+import { useUser } from "@clerk/clerk-expo";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -22,9 +25,23 @@ export default function Profile() {
   const isLowerRole = useIsLowerRole();
   const { mutateAsync: updateUserImageAsync } = useUpdateUserImage();
   const { user, gym, isLoading } = useProfileContext();
+  const { user: signedInUser } = useUser();
+  const { mutateAsync: updateUserAsync } = useUpdateUser();
 
   const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
   const { data: lastMonthCheckins } = useListLastMonthCheckins(user?.id ?? 0);
+
+  async function handleUpdateUserImage(image: string) {
+    await updateUserImageAsync({ image, userId: user?.clerkUserId ?? "" });
+    await signedInUser?.reload();
+    await updateUserAsync({
+      id: user?.id ?? 0,
+      profilePicture: signedInUser?.imageUrl ?? "",
+    });
+    await queryClient.invalidateQueries({
+      queryKey: ["user-profile", user?.id],
+    });
+  }
 
   return (
     <SafeAreaView>
@@ -45,11 +62,8 @@ export default function Profile() {
               fullName={user?.fullName ?? ""}
               imageUrl={user?.profilePicture ?? ""}
               size="xl"
-              updateImageFn={async (image) => {
-                await updateUserImageAsync({
-                  image,
-                  userId: user.clerkUserId,
-                });
+              updateImageFn={(image) => {
+                return handleUpdateUserImage(image);
               }}
             />
             <Text className="text-white text-lg font-bold mt-3">
