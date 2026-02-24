@@ -37,7 +37,7 @@ export interface Notification {
 
 export function useSendNotification() {
     const { showErrorToast } = useToast();
-    const getNotificationRecipientsFn = useGetNotificationRecipients;
+    const getNotificationRecipients = useGetNotificationRecipients();
     const { mutateAsync: updateUserFn } = useUpdateUser();
     const { user } = useProfileContext();
 
@@ -57,7 +57,7 @@ export function useSendNotification() {
     }
 
     async function sendPushNotification(notification: SendNotificationProps) {
-        const data = await getNotificationRecipientsFn(
+        const data = await getNotificationRecipients(
             notification.recipients.map((recipient) => parseInt(recipient)),
         );
         const expoPushTokens = data.map((user) => user.expoPushToken);

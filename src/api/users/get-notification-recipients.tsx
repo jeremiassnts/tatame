@@ -1,5 +1,6 @@
 import { useApi } from "@/src/hooks/use-api";
 import { useToast } from "@/src/hooks/use-toast";
+import { useCallback } from "react";
 
 export interface NotificationRecipient {
     id?: number;
@@ -7,23 +8,30 @@ export interface NotificationRecipient {
     expoPushToken?: string | null;
 }
 
-export async function useGetNotificationRecipients(recipientIds: number[]) {
+export function useGetNotificationRecipients() {
     const { get } = useApi();
     const { showErrorToast } = useToast();
-    const validIds = recipientIds.filter((id) => Number.isInteger(id) && id > 0);
-    const query = validIds.join(",");
 
-    try {
-        const response = await get<{
-            data: NotificationRecipient[];
-            count: number;
-        }>(`/users/notification-recipients?recipientIds=${query}`);
-        return response?.data ?? [];
-    } catch (error) {
-        showErrorToast(
-            "Erro",
-            "Ocorreu um erro ao buscar os destinatários da notificação",
-        );
-        throw error;
-    }
+    return useCallback(
+        async (recipientIds: number[]) => {
+            const validIds = recipientIds.filter(
+                (id) => Number.isInteger(id) && id > 0,
+            );
+            const query = validIds.join(",");
+            try {
+                const response = await get<{
+                    data: NotificationRecipient[];
+                    count: number;
+                }>(`/users/notification-recipients?recipientIds=${query}`);
+                return response?.data ?? [];
+            } catch (error) {
+                showErrorToast(
+                    "Erro",
+                    "Ocorreu um erro ao buscar os destinatários da notificação",
+                );
+                throw error;
+            }
+        },
+        [get, showErrorToast],
+    );
 }
