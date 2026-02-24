@@ -37,7 +37,7 @@ export function ProfileGymCard({ gym }: ProfileGymCardProps) {
         queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
         break;
       } catch (error) {
-        console.log(JSON.stringify(error, null, 2));
+        console.error(error);
         continue;
       }
     }
