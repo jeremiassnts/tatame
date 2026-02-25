@@ -100,7 +100,9 @@ export default function EditClass() {
         createdAt: classData?.createdAt ?? new Date(),
       });
       reset();
-      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      queryClient.invalidateQueries({
+        queryKey: ["classes", classData?.gymId],
+      });
       queryClient.invalidateQueries({ queryKey: ["class", classData?.id] });
       queryClient.invalidateQueries({ queryKey: ["next-class"] });
       router.replace("/(logged)/(schedule)");
@@ -109,24 +111,24 @@ export default function EditClass() {
 
   useEffect(() => {
     async function fetchClass() {
-      const classData = await getClassById(parseInt(classId));
-      if (classData) {
-        setClassData(classData);
-        setValue("description", classData.description ?? "");
-        setValue("start", classData.start ?? "");
-        setValue("end", classData.end ?? "");
-        setValue("modality", classData.modality ?? "");
-        setValue("days", classData.day ? [classData.day] : []);
-        setValue("instructorId", classData.instructorId ?? 0);
+      const data = await getClassById(parseInt(classId));
+      if (data) {
+        setClassData(data);
+        setValue("description", data.description ?? "");
+        setValue("start", data.start ?? "");
+        setValue("end", data.end ?? "");
+        setValue("modality", data.modality ?? "");
+        setValue("days", data.day ? [data.day] : []);
+        setValue("instructorId", data.instructorId ?? 0);
       }
       setIsLoading(false);
     }
     fetchClass();
-  }, [classId, getClassById, setValue]);
+  }, [classId]);
 
   function formatTime(time: string) {
     const template = `${new Date().toISOString().split("T")[0]} ${time}`;
-    const date = parse(template, "yyyy-MM-dd HH:mm:ss", new Date());
+    const date = parse(template, "yyyy-MM-dd HH:mm", new Date());
     return date;
   }
 
@@ -139,7 +141,7 @@ export default function EditClass() {
 
   return (
     <SafeAreaView className="pl-5 pr-5">
-      {(isLoading || isLoadingInstructors) && (
+      {(isLoading || isLoadingInstructors || !start || !end) && (
         <VStack className="gap-4 pt-10">
           <Skeleton className="w-full h-[50px] rounded-md bg-neutral-800" />
           <Skeleton className="w-full h-[20px] rounded-md bg-neutral-800" />
@@ -148,7 +150,7 @@ export default function EditClass() {
           <Skeleton className="w-full h-[50px] rounded-md bg-neutral-800" />
         </VStack>
       )}
-      {!isLoading && !isLoadingInstructors && (
+      {!isLoading && !isLoadingInstructors && start && end && (
         <ScrollView>
           <VStack className="gap-2">
             <VStack className="pb-2">

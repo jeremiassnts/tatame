@@ -15,7 +15,7 @@ import { queryClient } from "../lib/react-query";
 import { ProfileProvider } from "../providers/profile-provider";
 
 const StripeProviderWrapper =
-  Platform.OS === "web"
+  Platform.OS === "web" || __DEV__
     ? ({ children }: { children: React.ReactNode }) => <>{children}</>
     : function StripeProviderNative({
       children,

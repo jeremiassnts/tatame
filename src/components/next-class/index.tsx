@@ -1,7 +1,6 @@
 import { useGetNextClass } from "@/src/api/classes/get-next-class";
 import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
 import { useIsLowerRole } from "@/src/api/roles/is-lower-role";
-import { useIsMediumRole } from "@/src/api/roles/is-medium-role";
 import { useListStudentsApprovalStatus } from "@/src/api/users/list-students-approval-status";
 import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useRouter } from "expo-router";
@@ -21,7 +20,6 @@ export function NextClass() {
   const { user, gym, isLoading } = useProfileContext();
   const isHigherRole = useIsHigherRole();
   const isLowerRole = useIsLowerRole();
-  const isMediumRole = useIsMediumRole();
   const { data: nextClass, isLoading: isLoadingNextClass } = useGetNextClass();
   const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
 

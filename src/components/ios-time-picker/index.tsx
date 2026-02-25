@@ -6,7 +6,14 @@ import { Button, ButtonText } from "../ui/button";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 import { CloseIcon, Icon } from "../ui/icon";
-import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from "../ui/modal";
+import {
+    Modal,
+    ModalBackdrop,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalHeader,
+} from "../ui/modal";
 import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
@@ -32,21 +39,24 @@ export default function IosTimePicker({
 
     return (
         <VStack className={className}>
-            {label && <Text className="text-white font-bold mb-2 text-md">{label}</Text>}
+            {label && (
+                <Text className="text-white font-bold mb-2 text-md">{label}</Text>
+            )}
             <Pressable onPress={() => setIsOpen(true)}>
                 <Text
                     className={`w-full bg-neutral-800 p-3 pl-4 pr-4 rounded-md text-md`}
                 >
-                    {date
-                        ? formatDate(date, "HH:mm")
-                        : placeholder}
+                    {date ? formatDate(date, "HH:mm") : placeholder}
                 </Text>
             </Pressable>
             {error && <Text className="text-red-500 text-sm">{error}</Text>}
-            <Modal size="lg" isOpen={isOpen}
+            <Modal
+                size="lg"
+                isOpen={isOpen}
                 onClose={() => {
                     setIsOpen(false);
-                }}>
+                }}
+            >
                 <ModalBackdrop />
                 <ModalContent>
                     <ModalHeader className="mb-4">
@@ -69,20 +79,27 @@ export default function IosTimePicker({
                             }}
                         />
                         <HStack className="gap-2 justify-center items-center">
-                            <Button action="secondary" className="rounded-md" onPress={() => {
-                                setIsOpen(false)
-                                setDate(value || null)
-                                setNewDate(value)
-                            }}>
+                            <Button
+                                action="secondary"
+                                className="rounded-md"
+                                onPress={() => {
+                                    setIsOpen(false);
+                                    setDate(value || null);
+                                    setNewDate(value);
+                                }}
+                            >
                                 <ButtonText className="text-white">Cancelar</ButtonText>
                             </Button>
-                            <Button className="bg-violet-800 rounded-md" onPress={() => {
-                                if (date) {
-                                    setNewDate(date)
-                                    setDate(date)
-                                }
-                                setIsOpen(false)
-                            }}>
+                            <Button
+                                className="bg-violet-800 rounded-md"
+                                onPress={() => {
+                                    if (date) {
+                                        setNewDate(date);
+                                        setDate(date);
+                                    }
+                                    setIsOpen(false);
+                                }}
+                            >
                                 <ButtonText className="text-white">Ok</ButtonText>
                             </Button>
                         </HStack>
