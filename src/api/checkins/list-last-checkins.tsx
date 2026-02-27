@@ -1,4 +1,5 @@
 import { useApi } from "@/src/hooks/use-api";
+import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { Checkin } from "@/src/types/models";
 import { useQuery } from "@tanstack/react-query";
@@ -8,16 +9,17 @@ export interface ListLastCheckinsProps {
   count: number;
 }
 
-export function useListLastCheckins(userId: number) {
+export function useListLastCheckins() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
+  const { user } = useProfileContext();
 
   return useQuery({
-    queryKey: ["last-checkins", userId],
+    queryKey: ["last-checkins", user?.id],
     queryFn: async () => {
       try {
         const { data } = await get<ListLastCheckinsProps>(
-          `/checkins/user/${userId}/last`,
+          `/checkins/user/${user?.id}/last`,
         );
         return data;
       } catch (error) {

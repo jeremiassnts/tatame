@@ -1,7 +1,12 @@
 import { useListLastCheckins } from "@/src/api/checkins/list-last-checkins";
 import { DayOfWeek, Days } from "@/src/constants/date";
-import { useProfileContext } from "@/src/hooks/use-profile-context";
-import { addDays, eachWeekOfInterval, format, subWeeks } from "date-fns";
+import {
+    addDays,
+    eachWeekOfInterval,
+    format,
+    isSameDay,
+    subWeeks,
+} from "date-fns";
 import { useEffect, useState } from "react";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
 import { Card } from "../ui/card";
@@ -30,10 +35,8 @@ function WeekPresenceDay({ day, isSelected }: WeekPresenceDayProps) {
 }
 
 export function WeekPresence() {
-    const { user } = useProfileContext();
-    const { data: checkins, isLoading: isLoadingCheckins } = useListLastCheckins(
-        user?.id ?? 0,
-    );
+    const { data: checkins, isLoading: isLoadingCheckins } =
+        useListLastCheckins();
     const [checkInDays, setCheckInDays] = useState<
         { day: DayOfWeek; date: string }[]
     >([]);
@@ -48,9 +51,9 @@ export function WeekPresence() {
             const tempDays = [];
             for (const day of Days) {
                 if (
-                    checkins.some(
-                        (checkin) => checkin.date === format(currentDay, "yyyy-MM-dd"),
-                    )
+                    checkins.some((checkin) => {
+                        return isSameDay(new Date(checkin.date ?? ""), currentDay);
+                    })
                 ) {
                     tempDays.push({
                         day: day.value,

@@ -29,7 +29,7 @@ export default function Profile() {
   const { mutateAsync: updateUserAsync } = useUpdateUser();
 
   const { data: studentsApprovalStatus } = useListStudentsApprovalStatus();
-  const { data: lastMonthCheckins } = useListLastMonthCheckins(user?.id ?? 0);
+  const { data: lastMonthCheckins } = useListLastMonthCheckins();
 
   async function handleUpdateUserImage(image: string) {
     await updateUserImageAsync({ image, userId: user?.clerkUserId ?? "" });

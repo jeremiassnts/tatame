@@ -22,7 +22,7 @@ export function useCreateCheckin() {
         await post("/checkins", {
           userId: checkin.userId,
           classId: checkin.classId,
-          date: checkin.date ?? new Date().toISOString(),
+          date: checkin.date,
         });
       } catch (error) {
         showErrorToast("Erro", "Ocorreu um erro ao criar o checkin");

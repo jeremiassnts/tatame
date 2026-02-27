@@ -41,11 +41,12 @@ export function CheckIn({ class: classData, classDate }: CheckInProps) {
   if (!classDate) return null;
 
   async function handleCreateCheckin() {
+    if (!classDate) return;
     setIsLoading(true);
 
     createCheckinFn({
       classId: classData.id,
-      date: new Date().toISOString(),
+      date: classDate,
       userId: user?.id ?? 0,
     })
       .then(() => {

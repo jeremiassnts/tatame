@@ -6,6 +6,7 @@ import {
     endOfWeek,
     format,
     isBefore,
+    isSameDay,
     startOfWeek,
 } from "date-fns";
 import { Flame } from "lucide-react-native";
@@ -48,12 +49,13 @@ export function StudentPresenceSection({
             isBefore(current, weekEnd);
             current = addDays(current, 1)
         ) {
-            const dayCheckins = checkins.filter(
-                (checkin) => checkin.date === format(current, "yyyy-MM-dd"),
-            );
+            const dayCheckins = checkins.filter((checkin) => {
+                return isSameDay(new Date(checkin.date ?? ""), current);
+            });
             const tempTotalDuration = dayCheckins.reduce((acc, checkin) => {
-                const start = new Date(`${checkin.date} ${checkin?.class?.start}`);
-                const end = new Date(`${checkin.date} ${checkin?.class?.end}`);
+                const formattedDate = format(current, "yyyy-MM-dd");
+                const start = new Date(`${formattedDate} ${checkin?.class?.start}`);
+                const end = new Date(`${formattedDate} ${checkin?.class?.end}`);
                 return acc + differenceInMinutes(end, start);
             }, 0);
             const weekDay =
