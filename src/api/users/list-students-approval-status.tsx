@@ -3,6 +3,10 @@ import { useProfileContext } from "@/src/hooks/use-profile-context";
 import { useToast } from "@/src/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 
+interface ListStudentsApprovalStatusProps {
+  data: { isApproved: boolean };
+}
+
 export function useListStudentsApprovalStatus() {
   const { get } = useApi();
   const { showErrorToast } = useToast();
@@ -13,8 +17,10 @@ export function useListStudentsApprovalStatus() {
     queryFn: async () => {
       try {
         if (!user?.id) return false;
-        const { data } = await get<any>(`/users/${user?.id}/approval-status`);
-        return data;
+        const { data } = await get<ListStudentsApprovalStatusProps>(
+          `/users/${user?.id}/approval-status`,
+        );
+        return data.isApproved;
       } catch (error) {
         showErrorToast(
           "Erro",

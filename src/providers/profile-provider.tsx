@@ -45,7 +45,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         queryFn: async () => {
             if (user.data?.id == null || user.data?.id === 0) return null;
             try {
-                const { data } = await get<any>(`/gyms/user/${user.data?.id}`);
+                const { data } = await get<any>(`/gyms/${user.data?.gymId}`);
                 return data;
             } catch {
                 return null;

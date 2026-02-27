@@ -137,7 +137,7 @@ export default function Class() {
                                     <CheckIn class={data} classDate={classDate} />
                                 )}
                             </HStack>
-                            <CheckIns classId={data.id} />
+                            <CheckIns classId={data.id} date={classDate} />
                             <Divider className="my-4" />
                             <VStack className="gap-2">
                                 <HStack className="gap-2 items-center">

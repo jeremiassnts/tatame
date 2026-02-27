@@ -22,8 +22,10 @@ interface StudentRowProps {
 
 export function StudentRow({ student }: StudentRowProps) {
     const isHigherRole = useIsHigherRole();
-    const { mutateAsync: approveStudentFn } = useApproveStudent();
-    const { mutateAsync: denyStudentFn } = useDenyStudent();
+    const { mutateAsync: approveStudentFn, isPending: isApprovingStudent } =
+        useApproveStudent();
+    const { mutateAsync: denyStudentFn, isPending: isDenyingStudent } =
+        useDenyStudent();
     const router = useRouter();
 
     function handleApproveStudent() {
@@ -101,6 +103,7 @@ export function StudentRow({ student }: StudentRowProps) {
                                 className="rounded-md border-neutral-600"
                                 variant="outline"
                                 onPress={handleApproveStudent}
+                                disabled={isApprovingStudent}
                             >
                                 <ButtonIcon
                                     as={CheckIcon}
@@ -112,6 +115,7 @@ export function StudentRow({ student }: StudentRowProps) {
                                 className="rounded-md border-neutral-600"
                                 variant="outline"
                                 onPress={handleDenyStudent}
+                                disabled={isDenyingStudent}
                             >
                                 <ButtonIcon as={CloseIcon} size="sm" className="text-red-500" />
                             </Button>

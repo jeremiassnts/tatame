@@ -80,8 +80,8 @@ export interface Notification {
   status: string | null;
   recipients: string[] | null;
   viewedBy: string[] | null;
-  sentAt: Date | null;
-  createdAt: Date;
+  sentAt: string | null;
+  createdAt: string;
 }
 
 export interface User {

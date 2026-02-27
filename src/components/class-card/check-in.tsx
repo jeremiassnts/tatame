@@ -19,7 +19,7 @@ export function CheckIn({ class: classData, classDate }: CheckInProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { mutateAsync: createCheckinFn } = useCreateCheckin();
   const { data: checkins, isLoading: isLoadingCheckins } =
-    useListCheckinsByClassId(classData.id);
+    useListCheckinsByClassId(classData.id, classDate ?? "");
   const { mutateAsync: removeCheckinFn } = useRemoveCheckin();
   const [date, setDate] = useState<Date | null>(null);
   const { user } = useProfileContext();

@@ -71,8 +71,10 @@ export default function User() {
     );
     const [deniedAt, setDeniedAt] = useState<string | null>(initialDeniedAt);
     const isHigherRole = useIsHigherRole();
-    const { mutateAsync: approveStudentFn } = useApproveStudent();
-    const { mutateAsync: denyStudentFn } = useDenyStudent();
+    const { mutateAsync: approveStudentFn, isPending: isApprovingStudent } =
+        useApproveStudent();
+    const { mutateAsync: denyStudentFn, isPending: isDenyingStudent } =
+        useDenyStudent();
 
     function handleApproveStudent() {
         approveStudentFn(Number(userId)).then(() => {
@@ -136,6 +138,7 @@ export default function User() {
                                 className="rounded-md border-neutral-600"
                                 variant="outline"
                                 onPress={handleApproveStudent}
+                                disabled={isApprovingStudent}
                             >
                                 <ButtonIcon
                                     as={CheckIcon}
@@ -148,6 +151,7 @@ export default function User() {
                                 className="rounded-md border-neutral-600"
                                 variant="outline"
                                 onPress={handleDenyStudent}
+                                disabled={isDenyingStudent}
                             >
                                 <ButtonIcon as={CloseIcon} size="sm" className="text-red-500" />
                                 <ButtonText>Reprovar</ButtonText>

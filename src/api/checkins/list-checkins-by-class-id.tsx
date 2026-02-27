@@ -12,16 +12,17 @@ export interface ListCheckinsByClassIdProps {
   count: number;
 }
 
-export function useListCheckinsByClassId(classId: number) {
+export function useListCheckinsByClassId(classId: number, date: string) {
   const { get } = useApi();
   const { showErrorToast } = useToast();
 
   return useQuery({
     queryKey: ["checkins-by-class-id", classId],
     queryFn: async () => {
+      if (!date) return [];
       try {
         const { data } = await get<ListCheckinsByClassIdProps>(
-          `/checkins/class/${classId}`,
+          `/checkins/class/${classId}?date=${date}`,
         );
         return data;
       } catch (error) {

@@ -67,7 +67,7 @@ export function ClassCard({
         />
         {isLowerRole() && <CheckIn class={data} classDate={classDate} />}
       </HStack>
-      <CheckIns classId={data.id} />
+      <CheckIns classId={data.id} date={classDate ?? ""} />
       {/* {classDate && <HStack className="gap-2 items-center justify-start">
         <Badge className="gap-1">
           <BadgeIcon as={PlayIcon} />

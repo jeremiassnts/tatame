@@ -90,6 +90,7 @@ export default function CreateNotificationDialog() {
     };
 
     async function handleCreateNotification(data: CreateNotificationFormType) {
+        console.log("data", data);
         await createNotificationFn({
             title: data.title,
             content: data.content,
@@ -193,6 +194,11 @@ export default function CreateNotificationDialog() {
                                             </Card>
                                         </Pressable>
                                     ))}
+                                    {errors.recipients?.message && (
+                                        <Text className="text-red-500 text-sm">
+                                            {errors.recipients?.message}
+                                        </Text>
+                                    )}
                                 </VStack>
                             )}
                             <Button

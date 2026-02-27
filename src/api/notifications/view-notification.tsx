@@ -7,7 +7,7 @@ export function useViewNotification() {
   const { showErrorToast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ id, userId }: { id: number; userId: string }) => {
+    mutationFn: async ({ id, userId }: { id: number; userId: number }) => {
       try {
         await post(`/notifications/${id}/view`, { userId });
       } catch (error) {

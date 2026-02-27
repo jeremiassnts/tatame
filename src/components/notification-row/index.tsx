@@ -28,7 +28,7 @@ interface NotificationRowProps {
     onResend: ({ notificationId }: { notificationId: number }) => Promise<void>;
     isPendingResending: boolean;
     currentUserId: number;
-    onView: (props: { id: number; userId: string }) => Promise<void>;
+    onView: (props: { id: number; userId: number }) => Promise<void>;
     isHigherRole: boolean;
 }
 
@@ -99,7 +99,7 @@ export default function NotificationRow({
     async function handleViewNotification() {
         setIsOpen(true);
         if (!viewed) {
-            await onView({ id, userId: currentUserId.toString() });
+            await onView({ id, userId: currentUserId });
             queryClient.invalidateQueries({ queryKey: ["notifications-unread"] });
             setViewed(true);
         }
@@ -127,7 +127,7 @@ export default function NotificationRow({
                         </HStack>
                         <HStack className="items-center justify-between">
                             <Text className="text-neutral-400 text-sm">
-                                {getSentTime(sentAt?.toISOString() ?? createdAt.toISOString())}
+                                {getSentTime(sentAt ?? createdAt)}
                             </Text>
                             {isHigherRole && (
                                 <Badge size="sm" action={getStatusColor(status)}>
@@ -180,9 +180,7 @@ export default function NotificationRow({
                                         <Text>
                                             Enviado por {sentByName} às{" "}
                                             {formatInTimeZone(
-                                                new Date(
-                                                    sentAt?.toISOString() ?? createdAt.toISOString(),
-                                                ),
+                                                new Date(sentAt ?? createdAt),
                                                 "America/Sao_Paulo",
                                                 "dd/MM/yyyy HH:mm",
                                             )}
@@ -192,9 +190,7 @@ export default function NotificationRow({
                                         <Text>
                                             Enviado às{" "}
                                             {formatInTimeZone(
-                                                new Date(
-                                                    sentAt?.toISOString() ?? createdAt.toISOString(),
-                                                ),
+                                                new Date(sentAt ?? createdAt),
                                                 "America/Sao_Paulo",
                                                 "dd/MM/yyyy HH:mm",
                                             )}

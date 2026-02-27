@@ -51,6 +51,7 @@ export default function SelectGym() {
       userId: user?.id ?? 0,
     })
       .then(() => {
+        console.log("invalidating gym-by-user");
         queryClient.invalidateQueries({ queryKey: ["gym-by-user", user?.id] });
         queryClient.invalidateQueries({ queryKey: ["next-class"] });
         queryClient.invalidateQueries({ queryKey: ["user-profile"] });

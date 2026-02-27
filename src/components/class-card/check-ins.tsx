@@ -6,17 +6,18 @@ import { Text } from "../ui/text";
 
 interface CheckInsProps {
   classId: number;
+  date: string;
 }
 
-export function CheckIns({ classId }: CheckInsProps) {
+export function CheckIns({ classId, date }: CheckInsProps) {
   const { data: checkins, isLoading: isLoadingCheckins } =
-    useListCheckinsByClassId(classId);
-
+    useListCheckinsByClassId(classId, date);
   if (isLoadingCheckins) {
     return (
       <Skeleton className="w-full h-[30px] bg-neutral-700 rounded-md mt-2 mb-2" />
     );
   }
+  if (!date) return null;
   return (
     <HStack className="items-baseline">
       <HStack className="mt-2 mb-2 flex-row-reverse justify-end items-center">
