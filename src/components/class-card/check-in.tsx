@@ -21,16 +21,21 @@ export function CheckIn({ class: classData, classDate }: CheckInProps) {
   const { data: checkins, isLoading: isLoadingCheckins } =
     useListCheckinsByClassId(classData.id, classDate ?? "");
   const { mutateAsync: removeCheckinFn } = useRemoveCheckin();
-  const [date, setDate] = useState<Date | null>(null);
+  const [start, setStart] = useState<Date | null>(null);
+  const [end, setEnd] = useState<Date | null>(null);
   const { user } = useProfileContext();
 
   useEffect(() => {
     if (!classDate) return;
-    const hour = classData.end?.split(":")[0];
-    const minute = classData.end?.split(":")[1];
-    const temp = new Date(`${classDate}`);
-    temp.setHours(Number(hour), Number(minute));
-    setDate(temp);
+    function getDateFromTime(time: string) {
+      const hour = time?.split(":")[0];
+      const minute = time?.split(":")[1];
+      const temp = new Date(`${classDate}`);
+      temp.setHours(Number(hour), Number(minute));
+      return temp;
+    }
+    setStart(getDateFromTime(classData.start ?? ""));
+    setEnd(getDateFromTime(classData.end ?? ""));
   }, [classDate, classData.end]);
 
   if (!classDate) return null;
@@ -93,7 +98,13 @@ export function CheckIn({ class: classData, classDate }: CheckInProps) {
       });
   }
 
-  if (!date || differenceInHours(date, new Date()) > 24) return null;
+  if (
+    !start ||
+    !end ||
+    differenceInHours(start, new Date()) > 24 ||
+    differenceInHours(end, new Date()) < 0
+  )
+    return null;
 
   if (isLoadingCheckins) {
     return <Skeleton className="w-full h-[40px] bg-neutral-700 rounded-md" />;
