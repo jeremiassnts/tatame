@@ -25,6 +25,7 @@ import { VStack } from "@/src/components/ui/vstack";
 import { GENDERS } from "@/src/constants/genders";
 import { queryClient } from "@/src/lib/react-query";
 import { format } from "date-fns";
+import { RelativePathString } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import { Instagram } from "lucide-react-native";
 import { useState } from "react";
@@ -48,6 +49,7 @@ type UserProps = {
     phone: string;
     gender: string;
     birth: string;
+    backTo: RelativePathString;
 };
 
 export default function User() {
@@ -65,6 +67,7 @@ export default function User() {
         phone,
         gender,
         birth,
+        backTo,
     } = useLocalSearchParams<UserProps>();
     const [approvedAt, setApprovedAt] = useState<string | null>(
         initialApprovedAt,
@@ -196,7 +199,7 @@ export default function User() {
                         </VStack>
                     </Card>
                     <HStack className="justify-center w-full mt-4">
-                        <BackButton />
+                        <BackButton backTo={backTo} />
                     </HStack>
                 </VStack>
             </ScrollView>

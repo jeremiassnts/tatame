@@ -1,6 +1,7 @@
 import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
 import { useApproveStudent } from "@/src/api/users/approve-student";
 import { useDenyStudent } from "@/src/api/users/deny-student";
+import { StudentDetails } from "@/src/api/users/list-students-by-gym-id";
 import { BELT_COLORS, BELTS } from "@/src/constants/belts";
 import { DEGREES } from "@/src/constants/degrees";
 import { queryClient } from "@/src/lib/react-query";
@@ -17,7 +18,7 @@ import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
 interface StudentRowProps {
-    student: any;
+    student: StudentDetails;
 }
 
 export function StudentRow({ student }: StudentRowProps) {
@@ -45,13 +46,13 @@ export function StudentRow({ student }: StudentRowProps) {
     }
 
     function handleViewUser() {
-        router.push({
+        router.navigate({
             pathname: "/(logged)/(users)/[userId]",
             params: {
                 userId: student.id.toString(),
                 name: student.name,
                 email: student.email,
-                imageUrl: student.imageUrl,
+                imageUrl: student.profilePicture,
                 belt: student.belt,
                 degree: student.degree,
                 approvedAt: student.approvedAt,
@@ -64,6 +65,7 @@ export function StudentRow({ student }: StudentRowProps) {
                 phone: student.phone,
                 gender: student.gender,
                 birth: student.birth,
+                backTo: "/(logged)/(gym)",
             },
         });
     }
@@ -76,6 +78,7 @@ export function StudentRow({ student }: StudentRowProps) {
     const beltLabel = BELTS.find((b) => b.value === student.belt)?.label;
     // @ts-ignore
     const beltDegree = DEGREES[student.belt][student.degree];
+
     return (
         <Pressable onPress={handleViewUser}>
             <Card
@@ -88,7 +91,7 @@ export function StudentRow({ student }: StudentRowProps) {
                     />
                     <AvatarWithDialog
                         fullName={student.name}
-                        imageUrl={student.imageUrl}
+                        imageUrl={student.profilePicture ?? ""}
                         size="sm"
                     />
                     <VStack>

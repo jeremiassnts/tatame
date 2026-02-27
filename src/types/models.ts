@@ -102,9 +102,9 @@ export interface User {
   customerId: string | null;
   subscriptionId: string | null;
   plan: string | null;
-  approvedAt: Date | null;
-  deniedAt: Date | null;
-  migratedAt: Date | null;
-  deletedAt: Date | null;
-  createdAt: Date;
+  approvedAt: string | null;
+  deniedAt: string | null;
+  migratedAt: string | null;
+  deletedAt: string | null;
+  createdAt: string;
 }

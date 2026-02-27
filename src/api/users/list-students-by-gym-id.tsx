@@ -6,6 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 
 export type StudentDetails = {
   name: string;
+  belt?: string;
+  degree?: string;
 } & User;
 export interface ListStudentsByGymIdProps {
   data: StudentDetails[];
