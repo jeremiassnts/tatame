@@ -30,6 +30,7 @@ export interface StudentPresenceSectionData {
     weekDay: string;
     isPresent: boolean;
     duration: number;
+    amount: number;
 }
 
 export function StudentPresenceSection({
@@ -66,6 +67,7 @@ export function StudentPresenceSection({
                 date: current.getDate(),
                 isPresent: tempTotalDuration > 0,
                 duration: tempTotalDuration,
+                amount: dayCheckins.length,
             });
         }
         setData(tempWeekDays);
@@ -82,7 +84,7 @@ export function StudentPresenceSection({
         setTotalDuration(formattedDuration);
         setTotalCalories(CALORIES_PER_MINUTE * aux);
         setTotalTrainings(
-            tempWeekDays.filter((checkin) => checkin.duration > 0).length,
+            tempWeekDays.reduce((acc, checkin) => acc + checkin.amount, 0),
         );
     }, [checkins]);
 
