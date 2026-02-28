@@ -1,5 +1,5 @@
 import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
-import { useApproveStudent } from "@/src/api/users/approve-student";
+import { useApproveUser } from "@/src/api/users/approve-user";
 import { useDenyStudent } from "@/src/api/users/deny-student";
 import { BackButton } from "@/src/components/back-button";
 import { InfoRow } from "@/src/components/personal-data-section/info-row";
@@ -74,13 +74,13 @@ export default function User() {
     );
     const [deniedAt, setDeniedAt] = useState<string | null>(initialDeniedAt);
     const isHigherRole = useIsHigherRole();
-    const { mutateAsync: approveStudentFn, isPending: isApprovingStudent } =
-        useApproveStudent();
+    const { mutateAsync: approveUserFn, isPending: isApprovingUser } =
+        useApproveUser();
     const { mutateAsync: denyStudentFn, isPending: isDenyingStudent } =
         useDenyStudent();
 
-    function handleApproveStudent() {
-        approveStudentFn(Number(userId)).then(() => {
+    function handleApproveUser() {
+        approveUserFn(Number(userId)).then(() => {
             queryClient.invalidateQueries({
                 queryKey: ["students-by-gym-id", Number(gymId)],
             });
@@ -140,8 +140,8 @@ export default function User() {
                             <Button
                                 className="rounded-md border-neutral-600"
                                 variant="outline"
-                                onPress={handleApproveStudent}
-                                disabled={isApprovingStudent}
+                                onPress={handleApproveUser}
+                                disabled={isApprovingUser}
                             >
                                 <ButtonIcon
                                     as={CheckIcon}
@@ -165,7 +165,7 @@ export default function User() {
                         <Button
                             className="rounded-md border-neutral-600 mt-6"
                             variant="outline"
-                            onPress={handleApproveStudent}
+                            onPress={handleApproveUser}
                         >
                             <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
                             <ButtonText>Reativar</ButtonText>

@@ -1,5 +1,5 @@
 import { useIsHigherRole } from "@/src/api/roles/is-higher-role";
-import { useApproveStudent } from "@/src/api/users/approve-student";
+import { useApproveUser } from "@/src/api/users/approve-user";
 import { useDenyStudent } from "@/src/api/users/deny-student";
 import { StudentDetails } from "@/src/api/users/list-students-by-gym-id";
 import { BELT_COLORS, BELTS } from "@/src/constants/belts";
@@ -23,14 +23,14 @@ interface StudentRowProps {
 
 export function StudentRow({ student }: StudentRowProps) {
     const isHigherRole = useIsHigherRole();
-    const { mutateAsync: approveStudentFn, isPending: isApprovingStudent } =
-        useApproveStudent();
+    const { mutateAsync: approveUserFn, isPending: isApprovingUser } =
+        useApproveUser();
     const { mutateAsync: denyStudentFn, isPending: isDenyingStudent } =
         useDenyStudent();
     const router = useRouter();
 
-    function handleApproveStudent() {
-        approveStudentFn(student.id).then(() => {
+    function handleApproveUser() {
+        approveUserFn(student.id).then(() => {
             queryClient.invalidateQueries({
                 queryKey: ["students-by-gym-id", student.gymId],
             });
@@ -105,8 +105,8 @@ export function StudentRow({ student }: StudentRowProps) {
                             <Button
                                 className="rounded-md border-neutral-600"
                                 variant="outline"
-                                onPress={handleApproveStudent}
-                                disabled={isApprovingStudent}
+                                onPress={handleApproveUser}
+                                disabled={isApprovingUser}
                             >
                                 <ButtonIcon
                                     as={CheckIcon}
@@ -135,7 +135,7 @@ export function StudentRow({ student }: StudentRowProps) {
                         <Button
                             className="rounded-md border-neutral-600 ml-auto"
                             variant="outline"
-                            onPress={handleApproveStudent}
+                            onPress={handleApproveUser}
                         >
                             <ButtonIcon as={CheckIcon} size="sm" className="text-green-500" />
                             <ButtonText>Reativar</ButtonText>

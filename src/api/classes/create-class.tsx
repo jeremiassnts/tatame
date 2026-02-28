@@ -53,8 +53,10 @@ export function useCreateClass() {
         });
 
         return created;
-      } catch (error) {
-        showErrorToast("Erro", "Ocorreu um erro ao criar a aula");
+      } catch (error: any) {
+        const msg =
+          error?.response?.data?.message ?? "Ocorreu um erro ao criar a aula";
+        showErrorToast("Erro", msg);
         throw error;
       }
     },
